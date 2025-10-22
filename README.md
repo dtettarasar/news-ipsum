@@ -24,8 +24,6 @@ It includes a complete, ready-to-use environment for development and production.
 
 ---
 
----
-
 ## ⚙️ Install & Start
 
 ### 1. Clone the repo
