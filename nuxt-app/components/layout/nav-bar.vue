@@ -1,8 +1,8 @@
 <template>
 
-    <div class="bg-blue-200 flex flex-row">
+    <div class="border-t-1 border-b-1 px-4 bg-blue-200 flex flex-row">
 
-        <div class="hidden lg:flex">
+        <div class="hidden lg:flex flex-row basis-full justify-between">
 
             <!--Menu desktop-->
 
