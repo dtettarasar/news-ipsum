@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-3xl font-bold underline" >Test MongoDB</h1>
+    <h1 class="text-3xl font-bold underline" >Home</h1>
     <button @click="testMongo">Tester</button>
     <pre>{{ response }}</pre>
   </div>
