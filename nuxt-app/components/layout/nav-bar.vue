@@ -56,10 +56,15 @@
 
 <script setup>
 
+    import { useRoute } from 'vue-router'
 
+    const route = useRoute()
+
+    const menuItems = [
+        { label: 'Home', to: '/' },
+        { label: 'About', to: '/about' },
+        { label: 'Contact', to: '/contact' },
+        { label: 'All articles', to: '/articles' }
+    ]
 
 </script>
-
-<style scoped>
-
-</style>
