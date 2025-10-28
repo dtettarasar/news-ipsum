@@ -10,12 +10,27 @@
                 <img src="/logos/logoipsum-381.svg" alt="Logo du site" class="h-8 w-auto" />
             </div>
 
-            <div class="flex flex-row justify-center items-center gap-8 h-full pt-4">
+            <div class="flex flex-row justify-center items-center gap-8 h-full">
                 
-                <a href="/" class="hover:text-blue-600 transition border-b-2 h-full pb-4">Home</a>
-                <a href="/about" class="hover:text-blue-600 transition border-b-2 h-full pb-4">About</a>
-                <a href="/contact" class="hover:text-blue-600 transition border-b-2 h-full pb-4">Contact</a>
-                <a href="#" class="hover:text-blue-600 transition border-b-2 h-full pb-4">All articles</a>
+                <div class="menu-item-container flex flex-col justify-between items-center">
+                    <a href="/" class="">Home</a>
+                    <div class="rectangle"></div>
+                </div>
+
+                <div class="menu-item-container flex flex-col justify-between items-center">
+                    <a href="/about" class="">About</a>
+                    <div class="rectangle"></div>
+                </div>
+                
+                <div class="menu-item-container flex flex-col justify-between items-center">
+                    <a href="/contact" class="">Contact</a>
+                    <div class="rectangle"></div>
+                </div>
+
+                <div class="menu-item-container flex flex-col justify-between items-center">
+                    <a href="#" class="">All articles</a>
+                    <div class="rectangle"></div>
+                </div>
 
             </div>
 
@@ -44,3 +59,19 @@
 
 
 </script>
+
+<style scoped>
+
+    .rectangle {
+        width: 30px;
+        height: 4px;
+        background-color: black;
+        border-radius: 200px 200px 0% 0%
+    }
+
+    .menu-item-container {
+        height: 50px;
+        margin-top: 30px;
+    }
+
+</style>
