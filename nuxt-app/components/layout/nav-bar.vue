@@ -12,24 +12,23 @@
 
             <div class="flex flex-row justify-center items-center gap-8 h-full">
                 
-                <div class="menu-item-container mt-[20px] h-[40px] flex flex-col justify-between items-center group">
-                    <a href="/" class="">Home</a>
-                    <div class="rectangle w-[30px] h-[4px] rounded-t-full bg-transparent group-hover:bg-black transition-all duration-300"></div>
-                </div>
+                <div
+                v-for="item in menuItems"
+                :key="item.to"
+                class="group mt-[20px] h-[40px] flex flex-col justify-between items-center"
+                >
 
-                <div class="menu-item-container mt-[20px] h-[40px] flex flex-col justify-between items-center group">
-                    <a href="/about" class="">About</a>
-                    <div class="rectangle w-[30px] h-[4px] rounded-t-full bg-transparent group-hover:bg-black transition-all duration-300"></div>
-                </div>
-                
-                <div class="menu-item-container mt-[20px] h-[40px] flex flex-col justify-between items-center group">
-                    <a href="/contact" class="">Contact</a>
-                    <div class="rectangle w-[30px] h-[4px] rounded-t-full bg-transparent group-hover:bg-black transition-all duration-300"></div>
-                </div>
+                    <NuxtLink :to="item.to" class="">
+                        {{ item.label }}
+                    </NuxtLink>
 
-                <div class="menu-item-container mt-[20px] h-[40px] flex flex-col justify-between items-center group">
-                    <a href="#" class="">All articles</a>
-                    <div class="rectangle w-[30px] h-[4px] rounded-t-full bg-transparent group-hover:bg-black transition-all duration-300"></div>
+                    <div
+                        class="w-[30px] h-[4px] rounded-t-[200px] transition-all duration-200"
+                        :class="[
+                        route.path === item.to ? 'bg-black' : 'bg-blue-200 group-hover:bg-black'
+                        ]"
+                    ></div>
+
                 </div>
 
             </div>
