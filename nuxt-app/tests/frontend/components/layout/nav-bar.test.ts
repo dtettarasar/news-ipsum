@@ -16,11 +16,34 @@ describe('nav-bar.vue', () => {
 
         const wrapper = mount(navBar, {
             global: {
-                stubs: ['NuxtLink', 'icon'], // on mock NuxtLink et l’icône
+                stubs: ['NuxtLink', 'icon'], // crée des versions simplifiées de ces composants, <NuxtLink-stub> et <icon-stub>, juste pour que le rendu global se fasse sans erreur.
             },
         })
 
-        expect(wrapper.text()).toContain('Login')
+        expect(wrapper.text()).toContain('Login');
+
+    })
+
+    it('display "Welcome, User" when userIsLogged is true', async () => {
+
+        const wrapper = mount(navBar, {
+            global: {
+                stubs: ['NuxtLink', 'icon'],
+            },
+        })
+
+        // On simule que l'utilisateur est connecté
+
+        // options API: 
+        // await wrapper.setData({ userIsLogged: true })
+
+        // Composition API: 
+        wrapper.vm.userIsLogged = true;
+        
+        // Attend que le rendu et la mise à jour du DOM soient terminés
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.text()).toContain('Welcome, User');
 
     })
 
