@@ -33,8 +33,28 @@
 
             </div>
 
-            <div> 
-                user section
+            <div class="flex flex-row gap-2 items-center"> 
+
+                <div class="flex flex-row items-center">
+                    
+                    <icon name="ic:twotone-search" class="w-8 h-8 text-black hover:text-sky-500 transition-colors" />
+
+                </div>
+                
+                <div>
+
+                    <div v-if="userIsLogged">
+                        Welcome, User
+                    </div>
+
+                    <div v-else>
+
+                        Login
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
@@ -55,6 +75,7 @@
 
 <script setup>
 
+    import { ref } from 'vue'
     import { useRoute } from 'vue-router'
 
     const route = useRoute()
@@ -65,5 +86,8 @@
         { label: 'Contact', to: '/contact' },
         { label: 'All articles', to: '/articles' }
     ]
+
+    // 1️⃣ variable réactive (false par défaut)
+    const userIsLogged = ref(false)
 
 </script>
