@@ -1,14 +1,16 @@
 <template>
   <div class="container mx-auto flex justify-center pt-[50px] lg:pt-[100px]">
-    <h1 v-html="title" class="text-3xl font-bold text-center"></h1>
+    <h1 v-html="title" class="text-3xl md:text-6xl font-bold text-center"></h1>
   </div>
 </template>
 
 <script setup>
 
-import DOMPurify from 'dompurify'
-import { ref } from 'vue'
+import DOMPurify from "isomorphic-dompurify"
 
-const title = ref(DOMPurify.sanitize('<strong>Hello</strong> world'))
+import { ref, computed } from 'vue'
+
+const rawTitle = ref("<strong>Hey, We're Blogxpress.</strong> See Our Thoughts, Stories And Ideas.") // source "brute"
+const title = computed(() => DOMPurify.sanitize(rawTitle.value)) // version sécurisée
 
 </script>
