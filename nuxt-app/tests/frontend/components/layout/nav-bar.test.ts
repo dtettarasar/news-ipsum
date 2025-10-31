@@ -12,15 +12,24 @@ import navBar from '../../../../components/layout/nav-bar.vue'
 
 describe('nav-bar.vue', () => {
 
+    const globalStubs = {
+        NuxtLink: {
+            template: '<a><slot /></a>', // stub propre : simule juste le rendu du lien
+            props: ['to'], // optionnel, pour accepter la prop 'to'
+        },
+        icon: true, // pas besoin de template pour celui-là
+    }
+
     it('display login link when userIsLogged is false', () => {
 
         const wrapper = mount(navBar, {
             global: {
-                stubs: ['NuxtLink', 'icon'], // crée des versions simplifiées de ces composants, <NuxtLink-stub> et <icon-stub>, juste pour que le rendu global se fasse sans erreur.
+                stubs: globalStubs, // crée des versions simplifiées de ces composants, <NuxtLink-stub> et <icon-stub>, juste pour que le rendu global se fasse sans erreur.
             },
         })
 
         expect(wrapper.text()).toContain('Login');
+        expect(wrapper.text()).toContain('Register');
 
     })
 
