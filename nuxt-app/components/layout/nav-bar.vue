@@ -47,9 +47,34 @@
                         Welcome, User
                     </div>
 
-                    <div v-else>
+                    <div class="flex flex-row justify-center items-center gap-4 h-full" v-else>
 
-                        Login
+                        <div class="group mt-[20px] h-[40px] flex flex-col justify-between items-center">
+
+                            <NuxtLink to="/login" >Login</NuxtLink>
+
+                            <div
+                                class="w-[30px] h-[4px] rounded-t-[200px] transition-all duration-200"
+                                :class="[
+                                route.path === '/login' ? 'bg-black' : 'bg-blue-200 group-hover:bg-black'
+                                ]"
+                            ></div>
+
+                        </div>
+
+                        <div class="group mt-[20px] h-[40px] flex flex-col justify-between items-center">
+
+                            <NuxtLink to="/register" >Register</NuxtLink>
+
+                            <div
+                                class="w-[30px] h-[4px] rounded-t-[200px] transition-all duration-200"
+                                :class="[
+                                route.path === '/register' ? 'bg-black' : 'bg-blue-200 group-hover:bg-black'
+                                ]"
+                            ></div>
+
+                        </div>
+                        
 
                     </div>
 
@@ -84,7 +109,7 @@
         { label: 'Home', to: '/' },
         { label: 'About', to: '/about' },
         { label: 'Contact', to: '/contact' },
-        { label: 'All articles', to: '/articles' }
+        { label: 'All articles', to: '/all-articles' }
     ]
 
     // 1️⃣ variable réactive (false par défaut)
