@@ -1,9 +1,14 @@
 import { MongoClient } from 'mongodb'
 
 export default defineEventHandler(async (event) => {
-  const client = new MongoClient('mongodb://mongodb:27017') // mongodb = nom du service dans docker-compose
+
+  const config = useRuntimeConfig()
+  const uri = config.MONGODB_URI
+
+  const client = new MongoClient(uri)
   await client.connect()
-  const db = client.db('testdb') // une DB de test
+
+  const db = client.db(config.MONGO_DB_NAME) // récupère le nom défini dans .env
   const collection = db.collection('testCollection')
 
   // Insert un doc test
@@ -14,4 +19,5 @@ export default defineEventHandler(async (event) => {
 
   await client.close()
   return doc
+
 })
