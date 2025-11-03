@@ -1,23 +1,15 @@
+import TestMessage from '../database/models/test-message'
+
 import { MongoClient } from 'mongodb'
 
 export default defineEventHandler(async (event) => {
 
-  const config = useRuntimeConfig()
-  const uri = config.MONGODB_URI
+  // On insère un document de test
+  const newMessage = await TestMessage.create({ message: 'Hello from Nuxt + Mongoose!' });
 
-  const client = new MongoClient(uri)
-  await client.connect()
+  // Et on le récupère juste après
+  const foundMessage = await TestMessage.findById(newMessage._id)
 
-  const db = client.db(config.MONGO_DB_NAME) // récupère le nom défini dans .env
-  const collection = db.collection('testCollection')
-
-  // Insert un doc test
-  const result = await collection.insertOne({ message: 'Hello from Nuxt server!' })
-
-  // Récupère le doc
-  const doc = await collection.findOne({ _id: result.insertedId })
-
-  await client.close()
-  return doc
+  return foundMessage
 
 })
