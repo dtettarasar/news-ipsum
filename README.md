@@ -72,31 +72,78 @@ Only MONGO_INITDB_ROOT_USERNAME, MONGO_INITDB_ROOT_PASSWORD, MONGO_DB_NAME, and 
 
 ### 3. Start Docker
 
-```bash
-docker compose up --build
-```
+Once your .env file is ready, you can start the project using Docker Compose.
 
-This will start: 
+#### 🚧 Development environment
 
-- the Nuxt server on http://localhost:3000
-- MongoDB Service on port 27017
+In development, the stack includes:
 
-## Useful Docker commands
+- **Nuxt app** (frontend + API)
+- **MongoDB** (database)
+- **Mongo Express** (database web UI, only for local dev)
 
-**docker compose up**: start the containers
+The mongo-express service is automatically loaded from the docker-compose.override.yml file.
 
-**docker compose down**: stop and delete containers
-
-**docker ps**: list active containers
-
-**docker exec -it mongodb bash**: open MongoDB container terminal
-
-**docker exec -it nuxt-app bash**: open Nuxt App container terminal 
-
-📝 Note: If `bash` is not available in the container, use `sh` instead:
+**Command:**
 
 ```bash
-docker exec -it mongodb sh
+docker compose up -d
 ```
 
+This will:
+
+- Start all containers (nuxt-app, mongodb, mongo-express)
+
+- Expose the following ports:
+
+    - 3000 → Nuxt application
+    - 8081 → Mongo Express UI
+    - 27017 → MongoDB
+
+Once running:
+
+- Visit your app at http://localhost:3000
+- Access the Mongo Express interface at http://localhost:8081 (Use the credentials defined in your .env, e.g. devadmin / devsecret)
+
+To stop all containers:
+
+```bash
+docker compose down
+```
+
+#### 🚀 Production environment
+
+In production, Mongo Express is disabled for security reasons.
+Only the Nuxt app and MongoDB services are started.
+
+**Command:**
+
+```bash
+docker compose -f docker-compose.yml up -d
+```
+
+This ensures that:
+
+- Only essential containers are running.
+- No admin interface is publicly exposed.
+
+You can safely deploy this configuration on your production server or staging environment.
+
+#### 🔄 Other Useful Docker commands
+
+```bash
+
+# List running containers
+docker compose ps
+
+# Stream logs from all containers
+docker compose logs -f
+
+# Stop and remove containers and volumes
+docker compose down -v
+
+# Rebuild all images from scratch
+docker compose build --no-cache
+
+```
 
