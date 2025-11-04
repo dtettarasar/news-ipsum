@@ -33,7 +33,44 @@ git clone https://github.com/dtettarasar/news-ipsum.git
 cd news-ipsum
 ```
 
-### 2. Start Docker
+### 2. Setup the .env file
+
+Before launching the project, you must create a .env file at the root of the project.This file contains all the variables needed to connect Docker services (MongoDB, Mongo Express, etc.).
+
+#### Example of an .env file (development environment)
+
+```bash
+# --- MongoDB ---
+MONGO_INITDB_ROOT_USERNAME="admin"
+MONGO_INITDB_ROOT_PASSWORD="Ilaria1234!!"
+MONGO_DB_NAME="new_ipsum"
+MONGO_DB_URI="mongodb://admin:Ilaria1234!!@mongodb:27017/"
+
+# --- Mongo Express (for dev mode) ---
+ME_CONFIG_BASICAUTH_USERNAME="devadmin"
+ME_CONFIG_BASICAUTH_PASSWORD="devsecret"
+```
+
+- MONGO_INITDB_ROOT_USERNAME : MongoDB root username used during initialization.
+- MONGO_INITDB_ROOT_PASSWORD : MongoDB root account password.
+- MONGO_DB_NAME : Name of the database used by the application.
+- MONGO_DB_URI : Full connection URI to MongoDB. Used by dependent services (Nuxt, Mongo Express).
+- ME_CONFIG_BASICAUTH_USERNAME : Mongo Express interface login ID.
+- ME_CONFIG_BASICAUTH_PASSWORD : Mongo Express password.
+
+#### Important notes
+
+**Mongo Express is reserved for local development.**
+It must never be activated in production (risk of security breach).
+The service is configured to be deployed only in the development environment.
+
+**The identifiers “devadmin / devsecret” are examples for local use.**
+You can change them freely, but keep them simple for your local environment.
+
+**In production**, the application does not depend on Mongo Express.
+Only MONGO_INITDB_ROOT_USERNAME, MONGO_INITDB_ROOT_PASSWORD, MONGO_DB_NAME, and MONGO_DB_URI are required.
+
+### 3. Start Docker
 
 ```bash
 docker compose up --build
