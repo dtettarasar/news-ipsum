@@ -1,7 +1,6 @@
 services:
   nuxt-app:
     build: ./nuxt-app
-    container_name: new-ipsum-nuxt-app
     ports:
       - "3000:3000"
     environment:
@@ -16,7 +15,6 @@ services:
 
   mongodb:
     image: mongo:latest
-    container_name: new-ipsum-mongodb
     ports:
       - "27017:27017"
     environment:
