@@ -10,14 +10,6 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  vite : {
-
-    plugins: [
-      tailwindcss(),
-    ]
-
-  },
-
   runtimeConfig: {
 
     mongoUser: process.env.MONGO_INITDB_ROOT_USERNAME,
@@ -26,6 +18,6 @@ export default defineNuxtConfig({
     
   },
 
-  modules: ['@nuxt/icon'],
+  modules: ['@nuxt/icon','@nuxtjs/tailwindcss'],
 
 })
