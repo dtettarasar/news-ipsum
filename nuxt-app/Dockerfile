@@ -19,12 +19,12 @@ WORKDIR /usr/src/app
 
 # Copie et installation des dépendances
 COPY package*.json ./
-RUN npm install
-RUN npm install -g nuxt # Installation globale de Nuxt CLI
+RUN npm install --include=dev
+# RUN npm install -g nuxt # Installation globale de Nuxt CLI
 
 # Copie du code source et build
 COPY . .
-RUN nuxt build
+RUN npm run build
 
 # --- ÉTAPE 2: ÉTAPE DE PRODUCTION (Image Légère) ---
 FROM node:20-slim
