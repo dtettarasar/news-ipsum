@@ -1,24 +1,35 @@
+# docker-compose.yml (Configuration de base/production)
 services:
   nuxt-app:
-    build: ./nuxt-app
+    build:
+      context: ./nuxt-app
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: production # Utilise l'étape de production du Dockerfile
+        # 🚨 Transmission des variables au BUILD
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        MONGO_DB_NAME: ${MONGO_DB_NAME}
+    restart: always
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production # Variable d'environnement pour Nuxt
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
       - MONGO_DB_NAME=${MONGO_DB_NAME}
-    volumes:
-      - ./nuxt-app:/usr/src/app
+    # Volumes DEV (volumes: - ./nuxt-app:/usr/src/app) SUPPRIMÉS
+
     depends_on:
       - mongodb
 
   mongodb:
     image: mongo:latest
+    restart: always
     ports:
-      - "27017:27017"
+      - "27017:27017" # Peut être retiré en production si non exposé
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
-      - ./data/db:/data/db
+      - ./data/personal-db:/data/db
