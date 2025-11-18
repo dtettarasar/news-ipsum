@@ -8,6 +8,18 @@ on devices of different sizes (smartphones, tablets, desktop computers)
 and comply with web accessibility principles so that it can be used by people
 with various types of disabilities.
 
+
+## 🧩 Planned Features
+
+- 🔐 Authentication system for the back office
+- 🧠 Markdown-based content management
+- 🖼️ Media upload and image optimization
+- 🗃️ Project categories and filtering
+- 🚀 **SEO-Friendly Architecture (thanks to Nuxt JS)** — Server-side rendering (SSR) for optimized search engine visibility.
+- ♿ **Accessibility**: Full WCAG-compliant experience for inclusive reading.
+- 🔗 **Web3 (Future)**: Blockchain-backed article authenticity and signatures.
+- 📨 Mailer service integration (NodeMailer or similar)
+
 # Under the hood
 
 I've built a basic structure using tools for creating modern applications: **Nuxt 3**, **MongoDB**, and **Docker**.  
@@ -25,6 +37,23 @@ It includes a complete, ready-to-use environment for development and production.
 ---
 
 ## ⚙️ Install & Start
+
+**Prerequisites**
+
+- **Docker & Docker Compose** installed
+- **Node.js** (optional, if you want to run Nuxt locally, but recommended for tooling)
+- **Make** (Required for executing development/production commands via the `Makefile`)
+
+### Installing Make
+
+The project uses a `Makefile` to simplify Docker commands. You must have **Make** installed on your system.
+
+| OS | Installation Instructions |
+| :--- | :--- |
+| **macOS** | Included with **Xcode Command Line Tools**. If the `make` command fails, run: `xcode-select --install` |
+| **Linux** | Usually pre-installed. If not, install the build tools, e.g., on Ubuntu: `sudo apt install build-essential` |
+| **Windows** | Recommended via **WSL 2** (Windows Subsystem for Linux), or available through **Git Bash** (included with Git for Windows). |
+
 
 ### 1. Clone the repo
 
@@ -70,80 +99,72 @@ You can change them freely, but keep them simple for your local environment.
 **In production**, the application does not depend on Mongo Express.
 Only MONGO_INITDB_ROOT_USERNAME, MONGO_INITDB_ROOT_PASSWORD, MONGO_DB_NAME, and MONGO_DB_URI are required.
 
-### 3. Start Docker
+## 🐳 Docker Environments and Deployment
 
-Once your .env file is ready, you can start the project using Docker Compose.
+This project uses Docker Compose with two separate configuration files for clear separation:
+* **`docker-compose.yml`**: Defines the essential services for **Production** (Nuxt App, MongoDB).
+* **`docker-compose.dev.yml`**: A configuration override that adds **Development** features (Hot Reload volumes, Mongo Express).
 
-#### 🚧 Development environment
+### ⚙️ Local Development (Hot Reload & DB Admin)
 
-In development, the stack includes:
-
-- **Nuxt app** (frontend + API)
-- **MongoDB** (database)
-- **Mongo Express** (database web UI, only for local dev)
-
-The mongo-express service is automatically loaded from the docker-compose.override.yml file.
+Use the `make dev` command to run the environment locally. It automatically uses both configuration files.
 
 **Command:**
 
-```bash
-docker compose up -d
-```
+~~~
+make dev
+~~~
 
-This will:
+### 🚀 Production Deployment (Secure & Optimized)
 
-- Start all containers (nuxt-app, mongodb, mongo-express)
+In production, Mongo Express is disabled, the Nuxt application is served from its compiled .output files, and code volumes are omitted for security and performance.
 
-- Expose the following ports:
+You can launch the production environment using the Makefile (recommended for logs) or directly via Docker Compose.
 
-    - 3000 → Nuxt application
-    - 8081 → Mongo Express UI
-    - 27017 → MongoDB
+**1. Launch and Attach Logs (Foreground)**
 
-Once running:
+~~~
+make prod-log
+~~~
 
-- Visit your app at http://localhost:3000
-- Access the Mongo Express interface at http://localhost:8081 (Use the credentials defined in your .env, e.g. devadmin / devsecret)
+*Use this to check for runtime errors, typically during the first deployment.*
 
-To stop all containers:
+**2. Launch in Detached Mode (Background)**
 
-```bash
-docker compose down
-```
+~~~
+make prod-no-log
+~~~
 
-#### 🚀 Production environment
+*Use this for continuous operation on a remote server.*
 
-In production, Mongo Express is disabled for security reasons.
-Only the Nuxt app and MongoDB services are started.
+### 🔄 Other Useful Docker commands
 
-**Command:**
-
-```bash
-docker compose -f docker-compose.yml up -d
-```
-
-This ensures that:
-
-- Only essential containers are running.
-- No admin interface is publicly exposed.
-
-You can safely deploy this configuration on your production server or staging environment.
-
-#### 🔄 Other Useful Docker commands
-
-```bash
-
+~~~
 # List running containers
 docker compose ps
 
-# Stream logs from all containers
-docker compose logs -f
+# Stream logs from the production stack (use this if prod-no-log is running)
+docker compose -f docker-compose.yml logs -f
 
-# Stop and remove containers and volumes
-docker compose down -v
+# Stop and remove containers and volumes for the full DEV stack
+# (This includes mongo-express, even if it's currently down)
+make down
 
-# Rebuild all images from scratch
-docker compose build --no-cache
+# Rebuild all images from scratch (uses the DEV stack)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml build --no-cache
+~~~
 
-```
+## 📅 Project Status
+
+This project is **currently under development**.
+The structure and main components are being implemented progressively, and features will be added step by step.
+
+## 💡 About the Author
+
+I’m **Dylan Tettarasar**, a **Fullstack Developer** and former **Web Project Manager**, with a background in **digital marketing and communication**.
+My goal with this project is to merge my experience in web management with my growing expertise in development — and to create a personal site that reflects my technical journey and creative side.
+
+## 📄 License
+
+This project is released under the **MIT License** — feel free to fork, modify, and reuse it for your own projects.
 
