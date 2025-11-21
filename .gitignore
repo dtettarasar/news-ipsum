@@ -26,3 +26,8 @@ logs
 
 # Docker / MongoDB data
 data/
+
+# Caddy
+Caddyfile
+caddy_data/
+caddy_config/
