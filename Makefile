@@ -1,18 +1,34 @@
-# Makefile
-COMPOSE_FILES = -f docker-compose.yml -f docker-compose.dev.yml
+# ----- DEV MODE -----
 
-# Commande par défaut pour le développement (utilise les deux fichiers)
+COMPOSE_DEV = -f docker-compose.yml -f docker-compose.dev.yml
+COMPOSE_PROD = -f docker-compose.yml
+
 dev:
-	docker compose $(COMPOSE_FILES) up --build
+	docker compose $(COMPOSE_DEV) up --build
 
-# Commande pour la production (utilise SEULEMENT la base)
-# Note: Sur le serveur, vous pouvez utiliser 'docker compose up --build' sans le -f.
-prod-no-log:
-	docker compose -f docker-compose.yml up --build -d
+dev-down:
+	docker compose $(COMPOSE_DEV) down -v
 
-prod-log:
-	docker compose -f docker-compose.yml up --build
 
-# Commande pour arrêter tous les services
+# ----- PROD MODE -----
+
+# Rebuild uniquement Nuxt (flow normal, recommandé)
+prod-nuxt:
+	docker compose $(COMPOSE_PROD) up -d --build nuxt-app
+
+prod-nuxt-log:
+	docker compose $(COMPOSE_PROD) up --build nuxt-app
+
+
+# Rebuild tout le stack (rare, uniquement en cas de MAJ Caddy/Mongo)
+prod-all:
+	docker compose $(COMPOSE_PROD) up -d --build
+
+prod-all-log:
+	docker compose $(COMPOSE_PROD) up --build
+
+
+# ----- DOWN -----
+
 down:
-	docker compose $(COMPOSE_FILES) down -v
+	docker compose $(COMPOSE_PROD) down
