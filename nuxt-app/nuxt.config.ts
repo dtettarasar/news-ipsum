@@ -10,9 +10,15 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
 
+    // PRIVÉ (Uniquement serveur)
     mongoUser: process.env.MONGO_INITDB_ROOT_USERNAME,
     mongoPass: process.env.MONGO_INITDB_ROOT_PASSWORD,
     mongoDbName: process.env.MONGO_DB_NAME || 'testdb',
+
+    // PUBLIC (Serveur + Client)
+    public: {
+      seoIndex: false, // Valeur de secours par défaut
+    }
     
   },
 
