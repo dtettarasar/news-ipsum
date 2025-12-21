@@ -11,14 +11,16 @@ with various types of disabilities.
 
 ## 🧩 Planned Features
 
-- 🔐 Authentication system for the back office
-- 🧠 Markdown-based content management
+- 🔐 **Authentication**: Secure back-office for administrators.
+- 👨‍💻 **SuperUser CLI**: Dedicated script to create the first admin via terminal.
+- 🧠 **Content**: Markdown-based management.
 - 🖼️ Media upload and image optimization
 - 🗃️ Project categories and filtering
 - 🚀 **SEO-Friendly Architecture (thanks to Nuxt JS)** — Server-side rendering (SSR) for optimized search engine visibility.
 - ♿ **Accessibility**: Full WCAG-compliant experience for inclusive reading.
 - 🔗 **Web3 (Future)**: Blockchain-backed article authenticity and signatures.
 - 📨 Mailer service integration (NodeMailer or similar)
+- 🛡️ **Security**: Automated HTTPS via Caddy.
 
 # Under the hood
 
