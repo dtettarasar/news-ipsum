@@ -29,12 +29,13 @@ It includes a complete, ready-to-use environment for development and production.
 
 ## 🧱 Technical stack
 
-- **Nuxt 3 / Vue 3** — Integrated frontend + backend framework (server-side API)
-- **Tailwind CSS** — Fast and modern styling
-- **MongoDB** — NoSQL database
-- **Mongoose** *(optional)* — ODM to simplify MongoDB model and query management
-- **Docker & Docker Compose** — Containerization and orchestration
-- **Node.js 18+** — JavaScript runtime environment
+- **Nuxt 4 / Vue 3**: Integrated frontend + backend framework (server-side API)
+- **Tailwind CSS**: Fast and modern styling
+- **MongoDB**: NoSQL database
+- **Mongoose** *(optional)*: ODM to simplify MongoDB model and query management
+- **Docker & Docker Compose**: Containerization and orchestration
+- **Node.js 18+**: JavaScript runtime environment
+- **Caddy**: automated SSL
 
 ---
 
@@ -73,9 +74,14 @@ Before launching the project, you must create a .env file at the root of the pro
 ```bash
 # --- MongoDB ---
 MONGO_INITDB_ROOT_USERNAME="admin"
-MONGO_INITDB_ROOT_PASSWORD="Ilaria1234!!"
+MONGO_INITDB_ROOT_PASSWORD="your_secure_password"
 MONGO_DB_NAME="new_ipsum"
-MONGO_DB_URI="mongodb://admin:Ilaria1234!!@mongodb:27017/"
+# Used by the app to connect to the DB container
+MONGO_DB_URI="mongodb://admin:your_secure_password@mongodb:27017/"
+
+# --- SEO Control ---
+# Set to 'true' to allow search engines, 'false' for demo/dev (noindex)
+NUXT_PUBLIC_SEO_INDEX="false"
 
 # --- Mongo Express (for dev mode) ---
 ME_CONFIG_BASICAUTH_USERNAME="devadmin"
@@ -88,6 +94,7 @@ ME_CONFIG_BASICAUTH_PASSWORD="devsecret"
 - MONGO_DB_URI : Full connection URI to MongoDB. Used by dependent services (Nuxt, Mongo Express).
 - ME_CONFIG_BASICAUTH_USERNAME : Mongo Express interface login ID.
 - ME_CONFIG_BASICAUTH_PASSWORD : Mongo Express password.
+- NUXT_PUBLIC_SEO_INDEX : allow search engines to index the website
 
 #### Important notes
 
@@ -107,54 +114,106 @@ This project uses Docker Compose with two separate configuration files for clear
 * **`docker-compose.yml`**: Defines the essential services for **Production** (Nuxt App, MongoDB).
 * **`docker-compose.dev.yml`**: A configuration override that adds **Development** features (Hot Reload volumes, Mongo Express).
 
-### ⚙️ Local Development (Hot Reload & DB Admin)
+## 🛠️ Usage with Makefile
 
-Use the `make dev` command to run the environment locally. It automatically uses both configuration files.
+The project uses a Makefile to simplify operations. Note: In production, we avoid rebuilding the entire stack frequently to prevent Let's Encrypt rate-limiting via Caddy.
 
-**Command:**
+### 💻 Development Mode
+
+Includes Hot-Reload, Mongo Express (DB Admin), and standard HTTP.
+
+| Command | Description |
+|:-------- |:--------:|
+| make dev    | Start the dev stack with logs and auto-rebuild.   |
+| make dev-down     | Stop dev stack and delete all volumes (clean DB).   |
+
+### 🚀 Production Mode
+
+Optimized build, served via Caddy with automatic HTTPS.
+
+| Command | Description |
+|:-------- |:--------:|
+| make prod-nuxt    | Recommended: Rebuild & restart only the Nuxt app (Fast & Safe).   |
+| make prod-all     | Rebuild the entire stack (Nuxt, Mongo, Caddy). Use sparingly.   |
+| make prod-all-log | Same as prod-all but keeps logs attached in the terminal.   |
+| make down     | Gracefully stop the production stack (keeps data).   |
+
+## 🔐 Reverse Proxy & SEO
+
+### Caddy 
+
+**Automatic HTTPS with Caddy**
+
+Caddy handles SSL certificates automatically.
+
+1. Update the Caddyfile with your domain:
+
+~~~
+your-domain.dev {
+    reverse_proxy nuxt-app:3000
+}
+~~~
+
+Caddy listens on ports **80/443** and forwards traffic to the internal Docker service nuxt-app running on port 3000.
+
+2. Ensure your DNS (A/AAAA records) points to your server IP.
+
+3. Caddy will provision certificates on the first run. **Avoid make prod-all repeatedly to stay under Let's Encrypt usage limits**.
+
+#### Using Caddy in local development
+
+In development, Caddy is optional.
+
+You can simply run:
+
+~~~
+http://localhost:3000
+~~~
+
+But if you want to test Caddy locally:
+
+**1. Create a local-only Caddyfile:**
+
+~~~
+localhost {
+    reverse_proxy nuxt-app:3000
+}
+~~~
+
+**2. Start with the dev Docker Compose:**
+
+~~~
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+~~~
+
+or
 
 ~~~
 make dev
 ~~~
 
-### 🚀 Production Deployment (Secure & Optimized)
-
-In production, Mongo Express is disabled, the Nuxt application is served from its compiled .output files, and code volumes are omitted for security and performance.
-
-You can launch the production environment using the Makefile (recommended for logs) or directly via Docker Compose.
-
-**1. Launch and Attach Logs (Foreground)**
+Then visit:
 
 ~~~
-make prod-log
+http://localhost
 ~~~
 
-*Use this to check for runtime errors, typically during the first deployment.*
-
-**2. Launch in Detached Mode (Background)**
+Mongo Express should be also available here: 
 
 ~~~
-make prod-no-log
+http://localhost:8081
 ~~~
 
-*Use this for continuous operation on a remote server.*
+### SEO
 
-### 🔄 Other Useful Docker commands
+**Selective SEO Indexing**
 
-~~~
-# List running containers
-docker compose ps
+To prevent your demo site from being indexed by Google while still showing SEO features:
 
-# Stream logs from the production stack (use this if prod-no-log is running)
-docker compose -f docker-compose.yml logs -f
+- NUXT_PUBLIC_SEO_INDEX="false": Injects <meta name="robots" content="noindex, nofollow">.
 
-# Stop and remove containers and volumes for the full DEV stack
-# (This includes mongo-express, even if it's currently down)
-make down
+- NUXT_PUBLIC_SEO_INDEX="true": Allows full indexing for production. This setting is handled via Nuxt RuntimeConfig and defaults to false for safety.
 
-# Rebuild all images from scratch (uses the DEV stack)
-docker compose -f docker-compose.yml -f docker-compose.dev.yml build --no-cache
-~~~
 
 ## 📅 Project Status
 
