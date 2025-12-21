@@ -214,6 +214,15 @@ To prevent your demo site from being indexed by Google while still showing SEO f
 
 - NUXT_PUBLIC_SEO_INDEX="true": Allows full indexing for production. This setting is handled via Nuxt RuntimeConfig and defaults to false for safety.
 
+## 👤 Admin Management (CLI)
+
+To create your first SuperUser (to access the future back-office), run this command once the containers are running:
+
+~~~
+docker compose exec nuxt-app npm run createsuperuser
+~~~
+
+*(This will prompt you for a username, email, and password directly in the terminal.)
 
 ## 📅 Project Status
 
@@ -223,7 +232,7 @@ The structure and main components are being implemented progressively, and featu
 ## 💡 About the Author
 
 I’m **Dylan Tettarasar**, a **Fullstack Developer** and former **Web Project Manager**, with a background in **digital marketing and communication**.
-My goal with this project is to merge my experience in web management with my growing expertise in development — and to create a personal site that reflects my technical journey and creative side.
+This project merges my experience in web management with modern development expertise to create a high-performance news platform.
 
 ## 📄 License
 
