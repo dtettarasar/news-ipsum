@@ -18,6 +18,8 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
       - MONGO_DB_NAME=${MONGO_DB_NAME}
+      # Si NUXT_PUBLIC_SEO_INDEX n'est pas défini dans le .env, Docker utilisera 'false'
+      - NUXT_PUBLIC_SEO_INDEX=${NUXT_PUBLIC_SEO_INDEX:-false}
     # Volumes DEV (volumes: - ./nuxt-app:/usr/src/app) SUPPRIMÉS
 
     depends_on:
