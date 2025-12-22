@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center pt-[50px] lg:pt-[100px]">
+  <div class="flex justify-center pt-[50px] lg:pt-[100px] mb-[50px]">
     <h1 v-html="title" class="text-3xl md:text-6xl font-bold text-center"></h1>
   </div>
 </template>
