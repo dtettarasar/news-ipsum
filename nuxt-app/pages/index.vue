@@ -6,6 +6,8 @@
 
     <forms-search-bar></forms-search-bar>
 
+    <category-content-carrousel></category-content-carrousel>
+
   </div>
 
 </template>
