@@ -55,8 +55,8 @@ const categories = ref([
   { id: 4, name: 'Économie', image: 'https://images.unsplash.com/photo-1611974714851-eb6053e6235b?w=500' },
   { id: 5, name: 'Sport', image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=500' },
   { id: 6, name: 'Santé', image: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=500' },
-  { id: 7, name: 'Spiritualité', image: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=500' },
-  { id: 8, name: 'Marketing', image: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=500' },
+  { id: 7, name: 'Spiritualité', image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500' },
+  { id: 8, name: 'Marketing', image: 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=500' },
 ])
 
 const next = () => {
