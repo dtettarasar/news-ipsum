@@ -3,14 +3,14 @@
     
     <button 
       @click="prev"
-      class="absolute left-0 md:left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-200"
+      class="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-200"
     >
       <Icon name="heroicons:chevron-left" class="w-6 h-6 text-black" />
     </button>
 
     <button 
       @click="next"
-      class="absolute right-0 md:right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-200"
+      class="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-200"
     >
       <Icon name="heroicons:chevron-right" class="w-6 h-6 text-black" />
     </button>
