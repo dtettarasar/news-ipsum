@@ -24,7 +24,7 @@
           :key="category.id"
           class="relative flex-none w-full md:w-[calc(33.333%-1rem)] lg:w-[calc(20%-1.2rem)] group cursor-pointer"
         >
-          <div class="aspect-[3/4] overflow-hidden rounded-2xl border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-transform duration-300 group-hover:-translate-y-1">
+          <div class="aspect-[3/4] overflow-hidden rounded-2xl transition-transform duration-300 group-hover:-translate-y-1">
             <img 
               :src="category.image" 
               :alt="category.name"
@@ -33,7 +33,7 @@
           </div>
 
           <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-[80%]">
-            <div class="bg-white border-2 border-black py-2 px-4 rounded-full text-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+            <div class="bg-white py-2 px-4 rounded-full text-center">
               <span class="text-xs font-black uppercase tracking-widest text-black">
                 {{ category.name }}
               </span>
