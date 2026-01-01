@@ -7,14 +7,14 @@
     </div>
   </div>
   <button>prev</button>
-  <button @click="moveLeft" >next</button>
+  <button @click="next" >next</button>
 </template>
 
 <script setup lang="js">
 
 import { ref, onMounted } from 'vue'
 
-const cards = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+const cards = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 
 const inner = ref(null)
 const step = ref('')
@@ -49,11 +49,48 @@ const setStep = () => {
 
 }
 
-const moveLeft = () => {
+const next = () => {
   // Logic to move carousel left by 'step'
     console.log("moving left")
     inner.value.style.transform = `translateX(-${step.value})`
 
+    
+    afterTransition(() => {
+      console.log("after transition callback")
+
+      const firstCard = cards.value.shift()
+      cards.value.push(firstCard)
+
+      resetTranslate()
+
+    })
+    
+
+}
+
+const afterTransition = (callback) => {
+  
+  // Logic after transition ends
+
+  const listener = () => {
+    callback()
+    inner.value.removeEventListener('transitionend', listener)
+  }
+
+  inner.value.addEventListener('transitionend', listener)
+
+  console.log("transition ended")
+
+}
+
+const resetTranslate = () => {
+  // Reset translateX to 0
+  inner.value.style.transition = 'none'
+  inner.value.style.transform = 'translateX(0)'
+  // Force reflow to apply the change immediately
+  void inner.value.offsetWidth
+  // Restore transition
+  inner.value.style.transition = ''
 }
 
 </script>
