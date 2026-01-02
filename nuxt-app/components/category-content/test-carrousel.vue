@@ -6,7 +6,7 @@
       </div>
     </div>
   </div>
-  <button>prev</button>
+  <button @click="prev">prev</button>
   <button @click="next" >next</button>
 </template>
 
@@ -15,6 +15,9 @@
 import { ref, onMounted } from 'vue'
 
 const cards = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+
+// On met le 12 au début tout de suite
+cards.value.unshift(cards.value.pop())
 
 const inner = ref(null)
 const step = ref('')
@@ -27,6 +30,8 @@ onMounted(() => {
     
     setStep() 
 
+    resetTranslate() // Force la position à -step dès le début
+    // Nécessaire car si on clique sur prev au début, on est à la position -1 (donc on ne peut pas glisser vers la droite)
     console.log("step:", step.value)
 
 })
@@ -57,12 +62,14 @@ const next = () => {
 
     transitioning.value = true
 
-    console.log("moving left")
-    inner.value.style.transform = `translateX(-${step.value})`
+    // console.log("moving left")
+
+    // On glisse de la position -1 vers -2
+    inner.value.style.transform = `translateX(-${step.value}) translateX(-${step.value})`
 
     
     afterTransition(() => {
-      console.log("after transition callback")
+      // console.log("after transition callback")
 
       const firstCard = cards.value.shift()
       cards.value.push(firstCard)
@@ -74,6 +81,24 @@ const next = () => {
     })
     
 
+}
+
+const prev = () => {
+  if (transitioning.value) return
+  transitioning.value = true
+
+  // On glisse de la position -1 vers 0
+  inner.value.style.transform = `translateX(-${step.value}) translateX(${step.value})`
+  // Note : -step + step = 0, on pourrait écrire transform = 'translateX(0)'
+
+  afterTransition(() => {
+
+    const lastCard = cards.value.pop()
+    cards.value.unshift(lastCard)
+    resetTranslate() // On revient incognito à la position -1
+    transitioning.value = false
+
+  })
 }
 
 const afterTransition = (callback) => {
@@ -92,13 +117,16 @@ const afterTransition = (callback) => {
 }
 
 const resetTranslate = () => {
+
   // Reset translateX to 0
   inner.value.style.transition = 'none'
-  inner.value.style.transform = 'translateX(0)'
+  // On se positionne TOUJOURS à -1 step par défaut
+  inner.value.style.transform = `translateX(-${step.value})`
   // Force reflow to apply the change immediately
   void inner.value.offsetWidth
   // Restore transition
   inner.value.style.transition = ''
+
 }
 
 </script>
