@@ -18,6 +18,7 @@ const cards = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 
 const inner = ref(null)
 const step = ref('')
+const transitioning = ref(false)
 const innerStyle = ref({})
 
 onMounted(() => {
@@ -51,6 +52,11 @@ const setStep = () => {
 
 const next = () => {
   // Logic to move carousel left by 'step'
+
+    if (transitioning.value) {return}
+
+    transitioning.value = true
+
     console.log("moving left")
     inner.value.style.transform = `translateX(-${step.value})`
 
@@ -62,6 +68,8 @@ const next = () => {
       cards.value.push(firstCard)
 
       resetTranslate()
+
+      transitioning.value = false
 
     })
     
