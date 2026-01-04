@@ -56,11 +56,38 @@ const transitioning = ref(false)
 const isReady = ref(false)
 
 onMounted(async () => {
+
+    // 1. On attend que le DOM soit rendu une première fois
     await nextTick()
+
+    // 2. On calcule le step
+    setStep() 
     
     // On appellera setStep() ici après
     isReady.value = true
 })
+
+
+
+const setStep = () => {
+
+  // Logic to move the carousel by 'step' cards
+
+  console.log("setting step")
+
+  const innerWidth = inner.value.scrollWidth
+
+  console.log("innerWidth:", innerWidth)
+
+  const totalCards = categories.value.length
+
+  console.log("totalCards:", totalCards)
+
+  step.value = `${innerWidth / totalCards}px`
+
+
+}
+
 </script>
 
 <style scoped>
