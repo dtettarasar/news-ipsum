@@ -68,6 +68,13 @@ onMounted(async () => {
     
     // On appellera setStep() ici après
     isReady.value = true
+
+    // 4. On écoute le resize de la fenêtre pour recalculer le step
+    window.addEventListener('resize', () => {
+        setStep()
+        resetTranslate()
+    })
+
 })
 
 const setStep = () => {
