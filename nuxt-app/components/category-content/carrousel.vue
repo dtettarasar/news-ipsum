@@ -70,8 +70,6 @@ onMounted(async () => {
     isReady.value = true
 })
 
-
-
 const setStep = () => {
 
   // Logic to move the carousel by 'step' cards
@@ -102,6 +100,67 @@ const resetTranslate = () => {
   // Restore transition
   // inner.value.style.transition = 'transform 0.2s'
   inner.value.style.transition = ''
+
+}
+
+const next = () => {
+  // Logic to move carousel left by 'step'
+
+    if (transitioning.value) {return}
+
+    transitioning.value = true
+
+    // console.log("moving left")
+
+    // On glisse de la position -1 vers -2
+    inner.value.style.transform = `translateX(-${step.value}) translateX(-${step.value})`
+
+    
+    afterTransition(() => {
+      // console.log("after transition callback")
+
+      const firstCard = categories.value.shift()
+      categories.value.push(firstCard)
+
+      resetTranslate()
+
+      transitioning.value = false
+
+    })
+    
+
+}
+
+const prev = () => {
+  if (transitioning.value) return
+  transitioning.value = true
+
+  // On glisse de la position -1 vers 0
+  inner.value.style.transform = `translateX(-${step.value}) translateX(${step.value})`
+  // Note : -step + step = 0, on pourrait écrire transform = 'translateX(0)'
+
+  afterTransition(() => {
+
+    const lastCard = categories.value.pop()
+    categories.value.unshift(lastCard)
+    resetTranslate() // On revient incognito à la position -1
+    transitioning.value = false
+
+  })
+}
+
+const afterTransition = (callback) => {
+  
+  // Logic after transition ends
+
+  const listener = () => {
+    callback()
+    inner.value.removeEventListener('transitionend', listener)
+  }
+
+  inner.value.addEventListener('transitionend', listener)
+
+  console.log("transition ended")
 
 }
 
