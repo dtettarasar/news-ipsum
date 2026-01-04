@@ -1,52 +1,38 @@
 <template>
-  <div class="relative w-full my-12 px-10 md:px-16">
-    
-    <button 
-      @click="prev"
-      class="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-200"
-    >
-      <Icon name="heroicons:chevron-left" class="w-6 h-6 text-black" />
-    </button>
+  <div class="carousel-container relative w-full overflow-hidden">
+    <div v-if="!isReady" class="h-[300px] flex items-center justify-center bg-gray-100 font-bold uppercase tracking-widest">
+      Chargement des catégories...
+    </div>
 
-    <button 
-      @click="next"
-      class="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-200"
+    <div 
+      class="carousel-window w-full overflow-hidden" 
+      :class="{ 'visible': isReady, 'invisible': !isReady }"
     >
-      <Icon name="heroicons:chevron-right" class="w-6 h-6 text-black" />
-    </button>
-
-    <div class="overflow-hidden">
-      <div 
-        class="flex gap-6 transition-transform duration-500 ease-in-out"
-      >
+      <div ref="inner" class="inner flex">
         <div 
           v-for="category in categories" 
-          :key="category.id"
-          class="relative flex-none w-full md:w-[calc(33.333%-1rem)] lg:w-[calc(20%-1.2rem)] group cursor-pointer"
+          :key="category.id" 
+          class="card-wrapper flex-none w-full md:w-1/3 lg:w-1/5 p-2"
         >
-          <div class="aspect-[3/4] overflow-hidden rounded-2xl transition-transform duration-300 group-hover:-translate-y-1">
-            <img 
-              :src="category.image" 
-              :alt="category.name"
-              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-          </div>
-
-          <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-[80%]">
-            <div class="bg-white py-2 px-4 rounded-full text-center">
-              <span class="text-xs font-black uppercase tracking-widest text-black">
-                {{ category.name }}
-              </span>
-            </div>
+          <div class="card-content h-[300px] bg-[#39b1bd] rounded-xl border-2 border-black flex items-center justify-center text-center p-4">
+            <h3 class="text-white text-xl font-black uppercase tracking-tighter">
+              {{ category.name }}
+            </h3>
           </div>
         </div>
       </div>
     </div>
+    
+    <div v-if="isReady" class="flex justify-center gap-4 mt-6">
+      <button @click="prev" class="px-6 py-2 bg-black text-white font-bold uppercase hover:bg-gray-800 transition-colors">Prev</button>
+      <button @click="next" class="px-6 py-2 bg-black text-white font-bold uppercase hover:bg-gray-800 transition-colors">Next</button>
+    </div>
+
   </div>
 </template>
 
 <script setup lang="js">
-import { ref } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 
 const categories = ref([
   { id: 1, name: 'Technologie', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500' },
@@ -57,17 +43,42 @@ const categories = ref([
   { id: 6, name: 'Santé', image: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=500' },
   { id: 7, name: 'Spiritualité', image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500' },
   { id: 8, name: 'Marketing', image: 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=500' },
+  { id: 9, name: 'Voyage', image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=500' },
+  { id: 10, name: 'Cuisine', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500' }
 ])
 
-const next = () => {
-  // On prend le premier élément et on le pousse à la fin
-  const firstEl = categories.value.shift()
-  categories.value.push(firstEl)
+// Pré-décalage des données (le dernier devient premier)
+categories.value.unshift(categories.value.pop())
+
+const inner = ref(null)
+const step = ref('')
+const transitioning = ref(false)
+const isReady = ref(false)
+
+onMounted(async () => {
+    await nextTick()
+    
+    // On appellera setStep() ici après
+    isReady.value = true
+})
+</script>
+
+<style scoped>
+.invisible {
+  opacity: 0;
+  visibility: hidden;
 }
 
-const prev = () => {
-  // On prend le dernier élément et on le met au début
-  const lastEl = categories.value.pop()
-  categories.value.unshift(lastEl)
+.visible {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s ease;
 }
-</script>
+
+.inner {
+  /* On s'assure que le ruban ne revient pas à la ligne */
+  display: flex;
+  flex-wrap: nowrap;
+  transition: transform 0.3s ease;
+}
+</style>
