@@ -61,7 +61,10 @@ onMounted(async () => {
     await nextTick()
 
     // 2. On calcule le step
-    setStep() 
+    setStep()
+
+    // 3. On positionne à -1 step SANS transition
+    resetTranslate()
     
     // On appellera setStep() ici après
     isReady.value = true
@@ -85,6 +88,20 @@ const setStep = () => {
 
   step.value = `${innerWidth / totalCards}px`
 
+
+}
+
+const resetTranslate = () => {
+
+  // Reset translateX to 0
+  inner.value.style.transition = 'none'
+  // On se positionne TOUJOURS à -1 step par défaut
+  inner.value.style.transform = `translateX(-${step.value})`
+  // Force reflow to apply the change immediately
+  void inner.value.offsetWidth
+  // Restore transition
+  // inner.value.style.transition = 'transform 0.2s'
+  inner.value.style.transition = ''
 
 }
 
