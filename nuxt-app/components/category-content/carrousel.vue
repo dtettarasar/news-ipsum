@@ -8,6 +8,15 @@
       class="carousel-window w-full overflow-hidden" 
       :class="{ 'visible': isReady, 'invisible': !isReady }"
     >
+
+      <button 
+        @click="prev" 
+        class="hidden md:flex absolute left-2 top-1/2 z-50 w-12 h-12 bg-white border-2 border-black rounded-full items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+      >
+        <span class="text-2xl">←</span>
+      </button>
+
+
       <div ref="inner" class="inner flex">
         <div 
           v-for="category in categories" 
@@ -31,11 +40,29 @@
           </div>
         </div>
       </div>
+
+      <button 
+        @click="next" 
+        class="hidden md:flex absolute right-2 top-1/2 z-50 w-12 h-12 bg-white border-2 border-black rounded-full items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+      >
+        <span class="text-2xl">→</span>
+      </button>
+
     </div>
     
-    <div v-if="isReady" class="flex justify-center gap-4 mt-6">
-      <button @click="prev" class="px-6 py-2 bg-black text-white font-bold uppercase hover:bg-gray-800 transition-colors">Prev</button>
-      <button @click="next" class="px-6 py-2 bg-black text-white font-bold uppercase hover:bg-gray-800 transition-colors">Next</button>
+    <div v-if="isReady" class="flex md:hidden justify-center gap-6 mt-8 pb-4">
+      <button 
+        @click="prev" 
+        class="w-14 h-14 bg-white border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+      >
+        <span class="text-2xl">←</span>
+      </button>
+      <button 
+        @click="next" 
+        class="w-14 h-14 bg-white border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+      >
+        <span class="text-2xl">→</span>
+      </button>
     </div>
 
   </div>
