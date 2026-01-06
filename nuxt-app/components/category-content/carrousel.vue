@@ -14,10 +14,20 @@
           :key="category.id" 
           class="card-wrapper flex-none w-full md:w-1/3 lg:w-1/5 p-2"
         >
-          <div class="card-content h-[300px] bg-[#39b1bd] rounded-xl border-2 border-black flex items-end justify-center text-center p-4">
+          <div 
+            class="card-content relative h-[300px] rounded-xl border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex items-end justify-center text-center p-4 overflow-hidden group"
+            :style="{ 
+              backgroundColor: getFallbackColor(category.id),
+              backgroundImage: `url(${category.image})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }"
+          >
+
             <h3 class="text-black text-lg bg-white py-1 px-4 mb-2 rounded-full uppercase tracking-tighter">
               {{ category.name }}
             </h3>
+
           </div>
         </div>
       </div>
@@ -46,6 +56,9 @@ const categories = ref([
   { id: 9, name: 'Voyage', image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=500' },
   { id: 10, name: 'Cuisine', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500' }
 ])
+
+// Couleurs de fallback pour les catégories sans image
+const fallbackColors = ['#FF6F61', '#4ECDC4', '#FFC312', '#2C3A47', '#F5F6FA']
 
 // Pré-décalage des données (le dernier devient premier)
 categories.value.unshift(categories.value.pop())
@@ -169,6 +182,11 @@ const afterTransition = (callback) => {
 
   console.log("transition ended")
 
+}
+
+// Petite fonction pour obtenir une couleur basée sur l'ID (pour que la couleur reste la même pour une catégorie donnée)
+const getFallbackColor = (id) => {
+  return fallbackColors[id % fallbackColors.length]
 }
 
 </script>
