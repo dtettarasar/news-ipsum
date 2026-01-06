@@ -1,21 +1,23 @@
 <template>
-  <div class="carousel-container relative w-full overflow-hidden">
+
+  <div class="carousel-container relative w-full overflow-visible">
+
     <div v-if="!isReady" class="h-[300px] flex items-center justify-center bg-gray-100 font-bold uppercase tracking-widest">
       Chargement des catégories...
     </div>
+
+    <button
+        v-if="isReady"
+        @click="prev" 
+        class="hidden md:flex absolute left-0 -ml-6 top-1/2 -mt-6 z-50 w-12 h-12 bg-white border-2 border-black rounded-full items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+      >
+        <span class="text-2xl">←</span>
+    </button>
 
     <div 
       class="carousel-window w-full overflow-hidden" 
       :class="{ 'visible': isReady, 'invisible': !isReady }"
     >
-
-      <button 
-        @click="prev" 
-        class="hidden md:flex absolute left-2 top-1/2 z-50 w-12 h-12 bg-white border-2 border-black rounded-full items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
-      >
-        <span class="text-2xl">←</span>
-      </button>
-
 
       <div ref="inner" class="inner flex">
         <div 
@@ -41,14 +43,15 @@
         </div>
       </div>
 
-      <button 
+    </div>
+
+    <button 
+        v-if="isReady"
         @click="next" 
-        class="hidden md:flex absolute right-2 top-1/2 z-50 w-12 h-12 bg-white border-2 border-black rounded-full items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+        class="hidden md:flex absolute right-0 -mr-6 top-1/2 -mt-6 z-50 w-12 h-12 bg-white border-2 border-black rounded-full items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
       >
         <span class="text-2xl">→</span>
-      </button>
-
-    </div>
+    </button>
     
     <div v-if="isReady" class="flex md:hidden justify-center gap-6 mt-8 pb-4">
       <button 
@@ -66,6 +69,7 @@
     </div>
 
   </div>
+
 </template>
 
 <script setup lang="js">
