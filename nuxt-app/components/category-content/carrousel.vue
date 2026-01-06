@@ -14,8 +14,8 @@
           :key="category.id" 
           class="card-wrapper flex-none w-full md:w-1/3 lg:w-1/5 p-2"
         >
-          <div class="card-content h-[300px] bg-[#39b1bd] rounded-xl border-2 border-black flex items-center justify-center text-center p-4">
-            <h3 class="text-white text-xl font-black uppercase tracking-tighter">
+          <div class="card-content h-[300px] bg-[#39b1bd] rounded-xl border-2 border-black flex items-end justify-center text-center p-4">
+            <h3 class="text-black text-lg bg-white py-1 px-4 mb-2 rounded-full uppercase tracking-tighter">
               {{ category.name }}
             </h3>
           </div>
