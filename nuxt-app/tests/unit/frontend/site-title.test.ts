@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi } from 'vitest'
 import DOMPurify from "isomorphic-dompurify"
 
-import siteTitle from '../../../../components/text/site-title.vue'
+import siteTitle from '@/components/text/site-title.vue'
 
 describe('site-title.vue', () => {
 
