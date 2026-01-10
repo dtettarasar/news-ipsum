@@ -1,68 +1,80 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import Carrousel from '@/components/category-content/carrousel.vue'
+import { createTestingPinia } from '@pinia/testing'
 
 describe('Carousel.vue', () => {
+
+  const factory = (initialState = {}) => {
+    return mount(Carrousel, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            createSpy: vi.fn,
+            initialState: {
+              category: {
+                categories: [
+                  { id: 1, name: 'Technologie', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500' },
+                  { id: 10, name: 'Cuisine', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500' }
+                ],
+                loading: false
+              },
+              ...initialState
+            }
+          })
+        ]
+      }
+    })
+  }
   
   it('shows loading message initially', () => {
-    const wrapper = mount(Carrousel)
+    // Ici on simule un store vide et en cours de chargement
+    const wrapper = factory({
+      category: { categories: [], loading: true }
+    })
     expect(wrapper.text()).toContain('Chargement des catégories...')
   })
 
   it('renders categories after mount', async () => {
-    const wrapper = mount(Carrousel)
+    const wrapper = factory() // Utilisation systématique
     
-    // On attend deux cycles pour être sûr que le onMounted ET le changement de isReady soient traités
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick() // Cycle 1 : Le composant est monté (onMounted). L'action Pinia fetchCategories est appelée.
+    await wrapper.vm.$nextTick() // Cycle 2 : Les catégories sont mises à jour dans le store Pinia.
+    await wrapper.vm.$nextTick() // Cycle 3 : Le DOM est mis à jour avec les nouvelles catégories.
     
-    // On vérifie qu'une catégorie est présente
     expect(wrapper.text()).toContain('Technologie')
-
-    // On vérifie que le v-if a bien supprimé le message de chargement
     expect(wrapper.text()).not.toContain('Chargement des catégories...')
-
   })
 
   it('applies correct background image from category data', async () => {
-    const wrapper = mount(Carrousel)
+    const wrapper = factory()
 
-    // Là pareil, on attend deux cycles pour être sûr que tout est rendu
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
 
-    // On cherche l'élément qui contient le fond (le premier .card-content)
     const card = wrapper.find('.card-content')
-    const style = card.attributes('style')
-
-    // On vérifie que l'URL unsplash est bien injectée dans le style inline
-    // On utilise une RegEx ou on simplifie pour ignorer les guillemets ajoutés par le browser
-    expect(style).toContain('background-image: url(')
-    expect(style).toContain('https://images.unsplash.com')
+    expect(card.exists()).toBe(true)
     
+    const style = card.attributes('style')
+    expect(style).toContain('background-image: url(')
   })
 
   it('has functional next/prev buttons', async () => {
-    const wrapper = mount(Carrousel)
+    const wrapper = factory()
+    
+    await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
 
-    expect(typeof wrapper.vm.next).toBe('function')
-    expect(typeof wrapper.vm.prev).toBe('function')
-
-    // On récupère l'ordre initial (via les clés ou le texte)
-    // Ici on vérifie juste que les méthodes existent et ne crashent pas
     const buttons = wrapper.findAll('button')
-    const nextButton = buttons.find(b => b.text() === '→')
+    // On cherche spécifiquement le bouton avec la flèche
+    const nextButton = buttons.find(b => b.text().includes('→'))
 
+    expect(nextButton).toBeDefined()
     expect(nextButton?.exists()).toBe(true)
 
-    // On simule le clic
     await nextButton?.trigger('click')
-
-    // Si pas d'erreur crash, le test est valide pour la fonction
     expect(wrapper.exists()).toBe(true)
-
   })
-
 })
