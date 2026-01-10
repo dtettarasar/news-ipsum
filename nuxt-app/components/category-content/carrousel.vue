@@ -74,7 +74,14 @@
 
 <script setup lang="js">
 import { ref, onMounted, nextTick } from 'vue'
+import { useCategoryStore } from '@/stores/categoryStore'
+import { storeToRefs } from 'pinia'
 
+const categoryStore = useCategoryStore()
+// storeToRefs permet de garder la réactivité sur les variables du store
+const { categories, loading } = storeToRefs(categoryStore)
+
+/*
 const categories = ref([
   { id: 1, name: 'Technologie', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500' },
   { id: 2, name: 'Politique', image: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=500' },
@@ -87,12 +94,14 @@ const categories = ref([
   { id: 9, name: 'Voyage', image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=500' },
   { id: 10, name: 'Cuisine', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500' }
 ])
+*/
 
 // Couleurs de fallback pour les catégories sans image
 const fallbackColors = ['#FF6F61', '#4ECDC4', '#FFC312', '#2C3A47', '#F5F6FA']
 
 // Pré-décalage des données (le dernier devient premier)
-categories.value.unshift(categories.value.pop())
+// j'ai commenté cette ligne car on devrais peut-être le faire désormais dans onMounted après le fetch ?
+// categories.value.unshift(categories.value.pop())
 
 const inner = ref(null)
 const step = ref('')
@@ -101,19 +110,29 @@ const isReady = ref(false)
 
 onMounted(async () => {
 
-    // 1. On attend que le DOM soit rendu une première fois
+  // 1. On demande au store de charger les catégories
+    await categoryStore.fetchCategories()
+
+    // 2. IMPORTANT : On pré-décale les données pour le défilement infini
+    // On vérifie qu'on a bien des données avant de manipuler
+    if (categories.value.length > 0) {
+        const last = categories.value.pop()
+        categories.value.unshift(last)
+    }
+
+    // 3. On attend le rendu du DOM
     await nextTick()
 
-    // 2. On calcule le step
+    // 4. On calcule le step
     setStep()
 
-    // 3. On positionne à -1 step SANS transition
+    // 5. On positionne à -1 step SANS transition
     resetTranslate()
     
     // On appellera setStep() ici après
     isReady.value = true
 
-    // 4. On écoute le resize de la fenêtre pour recalculer le step
+    // 6. On écoute le resize de la fenêtre pour recalculer le step
     window.addEventListener('resize', () => {
         setStep()
         resetTranslate()
