@@ -21,14 +21,14 @@
 
       <div ref="inner" class="inner flex">
         <div 
-          v-for="category in categories" 
-          :key="category.id" 
+          v-for="(category, index) in categories" 
+          :key="category._id" 
           class="card-wrapper flex-none w-full md:w-1/3 lg:w-1/5 p-2"
         >
           <div 
             class="card-content relative h-[300px] rounded-xl border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex items-end justify-center text-center p-4 overflow-hidden group"
             :style="{ 
-              backgroundColor: getFallbackColor(category.id),
+              backgroundColor: getFallbackColor(category._id),
               backgroundImage: `url(${category.image})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center'
@@ -217,7 +217,18 @@ const afterTransition = (callback) => {
 
 // Petite fonction pour obtenir une couleur basée sur l'ID (pour que la couleur reste la même pour une catégorie donnée)
 const getFallbackColor = (id) => {
-  return fallbackColors[id % fallbackColors.length]
+  if (!id) return fallbackColors[0]
+  
+  // On crée un nombre unique à partir de la chaîne de caractères
+  let hash = 0
+  for (let i = 0; i < id.length; i++) {
+    // charCodeAt renvoie un code numérique pour chaque lettre/chiffre
+    hash = id.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  
+  // On s'assure que le nombre est positif et on applique le modulo
+  const index = Math.abs(hash) % fallbackColors.length
+  return fallbackColors[index]
 }
 
 </script>
