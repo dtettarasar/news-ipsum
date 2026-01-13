@@ -8,7 +8,7 @@ vi.mock('vue-router', () => ({
   }),
 }))
 
-import navBar from '../../../../components/layout/nav-bar.vue'
+import navBar from '@/components/layout/nav-bar.vue'
 
 describe('nav-bar.vue', () => {
 

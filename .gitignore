@@ -31,3 +31,7 @@ data/
 Caddyfile
 caddy_data/
 caddy_config/
+
+# Temporary test coverage files
+coverage/
+.vitest-coverage/

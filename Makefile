@@ -32,3 +32,23 @@ prod-all-log:
 
 down:
 	docker compose $(COMPOSE_PROD) down
+
+# ----- OTHER -----
+ps:
+	docker compose $(COMPOSE_PROD) ps
+logs:
+	docker compose $(COMPOSE_PROD) logs -f
+nuxt-logs:
+	docker compose $(COMPOSE_PROD) logs -f nuxt-app
+mongo-logs:
+	docker compose $(COMPOSE_PROD) logs -f mongo-db
+caddy-logs:
+	docker compose $(COMPOSE_PROD) logs -f caddy-server
+
+# ----- TESTS -----
+test:
+	docker compose $(COMPOSE_DEV) exec nuxt-app npm run test
+test-watch:
+	docker compose $(COMPOSE_DEV) exec nuxt-app npm run test:watch
+test-coverage:
+	docker compose $(COMPOSE_DEV) exec nuxt-app npm run test:coverage
