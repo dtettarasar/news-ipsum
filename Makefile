@@ -45,6 +45,10 @@ mongo-logs:
 caddy-logs:
 	docker compose $(COMPOSE_PROD) logs -f caddy-server
 
+# ----- CREATE ADMIN USER -----
+create-admin:
+	docker compose $(COMPOSE_DEV) exec nuxt-app npm run create-admin
+
 # ----- TESTS -----
 test:
 	docker compose $(COMPOSE_DEV) exec nuxt-app npm run test
