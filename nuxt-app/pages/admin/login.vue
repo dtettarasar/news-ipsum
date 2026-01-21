@@ -1,11 +1,7 @@
 <template>
   <div class="container mx-auto">
     <h1 class="text-2xl font-bold mb-4">Admin Login</h1>
-    <form @submit.prevent="login">
-      <input v-model="email" type="email" placeholder="Email" required />
-      <input v-model="password" type="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
+    <admin-login-form></admin-login-form>
   </div>
 </template>
 
