@@ -5,7 +5,7 @@
 
     <div class="flex items-center justify-center w-full px-4">
 
-        <form class="flex w-full flex-col max-w-96">
+        <form @submit.prevent="handleLogin" class="flex w-full flex-col max-w-96">
 
             <a href="https://prebuiltui.com" class="mb-8" title="Go to PrebuiltUI">
                 <svg class="size-10" width="30" height="33" viewBox="0 0 30 33" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -26,6 +26,7 @@
                     placeholder="Please enter your email"
                     class="mt-2 rounded-md ring ring-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none px-3 py-3 w-full"
                     required
+                    v-model="credentials.email"
                     type="email"
                     name="email"
                 />
@@ -37,6 +38,7 @@
                     placeholder="Please enter your password"
                     class="mt-2 rounded-md ring ring-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none px-3 py-3 w-full"
                     required
+                    v-model="credentials.password"
                     type="password"
                     name="password"
                 />
@@ -48,11 +50,25 @@
             >
                 Login
             </button>
-            <p class='text-center py-8'>
-                Don't have an account? <a href="/signup" class="text-indigo-600 hover:underline">Sign up</a>
-            </p>
+
         </form>
 
     </div>
 
 </template>
+
+<script setup lang="ts">
+
+    const credentials = reactive({
+        email: '',
+        password: ''
+    })
+
+    const handleLogin = (event: Event) => {
+        console.log('Login form submitted');
+        console.log('Email:', credentials.email);
+        console.log('Password:', credentials.password);
+        // Here you can add your authentication logic
+    }
+
+</script>
