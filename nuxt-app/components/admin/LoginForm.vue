@@ -64,11 +64,32 @@
         password: ''
     })
 
-    const handleLogin = (event: Event) => {
+    const handleLogin = async (event: Event) => {
         console.log('Login form submitted');
         console.log('Email:', credentials.email);
         console.log('Password:', credentials.password);
         // Here you can add your authentication logic
+
+        try {
+            
+            // L'appel au backend
+            // Nuxt devine automatiquement que c'est une requête vers ton serveur Nitro
+            const response = await $fetch('/api/auth/login', {
+                method: 'POST',
+                body: credentials
+            })
+
+            // C'est ici que l'on logue le retour du backend
+            console.log('Réponse du serveur :', response);
+            
+            // Petit feedback visuel pour confirmer
+            alert(`Message du serveur : ${response.message}\nEmail reçu : ${response.email}`);
+
+        } catch (err: any) {
+            // En cas d'erreur (ex: serveur éteint ou erreur 500)
+            console.error('Erreur lors de l\'appel API :', err);
+        }
+
     }
 
 </script>
