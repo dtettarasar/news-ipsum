@@ -10,8 +10,6 @@
       <category-content-carrousel></category-content-carrousel>
     </div>
 
-    <other-test-mongo-db></other-test-mongo-db>
-
   </div>
 
 </template>
