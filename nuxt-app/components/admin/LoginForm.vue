@@ -81,9 +81,6 @@
 
             // C'est ici que l'on logue le retour du backend
             console.log('Réponse du serveur :', response);
-            
-            // Petit feedback visuel pour confirmer
-            alert(`Message du serveur : ${response.message}\nEmail reçu : ${response.email}`);
 
         } catch (err: any) {
             // En cas d'erreur (ex: serveur éteint ou erreur 500)
