@@ -10,6 +10,20 @@ export default defineEventHandler(async (event) => {
     // Tester le renvoi de ces données vers le composant frontend
     console.log('Login attempt:', { email, password })
 
+    // 1. Chercher l'utilisateur
+    // Note : on enlève "where", on passe l'objet directement
+    const user = await User.findOne({ email })
+
+    if (!user) {
+        console.log('❌ Utilisateur non trouvé en base');
+        throw createError({
+            statusCode: 401,
+            statusMessage: 'Identifiants invalides'
+        })
+    }
+
+    console.log('✅ Utilisateur trouvé:', user.name)
+
     return { message: 'Login endpoint hit', email, password }
 
 
