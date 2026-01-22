@@ -67,7 +67,7 @@
             
             // L'appel au backend
             // Nuxt devine automatiquement que c'est une requête vers ton serveur Nitro
-            const response = await $fetch('/api/auth/login', {
+            const response = await $fetch('/api/auth/admin-login', {
                 method: 'POST',
                 body: credentials
             })
