@@ -1,5 +1,5 @@
 // server/utils/auth.service.ts
-import { User } from '~/server/models/User.model'
+import { User } from '../../server/models/User.model'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
