@@ -24,7 +24,27 @@ export default defineEventHandler(async (event) => {
 
     console.log('✅ Utilisateur trouvé:', user.name)
 
-    return { message: 'Login endpoint hit', email, password }
+    // 2. Vérifier le mot de passe
+    // /!\ Vérifie bien si c'est user.password ou user.passwordHash dans le schéma
+    const isPasswordValid = await bcrypt.compare(password, user.password)
 
+    if (!isPasswordValid) {
+        console.log('❌ Mot de passe incorrect');
+        throw createError({
+            statusCode: 401,
+            statusMessage: 'Identifiants invalides'
+        })
+    }
+
+    console.log('🚀 Authentification réussie pour:', user.email)
+
+    return { 
+        message: 'Authentification réussie', 
+        user: {
+            name: user.name,
+            email: user.email,
+            role: user.role
+        }
+    }
 
 })
