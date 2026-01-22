@@ -21,6 +21,7 @@ export const authenticateUser = async (email: string, pass: string, requiredRole
 }
 
 export const createAuthToken = (userId: string, role: string) => {
+
   const config = useRuntimeConfig() // Accès à la config centralisée
 
   if (!config.jwtSecret) {
@@ -33,13 +34,29 @@ export const createAuthToken = (userId: string, role: string) => {
       statusMessage: "Une erreur interne est survenue."
     })
   }
+
+  // 1. Chiffrage de l'ID
+  const encrypted = encryptString(userId)
+  const secureId = `${encrypted.iv}:${encrypted.encryptedStr}`
+
+  // --- LOGS TEMPORAIRES DE DÉVELOPPEMENT ---
+  console.log('--- 🔐 DEBUG AUTH TOKEN ---')
+  console.log('ID Original (DB):', userId)
+  console.log('ID Crypté (JWT):', secureId)
+  
+  // Test de décryptage pour vérification
+  const decryptedCheck = decryptString(encrypted)
+  console.log('Vérification décryptage:', decryptedCheck === userId ? '✅ SUCCESS' : '❌ FAILED')
+  console.log('---------------------------')
+  // -----------------------------------------
   
   // On utilise les noms définis dans nuxt.config.ts
   return jwt.sign(
-    { userId, role }, 
+    { sub: secureId, role }, 
     config.jwtSecret, 
     { expiresIn: '24h' }
   )
+
 }
 
 export const verifyAuthToken = (token: string) => {
