@@ -6,7 +6,7 @@ const generate = (size: number) => randomBytes(size).toString('hex')
 const secrets = {
   JWT_SECRET: generate(64),          // Pour signer tes JWT
   SESSION_PASSWORD: generate(32),    // Pour le scellage des cookies Nitro
-  ENCRYPTION_KEY: generate(16)       // Pour ton chiffrage AES (ID utilisateur)
+  ENCRYPTION_KEY: generate(32)       // Pour ton chiffrage AES (ID utilisateur)
 }
 
 console.log('\n--- 🔑 News Ipsum : Générateur de Secrets ---')
