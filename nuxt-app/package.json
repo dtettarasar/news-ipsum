@@ -11,7 +11,8 @@
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "create-admin": "tsx scripts/create-admin.ts"
+    "create-admin": "tsx scripts/create-admin.ts",
+    "generate-secrets": "tsx scripts/generate-secrets.ts"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.11.3",

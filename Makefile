@@ -49,6 +49,10 @@ caddy-logs:
 create-admin:
 	docker compose $(COMPOSE_DEV) exec nuxt-app npm run create-admin
 
+# ----- GENERATE SECRETS -----
+generate-secrets:
+	docker compose $(COMPOSE_DEV) exec nuxt-app npm run generate-secrets
+
 # ----- TESTS -----
 test:
 	docker compose $(COMPOSE_DEV) exec nuxt-app npm run test
