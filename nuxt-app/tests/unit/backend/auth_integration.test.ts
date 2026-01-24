@@ -1,4 +1,4 @@
-import { expect, test, describe, beforeAll } from 'vitest'
+import { expect, test, describe, beforeAll, afterAll } from 'vitest'
 import { authenticateUser, createAuthToken, verifyAuthToken } from '../../../server/utils/auth.service'
 import { decryptString } from '../../../server/utils/cypher'
 import mongoose from 'mongoose'
@@ -38,6 +38,33 @@ describe('Authentication Integration', () => {
 
         console.log(`👤 Test user created: ${testAdminData.email}`)
 
+    })
+
+    afterAll(async () => {
+
+        // On nettoie et on ferme
+        try {
+            
+            await User.deleteMany({ email: testAdminData.email })
+            console.log(`🧼 Test user deleted: ${testAdminData.email}`)
+
+        } catch (error) {
+
+            console.error('Error deleting test user:', error)
+
+        }
+
+        await disconnectTestDB()
+
+    })
+
+    test('Should verify credentials using factory data', async () => {
+        const result = await authenticateUser(
+            testAdminData.email, 
+            testAdminData.password, 
+            'admin'
+        )
+        expect(result.success).toBe(true)
     })
 
 })
