@@ -23,6 +23,21 @@ describe('Authentication Integration', () => {
         // 2. Connexion via le handler
         await connectTestDB()
 
+        // 3. creation d'un user admin de test
+        testAdminData = generateTestUserData('admin')
+        
+        // Nettoyage au cas où un utilisateur avec le même email existerait déjà
+        await User.deleteMany({ email: testAdminData.email })
+
+        // Hashage et création
+        const hashedPassword = await bcrypt.hash(testAdminData.password, 10)
+        testAdminDoc = await User.create({
+            ...testAdminData,
+            password: hashedPassword
+        })
+
+        console.log(`👤 Test user created: ${testAdminData.email}`)
+
     })
 
 })
