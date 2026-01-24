@@ -132,5 +132,19 @@ describe('Authentication Integration', () => {
         // Un JWT valide contient deux points (header.payload.signature)
         expect(generatedToken.split('.')).toHaveLength(3)
     })
+
+    test('Should verify the token and return the correct decrypted ID', () => {
+        const payload = verifyAuthToken(generatedToken) as any
+        
+        expect(payload).not.toBeNull()
+        expect(payload.role).toBe('admin')
+        expect(payload.sub).toContain(':') // Format iv:encryptedStr
+
+        // Extraction et décryptage pour boucler la boucle
+        const [iv, encryptedStr] = payload.sub.split(':')
+        const decryptedId = decryptString({ iv, encryptedStr })
+        
+        expect(decryptedId).toBe(adminDoc._id.toString())
+    })
     
 })

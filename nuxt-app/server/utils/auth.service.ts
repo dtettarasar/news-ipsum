@@ -87,11 +87,17 @@ export const createAuthToken = (userId: string, role: string) => {
 
 export const verifyAuthToken = (token: string) => {
 
-  
-  const config = useRuntimeConfig()
   try {
-    return jwt.verify(token, config.jwtSecret)
+
+    const secret = getJwtSecret()
+    return jwt.verify(token, secret)
+
   } catch (err) {
+
+    console.error("🚨 JWT Verification Error:", err)
+
     return null
+
   }
+  
 }
