@@ -44,7 +44,7 @@ describe('Authentication Integration', () => {
 
         // On nettoie et on ferme
         try {
-            
+
             await User.deleteMany({ email: testAdminData.email })
             console.log(`🧼 Test user deleted: ${testAdminData.email}`)
 
@@ -65,6 +65,18 @@ describe('Authentication Integration', () => {
             'admin'
         )
         expect(result.success).toBe(true)
+    })
+
+    // 1. Tests de sécurité sur l'authentification
+
+    test('Should fail authentication with an incorrect password', async () => {
+        const result = await authenticateUser(
+            testAdminData.email, 
+            'WrongPassword123!', 
+            'admin'
+        )
+        expect(result.success).toBe(false)
+        expect(result.error).toBe('Identifiants invalides')
     })
 
 })
