@@ -15,3 +15,11 @@ const UserSchema = new mongoose.Schema({
 
 // On exporte avec l'astuce Nuxt pour éviter les erreurs au rechargement
 export const User = mongoose.models.User || mongoose.model('User', UserSchema)
+
+// TODO : ajouter une fonction pour générer le hash du mot de passe avant sauvegarde ?
+// UserSchema.pre('save', async function(next) {
+//   if (this.isModified('password')) {
+//     this.password = await bcrypt.hash(this.password, 10)
+//   }
+//   next()
+// })
