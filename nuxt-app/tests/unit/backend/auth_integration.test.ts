@@ -10,8 +10,8 @@ import { generateTestUserData } from '../utils/test-factory'
 
 describe('Authentication Integration', () => {
 
-    let editorData: any
-    let testAdminDoc: any
+    let adminData: any
+    let adminDoc: any
     let generatedToken: string
 
     beforeAll(async () => {
@@ -24,44 +24,47 @@ describe('Authentication Integration', () => {
         await connectTestDB()
 
         // 3. creation d'un user admin de test
-        editorData = generateTestUserData('admin')
+        adminData = generateTestUserData('admin')
         
         // Nettoyage au cas où un utilisateur avec le même email existerait déjà
-        await User.deleteMany({ email: editorData.email })
+        await User.deleteMany({ email: adminData.email })
 
         // Hashage et création
-        const hashedPassword = await bcrypt.hash(editorData.password, 10)
-        testAdminDoc = await User.create({
-            ...editorData,
+        const hashedPassword = await bcrypt.hash(adminData.password, 10)
+
+        adminDoc = await User.create({
+            ...adminData,
             password: hashedPassword
         })
 
-        console.log(`👤 Test user created: ${editorData.email}`)
-
+        console.log(`👤 Main Test Admin created: ${adminData.email}`)
     })
 
     afterAll(async () => {
 
-        // On nettoie et on ferme
         try {
 
-            await User.deleteMany({ email: editorData.email })
-            console.log(`🧼 Test user deleted: ${editorData.email}`)
+            if (adminData) {
+                await User.deleteMany({ email: adminData.email })
+                console.log(`🧼 Main Test Admin deleted: ${adminData.email}`)
+            }
 
         } catch (error) {
 
-            console.error('Error deleting test user:', error)
+            console.error('⚠️ Cleanup error:', error)
+
+        } finally {
+
+            // Garantit la déconnexion même si le delete échoue
+            await disconnectTestDB()
 
         }
-
-        await disconnectTestDB()
-
     })
 
     test('Should verify credentials using factory data', async () => {
         const result = await authenticateUser(
-            editorData.email, 
-            editorData.password, 
+            adminData.email, 
+            adminData.password, 
             'admin'
         )
         expect(result.success).toBe(true)
@@ -71,7 +74,7 @@ describe('Authentication Integration', () => {
 
     test('Should fail authentication with an incorrect password', async () => {
         const result = await authenticateUser(
-            editorData.email, 
+            adminData.email, 
             'WrongPassword123!', 
             'admin'
         )
@@ -91,32 +94,31 @@ describe('Authentication Integration', () => {
 
     test('Should ALLOW an admin to access an editor role (hierarchy check)', async () => {
         const result = await authenticateUser(
-            editorData.email, 
-            editorData.password, 
+            adminData.email, 
+            adminData.password, 
             'editor' // L'admin a le droit car il est "au-dessus"
         )
         expect(result.success).toBe(true)
     })
 
     test('Should REJECT an editor trying to access an admin role', async () => {
-        
-        const editorData = generateTestUserData('editor')
-        const hashedPassword = await bcrypt.hash(editorData.password, 10)
+
+        const localEditorData = generateTestUserData('editor')
+        const hashedPassword = await bcrypt.hash(localEditorData.password, 10)
         
         // On crée l'user
-        await User.create({ ...editorData, password: hashedPassword })
-
+        await User.create({ ...localEditorData, password: hashedPassword })
         try {
 
             // Le test proprement dit
-            const result = await authenticateUser(editorData.email, editorData.password, 'admin')
+            const result = await authenticateUser(localEditorData.email, localEditorData.password, 'admin')
             expect(result.success).toBe(false)
             expect(result.error).toBe('Accès non autorisé pour ce rôle')
 
         } finally {
 
             // Le FINALLY s'exécute QUOI QU'IL ARRIVE (succès ou échec du expect)
-            await User.deleteOne({ email: editorData.email })
+            await User.deleteOne({ email: localEditorData.email })
 
         }
     })
