@@ -3,6 +3,12 @@ import { User } from '../../server/models/User.model'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
+const ROLE_HIERARCHY: Record<string, number> = {
+  admin: 3,
+  editor: 2,
+  user: 1
+}
+
 export const authenticateUser = async (email: string, pass: string, requiredRole?: string) => {
     const user = await User.findOne({ email })
     
@@ -12,9 +18,15 @@ export const authenticateUser = async (email: string, pass: string, requiredRole
     const isMatch = await bcrypt.compare(pass, user.password)
     if (!isMatch) return { success: false, error: 'Identifiants invalides' }
 
-    // 2. Vérification autorisation (Rôle)
-    if (requiredRole && user.role !== requiredRole) {
-        return { success: false, error: 'Accès non autorisé pour ce rôle' }
+    // Logique hiérarchique : 
+    // On vérifie si le poids du rôle de l'utilisateur est >= au poids requis
+    if (requiredRole) {
+        const userLevel = ROLE_HIERARCHY[user.role] || 0
+        const requiredLevel = ROLE_HIERARCHY[requiredRole] || 0
+
+        if (userLevel < requiredLevel) {
+            return { success: false, error: 'Accès non autorisé pour ce rôle' }
+        }
     }
 
     return { success: true, user }

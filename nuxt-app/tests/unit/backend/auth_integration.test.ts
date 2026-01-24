@@ -10,7 +10,7 @@ import { generateTestUserData } from '../utils/test-factory'
 
 describe('Authentication Integration', () => {
 
-    let testAdminData: any
+    let editorData: any
     let testAdminDoc: any
     let generatedToken: string
 
@@ -24,19 +24,19 @@ describe('Authentication Integration', () => {
         await connectTestDB()
 
         // 3. creation d'un user admin de test
-        testAdminData = generateTestUserData('admin')
+        editorData = generateTestUserData('admin')
         
         // Nettoyage au cas où un utilisateur avec le même email existerait déjà
-        await User.deleteMany({ email: testAdminData.email })
+        await User.deleteMany({ email: editorData.email })
 
         // Hashage et création
-        const hashedPassword = await bcrypt.hash(testAdminData.password, 10)
+        const hashedPassword = await bcrypt.hash(editorData.password, 10)
         testAdminDoc = await User.create({
-            ...testAdminData,
+            ...editorData,
             password: hashedPassword
         })
 
-        console.log(`👤 Test user created: ${testAdminData.email}`)
+        console.log(`👤 Test user created: ${editorData.email}`)
 
     })
 
@@ -45,8 +45,8 @@ describe('Authentication Integration', () => {
         // On nettoie et on ferme
         try {
 
-            await User.deleteMany({ email: testAdminData.email })
-            console.log(`🧼 Test user deleted: ${testAdminData.email}`)
+            await User.deleteMany({ email: editorData.email })
+            console.log(`🧼 Test user deleted: ${editorData.email}`)
 
         } catch (error) {
 
@@ -60,8 +60,8 @@ describe('Authentication Integration', () => {
 
     test('Should verify credentials using factory data', async () => {
         const result = await authenticateUser(
-            testAdminData.email, 
-            testAdminData.password, 
+            editorData.email, 
+            editorData.password, 
             'admin'
         )
         expect(result.success).toBe(true)
@@ -71,7 +71,7 @@ describe('Authentication Integration', () => {
 
     test('Should fail authentication with an incorrect password', async () => {
         const result = await authenticateUser(
-            testAdminData.email, 
+            editorData.email, 
             'WrongPassword123!', 
             'admin'
         )
@@ -79,4 +79,46 @@ describe('Authentication Integration', () => {
         expect(result.error).toBe('Identifiants invalides')
     })
 
+    test('Should fail authentication with an unknown email', async () => {
+        const result = await authenticateUser(
+            'nobody-exists@test.com', 
+            'SomePassword123!', 
+            'admin'
+        )
+        expect(result.success).toBe(false)
+        expect(result.error).toBe('Identifiants invalides')
+    })
+
+    test('Should ALLOW an admin to access an editor role (hierarchy check)', async () => {
+        const result = await authenticateUser(
+            editorData.email, 
+            editorData.password, 
+            'editor' // L'admin a le droit car il est "au-dessus"
+        )
+        expect(result.success).toBe(true)
+    })
+
+    test('Should REJECT an editor trying to access an admin role', async () => {
+        
+        const editorData = generateTestUserData('editor')
+        const hashedPassword = await bcrypt.hash(editorData.password, 10)
+        
+        // On crée l'user
+        await User.create({ ...editorData, password: hashedPassword })
+
+        try {
+
+            // Le test proprement dit
+            const result = await authenticateUser(editorData.email, editorData.password, 'admin')
+            expect(result.success).toBe(false)
+            expect(result.error).toBe('Accès non autorisé pour ce rôle')
+
+        } finally {
+
+            // Le FINALLY s'exécute QUOI QU'IL ARRIVE (succès ou échec du expect)
+            await User.deleteOne({ email: editorData.email })
+
+        }
+    })
+    
 })
