@@ -11,6 +11,29 @@ const ROLE_HIERARCHY: Record<string, number> = {
   user: 1
 }
 
+const getJwtSecret = (): string => {
+
+  let secret: string | undefined;
+
+  try {
+    const config = useRuntimeConfig()
+    secret = config.jwtSecret
+  } catch {
+    secret = process.env.JWT_SECRET
+  }
+
+  if (!secret) {
+    console.error("🚨 CRITICAL: JWT_SECRET is missing")
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Une erreur interne est survenue."
+    })
+  }
+
+  return secret
+
+}
+
 export const authenticateUser = async (email: string, pass: string, requiredRole?: string) => {
     const user = await User.findOne({ email })
     
@@ -36,30 +59,7 @@ export const authenticateUser = async (email: string, pass: string, requiredRole
 
 export const createAuthToken = (userId: string, role: string) => {
 
-  let jwtSecret: string | undefined;
-
-  try {
-
-    const config = useRuntimeConfig()
-    jwtSecret = config.jwtSecret
-
-  } catch {
-
-    // Si useRuntimeConfig échoue (en test), on prend process.env
-    jwtSecret = process.env.JWT_SECRET
-
-  }
-
-  if (!jwtSecret) {
-
-    console.error("🚨 CRITICAL: JWT_SECRET is missing")
-
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Une erreur interne est survenue."
-    })
-
-  }
+  const jwtSecret = getJwtSecret()
 
   // 1. Chiffrage de l'ID
   const encrypted = encryptString(userId)
@@ -86,6 +86,8 @@ export const createAuthToken = (userId: string, role: string) => {
 }
 
 export const verifyAuthToken = (token: string) => {
+
+  
   const config = useRuntimeConfig()
   try {
     return jwt.verify(token, config.jwtSecret)
