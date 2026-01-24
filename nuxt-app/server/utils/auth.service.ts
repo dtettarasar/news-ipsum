@@ -3,6 +3,8 @@ import { User } from '../../server/models/User.model'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
+import { encryptString, decryptString } from './cypher'
+
 const ROLE_HIERARCHY: Record<string, number> = {
   admin: 3,
   editor: 2,
@@ -34,17 +36,29 @@ export const authenticateUser = async (email: string, pass: string, requiredRole
 
 export const createAuthToken = (userId: string, role: string) => {
 
-  const config = useRuntimeConfig() // Accès à la config centralisée
+  let jwtSecret: string | undefined;
 
-  if (!config.jwtSecret) {
-    // 1. Log précis pour le développeur (visible dans Docker)
-    console.error("🚨 CRITICAL: JWT_SECRET is missing in .env or nuxt.config.ts")
-    
-    // 2. Erreur floue pour l'utilisateur (visible dans le navigateur)
+  try {
+
+    const config = useRuntimeConfig()
+    jwtSecret = config.jwtSecret
+
+  } catch {
+
+    // Si useRuntimeConfig échoue (en test), on prend process.env
+    jwtSecret = process.env.JWT_SECRET
+
+  }
+
+  if (!jwtSecret) {
+
+    console.error("🚨 CRITICAL: JWT_SECRET is missing")
+
     throw createError({
       statusCode: 500,
       statusMessage: "Une erreur interne est survenue."
     })
+
   }
 
   // 1. Chiffrage de l'ID
@@ -65,7 +79,7 @@ export const createAuthToken = (userId: string, role: string) => {
   // On utilise les noms définis dans nuxt.config.ts
   return jwt.sign(
     { sub: secureId, role }, 
-    config.jwtSecret, 
+    jwtSecret, 
     { expiresIn: '24h' }
   )
 

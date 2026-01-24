@@ -122,5 +122,15 @@ describe('Authentication Integration', () => {
 
         }
     })
+
+    // 2. Tests de génération et vérification de token
+
+    test('Should generate a signed token with an encrypted ID', async () => {
+        generatedToken = createAuthToken(adminDoc._id.toString(), adminDoc.role)
+        
+        expect(generatedToken).toBeTypeOf('string')
+        // Un JWT valide contient deux points (header.payload.signature)
+        expect(generatedToken.split('.')).toHaveLength(3)
+    })
     
 })
