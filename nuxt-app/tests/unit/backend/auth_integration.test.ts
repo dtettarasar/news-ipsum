@@ -146,5 +146,13 @@ describe('Authentication Integration', () => {
         
         expect(decryptedId).toBe(adminDoc._id.toString())
     })
+
+    test('Should reject a tampered or invalid token', () => {
+
+        const tamperedToken = generatedToken + 'xyz'
+        const result = verifyAuthToken(tamperedToken)
+        expect(result).toBeNull()
+        
+    })
     
 })
