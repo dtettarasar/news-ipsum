@@ -1,6 +1,11 @@
+// server/api/auth/logout.post.ts
 export default defineEventHandler((event) => {
-    // On écrase le cookie avec une date d'expiration passée
-    deleteCookie(event, 'auth_token')
+    deleteCookie(event, 'auth_token', {
+        httpOnly: true,
+        path: '/',
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production'
+    })
     
-    return { message: 'Déconnecté avec succès' }
+    return { success: true, message: 'Déconnecté avec succès' }
 })
