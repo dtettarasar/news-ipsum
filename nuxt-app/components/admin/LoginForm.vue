@@ -74,6 +74,10 @@
 
             // C'est ici que l'on logue le retour du backend
             console.log('Réponse du serveur :', response);
+        
+            // On s'assure que le cookie a bien été traité par le navigateur 
+            // avant de changer de page
+            await navigateTo('/admin', { replace: true })
 
         } catch (err: any) {
             // En cas d'erreur (ex: serveur éteint ou erreur 500)
