@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
 
     // 2. Utilisation de ton service pour vérifier l'admin
     // On demande explicitement le rôle 'admin' au service
-    const result = await authenticateUser(email, password, 'admin')
+    const result = await authenticateUser(email, password, 'editor')
 
     if (!result.success) {
         throw createError({
