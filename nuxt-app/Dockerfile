@@ -4,16 +4,21 @@ FROM node:20 AS builder
 # Définition de l'environnement
 ARG NODE_ENV=production
 
-# Définition des ARGs
+# AJOUTER LES ARGUMENTS ICI POUR LA PROD
+ARG JWT_SECRET
+ARG ENCRYPTION_KEY
+ARG SESSION_PASSWORD
 ARG MONGO_INITDB_ROOT_USERNAME
 ARG MONGO_INITDB_ROOT_PASSWORD
 ARG MONGO_DB_NAME
 
-# Utilisation des ARGs comme ENVs (pour le build)
+# LES TRANSFORMER EN VARIABLES D'ENVIRONNEMENT
+ENV JWT_SECRET=${JWT_SECRET}
+ENV ENCRYPTION_KEY=${ENCRYPTION_KEY}
+ENV SESSION_PASSWORD=${SESSION_PASSWORD}
 ENV MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
 ENV MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
 ENV MONGO_DB_NAME=${MONGO_DB_NAME}
-ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
@@ -34,9 +39,15 @@ ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 WORKDIR /usr/src/app
 
-# Copie des fichiers essentiels depuis l'étape de build
+# 1. Copie des fichiers compilés
 COPY --from=builder /usr/src/app/.output /usr/src/app/.output
 COPY --from=builder /usr/src/app/node_modules /usr/src/app/node_modules
+
+# 2. AJOUT : On récupère aussi le dossier server pour avoir accès aux modèles !
+COPY --from=builder /usr/src/app/server /usr/src/app/server
+
+# 3. On garde les scripts et la config
+COPY --from=builder /usr/src/app/scripts /usr/src/app/scripts
 COPY package*.json ./
 
 # Définition du port
