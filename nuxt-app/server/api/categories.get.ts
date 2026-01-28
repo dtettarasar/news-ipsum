@@ -1,5 +1,5 @@
 // server/api/categories.get.ts
-import { Category } from '../models/Category'
+import { Category } from '../models/Category.model'
 
 const MOCK_CATEGORIES = [
   { name: 'Technologie', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500' },

@@ -15,6 +15,11 @@ export default defineNuxtConfig({
     mongoPass: process.env.MONGO_INITDB_ROOT_PASSWORD,
     mongoDbName: process.env.MONGO_DB_NAME || 'testdb',
 
+    // Auth keys
+    jwtSecret: process.env.JWT_SECRET,
+    encryptionKey: process.env.ENCRYPTION_KEY,
+    sessionPassword: process.env.SESSION_PASSWORD,
+
     // PUBLIC (Serveur + Client)
     public: {
       seoIndex: false, // Valeur de secours par défaut

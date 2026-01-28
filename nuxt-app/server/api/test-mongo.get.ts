@@ -1,4 +1,4 @@
-import TestMessage from '../database/models/test-message'
+import TestMessage from '~/server/models/TestMessage.model'
 
 import { MongoClient } from 'mongodb'
 
