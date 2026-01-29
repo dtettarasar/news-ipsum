@@ -27,6 +27,14 @@ export default defineNuxtConfig({
     
   },
 
+  vite: {
+    esbuild: {
+      // Cette ligne retire console.log, console.debug, et debugger 
+      // uniquement quand tu builds pour la production.
+      drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+    },
+  },
+
   modules: ['@nuxt/icon','@nuxtjs/tailwindcss', '@pinia/nuxt',],
 
 })
