@@ -68,7 +68,8 @@ async function createAdmin() {
     console.log(`\n✅ Succès : L'administrateur "${name}" a été créé avec succès !`)
 
   } catch (err) {
-    console.error('❌ Erreur critique lors de la création :', err)
+    const msg = err instanceof Error ? err.message : 'Erreur inconnue'
+    console.error('❌ Erreur critique lors de la création :', msg)
   } finally {
     // 5. Fermeture propre des connexions
     await mongoose.connection.close()

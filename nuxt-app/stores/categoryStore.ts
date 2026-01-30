@@ -27,7 +27,6 @@ export const useCategoryStore = defineStore('category', {
         this.categories = data
       } catch (err: any) {
         this.error = err.statusMessage || "Erreur lors de la récupération des catégories"
-        console.error('Fetch error:', err)
       } finally {
         this.loading = false
       }

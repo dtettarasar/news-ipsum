@@ -65,17 +65,6 @@ export const createAuthToken = (userId: string, role: string) => {
   const encrypted = encryptString(userId)
   const secureId = `${encrypted.iv}:${encrypted.encryptedStr}`
 
-  // --- LOGS TEMPORAIRES DE DÉVELOPPEMENT ---
-  console.log('--- 🔐 DEBUG AUTH TOKEN ---')
-  console.log('ID Original (DB):', userId)
-  console.log('ID Crypté (JWT):', secureId)
-  
-  // Test de décryptage pour vérification
-  const decryptedCheck = decryptString(encrypted)
-  console.log('Vérification décryptage:', decryptedCheck === userId ? '✅ SUCCESS' : '❌ FAILED')
-  console.log('---------------------------')
-  // -----------------------------------------
-  
   // On utilise les noms définis dans nuxt.config.ts
   return jwt.sign(
     { sub: secureId, role }, 
@@ -86,18 +75,14 @@ export const createAuthToken = (userId: string, role: string) => {
 }
 
 export const verifyAuthToken = (token: string) => {
-
   try {
-
     const secret = getJwtSecret()
     return jwt.verify(token, secret)
-
-  } catch (err) {
-
-    console.error("🚨 JWT Verification Error:", err)
-
+  } catch (err: unknown) {
+    // Log minimal côté serveur : uniquement le type d'erreur (expiré, signature invalide, etc.)
+    // Ne jamais logger le token ni err.message/stack qui pourraient contenir des infos sensibles
+    const errorName = err instanceof Error ? err.name : 'Unknown'
+    console.warn('[Auth] JWT verification failed:', errorName)
     return null
-
   }
-  
 }
