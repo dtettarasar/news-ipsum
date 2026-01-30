@@ -54,22 +54,9 @@ onMounted(async () => {
 })
 
 const setStep = () => {
-
-  // Logic to move the carousel by 'step' cards
-
-  console.log("setting step")
-
   const innerWidth = inner.value.scrollWidth
-
-  console.log("innerWidth:", innerWidth)
-
   const totalCards = cards.value.length
-
-  console.log("totalCards:", totalCards)
-
   step.value = `${innerWidth / totalCards}px`
-
-
 }
 
 const next = () => {
@@ -119,18 +106,11 @@ const prev = () => {
 }
 
 const afterTransition = (callback) => {
-  
-  // Logic after transition ends
-
   const listener = () => {
     callback()
     inner.value.removeEventListener('transitionend', listener)
   }
-
   inner.value.addEventListener('transitionend', listener)
-
-  console.log("transition ended")
-
 }
 
 const resetTranslate = () => {

@@ -1,15 +1,42 @@
-export default defineEventHandler(async (event) => {
-    // 1. Récupération des données du formulaire
-    const { email, password } = await readBody(event)
+const MAX_EMAIL_LENGTH = 320
+const MAX_PASSWORD_LENGTH = 1024
 
-    // 2. Utilisation de ton service pour vérifier l'admin
-    // On demande explicitement le rôle 'admin' au service
+function isValidEmail(value: unknown): value is string {
+    if (typeof value !== 'string') return false
+    if (value.length === 0 || value.length > MAX_EMAIL_LENGTH) return false
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+}
+
+function isValidPassword(value: unknown): value is string {
+    if (typeof value !== 'string') return false
+    return value.length >= 1 && value.length <= MAX_PASSWORD_LENGTH
+}
+
+export default defineEventHandler(async (event) => {
+    const body = await readBody(event).catch(() => null)
+    if (!body || typeof body !== 'object') {
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'Requête invalide'
+        })
+    }
+
+    const { email, password } = body
+    if (!isValidEmail(email) || !isValidPassword(password)) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'Identifiants invalides'
+        })
+    }
+
+    // Accès back-office : rôle editor ou admin (hiérarchie)
     const result = await authenticateUser(email, password, 'editor')
 
     if (!result.success) {
+        // Message générique pour éviter l'énumération de comptes (401 vs 403)
         throw createError({
-            statusCode: result.error.includes('autorisé') ? 403 : 401,
-            statusMessage: result.error
+            statusCode: 401,
+            statusMessage: 'Identifiants invalides'
         })
     }
     

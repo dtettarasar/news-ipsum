@@ -1,9 +1,11 @@
 import mongoose from 'mongoose'
 
-mongoose.set('debug', true)
+// Éviter de logger toutes les requêtes MongoDB en production (fuite d'infos)
+mongoose.set('debug', process.env.NODE_ENV === 'development')
 
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+process.on('unhandledRejection', (reason) => {
+    const msg = reason instanceof Error ? reason.message : 'Unhandled Rejection'
+    console.error('[DB] Unhandled Rejection:', msg)
 })
 
 export async function initDB(uri: string) {
@@ -32,9 +34,9 @@ export async function initDB(uri: string) {
         return connection;
 
     } catch (error) {
-        console.error('❌ Error connecting to MongoDB:', error);
-        console.trace();
-        throw error;
+        const msg = error instanceof Error ? error.message : 'Unknown error'
+        console.error('[DB] Connection failed:', msg)
+        throw error
     }
 }
 
@@ -46,7 +48,8 @@ export async function closeDB() {
             console.log('🔒 MongoDB connection closed.');
         }
     } catch (error) {
-        console.error('Error while closing MongoDB connection:', error);
+        const msg = error instanceof Error ? error.message : 'Unknown error'
+        console.error('[DB] Error while closing connection:', msg)
     }
 }
 

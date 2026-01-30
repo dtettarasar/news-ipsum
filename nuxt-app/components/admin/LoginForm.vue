@@ -25,6 +25,10 @@
                 />
             </div>
 
+            <p v-if="errorMessage" class="mt-4 text-sm text-red-600" role="alert">
+                {{ errorMessage }}
+            </p>
+
             <div class="mt-6">
                 <label class="font-medium">Password</label>
                 <input
@@ -57,33 +61,19 @@
         password: ''
     })
 
-    const handleLogin = async (event: Event) => {
-        console.log('Login form submitted');
-        console.log('Email:', credentials.email);
-        console.log('Password:', credentials.password);
-        // Here you can add your authentication logic
+    const errorMessage = ref('')
 
+    const handleLogin = async () => {
+        errorMessage.value = ''
         try {
-            
-            // L'appel au backend
-            // Nuxt devine automatiquement que c'est une requête vers ton serveur Nitro
-            const response = await $fetch('/api/auth/admin-login', {
+            await $fetch('/api/auth/admin-login', {
                 method: 'POST',
                 body: credentials
             })
-
-            // C'est ici que l'on logue le retour du backend
-            console.log('Réponse du serveur :', response);
-        
-            // On s'assure que le cookie a bien été traité par le navigateur 
-            // avant de changer de page
             await navigateTo('/admin', { replace: true })
-
-        } catch (err: any) {
-            // En cas d'erreur (ex: serveur éteint ou erreur 500)
-            console.error('Erreur lors de l\'appel API :', err);
+        } catch {
+            errorMessage.value = 'Identifiants incorrects ou accès non autorisé.'
         }
-
     }
 
 </script>

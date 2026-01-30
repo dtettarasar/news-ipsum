@@ -19,7 +19,8 @@ export default defineEventHandler(async (event) => {
 
     // Si la base est vide (que ce soit en local ou en prod)
     if (categories.length === 0) {
-      console.log('🌱 Database categories empty. Seeding mocks...')
+      // Seed initial data (log sans donnée sensible)
+      console.warn('[Categories] Database empty, seeding initial categories')
       // On insère les mocks en base de données
       await Category.insertMany(MOCK_CATEGORIES)
       // On les récupère à nouveau pour avoir les vrais objets avec _id

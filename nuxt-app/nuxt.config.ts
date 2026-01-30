@@ -29,8 +29,9 @@ export default defineNuxtConfig({
 
   vite: {
     esbuild: {
-      // Cette ligne retire console.log, console.debug, et debugger 
-      // uniquement quand tu builds pour la production.
+      // En production : retire console.* et debugger du bundle (client ET serveur).
+      // Double bénéfice : pas de logs sensibles côté navigateur, et côté serveur
+      // les console.warn/error ajoutés pour le diagnostic ne s'affichent qu'en dev.
       drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
     },
   },

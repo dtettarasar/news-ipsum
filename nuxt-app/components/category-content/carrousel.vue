@@ -122,22 +122,9 @@ onMounted(async () => {
 })
 
 const setStep = () => {
-
-  // Logic to move the carousel by 'step' cards
-
-  console.log("setting step")
-
   const innerWidth = inner.value.scrollWidth
-
-  console.log("innerWidth:", innerWidth)
-
   const totalCards = categories.value.length
-
-  console.log("totalCards:", totalCards)
-
   step.value = `${innerWidth / totalCards}px`
-
-
 }
 
 const resetTranslate = () => {
@@ -201,18 +188,11 @@ const prev = () => {
 }
 
 const afterTransition = (callback) => {
-  
-  // Logic after transition ends
-
   const listener = () => {
     callback()
     inner.value.removeEventListener('transitionend', listener)
   }
-
   inner.value.addEventListener('transitionend', listener)
-
-  console.log("transition ended")
-
 }
 
 // Petite fonction pour obtenir une couleur basée sur l'ID (pour que la couleur reste la même pour une catégorie donnée)

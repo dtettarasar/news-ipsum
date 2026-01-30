@@ -1,54 +1,43 @@
 import { User } from '~/server/models/User.model'
 import { decryptString } from '~/server/utils/cypher'
+import { verifyAuthToken } from '~/server/utils/auth.service'
 
 export default defineEventHandler(async (event) => {
-
-    console.log('Vérification de l\'authentification via /api/auth/me') 
-
     const token = getCookie(event, 'auth_token')
 
-    console.log('Token récupéré depuis le cookie :', token)
-
     if (!token) {
-
-        console.log('Aucun token trouvé, utilisateur non authentifié.')
         return { authenticated: false }
+    }
 
-    } else  {
+    const decoded = verifyAuthToken(token) as { sub?: string; role?: string } | null
 
-        console.log('Token trouvé, vérification en cours...')
-        const decoded = verifyAuthToken(token) as any
+    if (!decoded?.sub || typeof decoded.sub !== 'string') {
+        return { authenticated: false }
+    }
 
-        if (!decoded) {
+    // Format attendu : "iv:encryptedStr" (un seul ':' entre iv et payload hex)
+    const parts = decoded.sub.split(':')
+    if (parts.length !== 2 || !parts[0] || !parts[1]) {
+        return { authenticated: false }
+    }
 
-            console.log('Token invalide ou expiré.')
+    try {
+        const userId = decryptString({ iv: parts[0], encryptedStr: parts[1] })
+        const user = await User.findById(userId).select('name email role')
+
+        if (!user) {
             return { authenticated: false }
-
-        } else  {
-
-            console.log('Token valide. Utilisateur authentifié avec les données :', decoded)
-
-            // Décryptage de l'ID pour chercher l'user en DB
-            const [iv, encryptedStr] = decoded.sub.split(':')
-            const userId = decryptString({ iv, encryptedStr })
-
-            const user = await User.findById(userId).select('name email role')
-
-            if (!user) {
-                console.log('Utilisateur non trouvé en base de données.')
-                return { authenticated: false }
-            }
-
-            console.log('Utilisateur trouvé en base de données :', user)
-
-            return {
-                authenticated: true, 
-                user: {
-                    name: user.name,
-                    email: user.email,
-                    role: user.role
-                }
-            } 
         }
+
+        return {
+            authenticated: true,
+            user: {
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        }
+    } catch {
+        return { authenticated: false }
     }
 })

@@ -41,18 +41,9 @@ import { ref } from 'vue'
 const searchQuery = ref('')
 
 const handleSearch = () => {
-  // 3. On accède à la valeur via .value
-
   if (searchQuery.value.trim() !== '') {
-    console.log('Résultat de la recherche pour :', searchQuery.value)
-    
-    // Optionnel : vider le champ après la recherche
+    // TODO : brancher la recherche (navigation ou API)
     searchQuery.value = ''
-
-  } else {
-
-    console.log('Le champ est vide.')
-
   }
 }
 </script>
