@@ -66,6 +66,19 @@
 
 **Correction appliquée :** Validation du format de `decoded.sub` (split en 2 parties) avant décryptage ; try/catch autour du décryptage et de `User.findById` ; retour systématique `{ authenticated: false }` en cas d’erreur, sans exposer de détail.
 
+
+#### 1.1.6 Route de test exposée (GET /api/test-mongo) ✅ Corrigé
+
+**Fichiers concernés :** `server/api/test-mongo.get.ts`, `components/other/test-mongo-db.vue`
+
+**Problème :** Une route GET publique (`/api/test-mongo`) permettait de **créer des documents dans MongoDB** (modèle TestMessage) à chaque appel, sans authentification, sans validation ni quota. Un attaquant ou un robot pouvait en appeler l'URL pour polluer la base ou surcharger le serveur.
+
+**Risque :** Écriture non contrôlée en base, pollution des données, abus (appels massifs), fuite d'information sur la structure des modèles.
+
+**Correction appliquée :** Route et composant supprimés. Les vérifications « création + lecture » du modèle TestMessage sont désormais couvertes par des **tests Vitest** (unitaire avec mocks + intégration avec vraie DB). Voir section 4.5.
+
+**Règle à respecter :** Ne pas exposer de route API (GET, POST, etc.) dont le seul but est de tester la base de données ou de créer/manipuler des objets en base sans contrôle (auth, validation, usage légitime). Les tests de persistance doivent rester dans la suite de tests (ex. Vitest, tests d'intégration), pas dans une route appelable en production.
+
 ---
 
 ### 1.2 Moyenne priorité
@@ -191,6 +204,13 @@ Toutes les modifications listées ci-dessous ont été committées et sont prêt
 ### 4.4 Configuration (nuxt.config.ts)
 
 - **vite.esbuild.drop** : En production, `['console', 'debugger']` retire tout `console.*` et `debugger` du bundle **client et serveur**. Les logs serveur ajoutés pour le diagnostic ne s'affichent qu'en dev ; en prod, aucune sortie console = pas de fuite. Commentaire dans le config mis à jour pour expliquer ce comportement.
+
+### 4.5 Routes de test / base de données
+
+- **Suppression de `server/api/test-mongo.get.ts`** : Route GET publique qui créait un document TestMessage à chaque appel, sans aucun contrôle. Risque de pollution de la base et d'abus. La route a été retirée.
+- **Suppression de `components/other/test-mongo-db.vue`** : Composant qui appelait cette route ; plus utilisé.
+- **Remplacement par des tests Vitest** : Un test unitaire (mocks) et un test d'intégration (vraie MongoDB) couvrent désormais le modèle TestMessage (création + findById), dans `tests/unit/backend/test-message.test.ts` et `tests/integration/backend/test-message.integration.test.ts`.
+- **Règle pour la suite** : Ne pas créer de route API dont le but est uniquement de tester la base ou de créer/manipuler des objets en base sans authentification, validation ou usage métier légitime. Privilégier les tests automatisés (unitaires + intégration) pour ce type de vérifications.
 
 ---
 
