@@ -55,8 +55,15 @@ generate-secrets:
 	docker compose $(COMPOSE_PROD) exec nuxt-app npm run generate-secrets
 
 # ----- TESTS -----
+# Tous les tests (unit + integration). Les tests d'intégration nécessitent make dev (MongoDB).
 test:
 	docker compose $(COMPOSE_DEV) exec nuxt-app npm run test
+# Uniquement les tests unitaires (backend mocks + frontend), sans MongoDB
+test-unit:
+	docker compose $(COMPOSE_DEV) exec nuxt-app npm run test:unit
+# Uniquement les tests d'intégration (vraie DB) ; exiger make dev avant
+test-integration:
+	docker compose $(COMPOSE_DEV) exec nuxt-app npm run test:integration
 test-watch:
 	docker compose $(COMPOSE_DEV) exec nuxt-app npm run test:watch
 test-coverage:
