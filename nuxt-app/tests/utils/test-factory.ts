@@ -10,3 +10,10 @@ export const generateTestUserData = (role: 'admin' | 'editor' | 'user' = 'user')
     username: `user_${id}`
   }
 }
+
+export const generateTestMessageData = (message?: string) => {
+  const suffix = Math.floor(Math.random() * 10000)
+  return {
+    message: message ?? `Test message from integration test ${suffix}`,
+  }
+}

@@ -5,8 +5,8 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
 import { User } from '../../../server/models/User.model'
 
-import { connectTestDB, disconnectTestDB } from '../utils/db-handler'
-import { generateTestUserData } from '../utils/test-factory'
+import { connectTestDB, disconnectTestDB } from '../../utils/db-handler'
+import { generateTestUserData } from '../../utils/test-factory'
 
 describe('Authentication Integration', () => {
 

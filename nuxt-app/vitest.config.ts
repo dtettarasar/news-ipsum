@@ -4,9 +4,8 @@ import path from 'path'
 
 export default defineConfig({
   test: {
-    // Configuration des projets (Workspaces)
     projects: [
-      // 1. Projet Backend (Node pur, rapide)
+      // 1. Backend – tests unitaires (mocks, pas de DB)
       {
         test: {
           name: 'backend',
@@ -14,8 +13,15 @@ export default defineConfig({
           environment: 'node',
         },
       },
-      // 2. Projet Frontend (Environnement Nuxt)
-      // On utilise "await" car defineVitestProject charge l'environnement Nuxt
+      // 2. Intégration – vraie connexion MongoDB (nécessite make dev ou stack Docker)
+      {
+        test: {
+          name: 'integration',
+          include: ['tests/integration/backend/**/*.{test,spec}.ts'],
+          environment: 'node',
+        },
+      },
+      // 3. Frontend (environnement Nuxt)
       await defineVitestProject({
         test: {
           name: 'frontend',
@@ -24,12 +30,11 @@ export default defineConfig({
           environmentOptions: {
             nuxt: {
               domEnvironment: 'jsdom',
-            }
-          }
+            },
+          },
         },
       }),
     ],
-    // Options globales partagées
     globals: true,
     watch: {
       usePolling: true, // Crucial pour Docker
