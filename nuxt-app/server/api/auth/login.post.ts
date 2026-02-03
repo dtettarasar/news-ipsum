@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    const { email, password } = body
+    const { email, password, role } = body
     if (!isValidEmail(email) || !isValidPassword(password)) {
         throw createError({
             statusCode: 400,
@@ -30,7 +30,8 @@ export default defineEventHandler(async (event) => {
     }
 
     // Accès back-office : rôle editor ou admin (hiérarchie)
-    const result = await authenticateUser(email, password, 'editor')
+    // authenticateUser est dans le service auth.service.ts
+    const result = await authenticateUser(email, password, role)
 
     if (!result.success) {
         // Message générique pour éviter l'énumération de comptes (401 vs 403)
@@ -42,6 +43,7 @@ export default defineEventHandler(async (event) => {
     
     // 3. Génération du Token JWT (via ta nouvelle fonction dans le service)
     // On passe l'ID de l'utilisateur (converti en string) et son rôle
+    // createAuthToken est dans le service auth.service.ts
     const token = createAuthToken(result.user._id.toString(), result.user.role)
 
     // 4. Stockage dans un Cookie sécurisé
@@ -54,6 +56,7 @@ export default defineEventHandler(async (event) => {
     })
 
     // 5. Réponse au frontend
+    /*
     return { 
         message: 'Accès Admin accordé', 
         user: { 
@@ -61,4 +64,6 @@ export default defineEventHandler(async (event) => {
             email: result.user.email
         } 
     }
+    */
+   
 })

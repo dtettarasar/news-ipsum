@@ -58,7 +58,8 @@
 
     const credentials = reactive({
         email: '',
-        password: ''
+        password: '',
+        role: 'editor'
     })
 
     const errorMessage = ref('')
@@ -66,7 +67,7 @@
     const handleLogin = async () => {
         errorMessage.value = ''
         try {
-            await $fetch('/api/auth/admin-login', {
+            await $fetch('/api/auth/login', {
                 method: 'POST',
                 body: credentials
             })
