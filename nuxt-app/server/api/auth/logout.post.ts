@@ -1,11 +1,7 @@
 // server/api/auth/logout.post.ts
+import { deleteAuthToken } from '~/server/utils/auth.service'
+
 export default defineEventHandler((event) => {
-    deleteCookie(event, 'auth_token', {
-        httpOnly: true,
-        path: '/',
-        sameSite: 'strict',
-        secure: process.env.NODE_ENV === 'production'
-    })
-    
+    deleteAuthToken(event)
     return { success: true, message: 'Déconnecté avec succès' }
 })

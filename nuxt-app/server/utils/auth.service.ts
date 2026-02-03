@@ -86,3 +86,12 @@ export const verifyAuthToken = (token: string) => {
     return null
   }
 }
+
+export const deleteAuthToken = (event: H3Event) => {
+  deleteCookie(event, 'auth_token', {
+    httpOnly: true,
+    path: '/',
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production'
+  })
+}
