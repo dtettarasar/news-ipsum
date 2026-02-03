@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
 import { encryptString, decryptString } from './cypher'
+import { H3Event } from 'h3'
 
 const ROLE_HIERARCHY: Record<string, number> = {
   admin: 3,
