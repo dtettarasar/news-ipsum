@@ -1,4 +1,4 @@
-const MAX_EMAIL_LENGTH = 320
+/*const MAX_EMAIL_LENGTH = 320
 const MAX_PASSWORD_LENGTH = 1024
 
 function isValidEmail(value: unknown): value is string {
@@ -10,7 +10,9 @@ function isValidEmail(value: unknown): value is string {
 function isValidPassword(value: unknown): value is string {
     if (typeof value !== 'string') return false
     return value.length >= 1 && value.length <= MAX_PASSWORD_LENGTH
-}
+}*/
+
+import { isValidEmail, isValidPassword } from '~/server/utils/auth.validation'
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event).catch(() => null)
@@ -65,5 +67,5 @@ export default defineEventHandler(async (event) => {
         } 
     }
     */
-   
+
 })
