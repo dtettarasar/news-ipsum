@@ -65,15 +65,32 @@
     const errorMessage = ref('')
 
     const handleLogin = async () => {
+
         errorMessage.value = ''
+
         try {
-            await $fetch('/api/auth/login', {
+            
+            const data = await $fetch<{ success: boolean; message?: string }>('/api/auth/login', {
                 method: 'POST',
                 body: credentials
             })
-            await navigateTo('/admin', { replace: true })
-        } catch {
-            errorMessage.value = 'Identifiants incorrects ou accès non autorisé.'
+
+            if (data.success) {
+
+                console.log('Connexion réussie')
+                console.log(data)
+                await navigateTo('/admin', { replace: true })
+
+            } else {
+                console.log('Connexion échouée')
+                errorMessage.value = data.message ?? 'Identifiants incorrects ou accès non autorisé.'
+            }
+            
+        } catch (error) {
+
+            console.error(error)
+            errorMessage.value = 'Une erreur est survenue lors de la connexion.'
+
         }
     }
 

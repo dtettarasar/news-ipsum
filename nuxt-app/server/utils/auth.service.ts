@@ -2,9 +2,11 @@
 import { User } from '../../server/models/User.model'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { H3Event } from 'h3'
 
 import { encryptString, decryptString } from './cypher'
-import { H3Event } from 'h3'
+import { isValidEmail, isValidPassword } from '../../server/utils/auth.validation'
+
 
 const ROLE_HIERARCHY: Record<string, number> = {
   admin: 3,
@@ -95,4 +97,34 @@ export const deleteAuthToken = (event: H3Event) => {
     sameSite: 'strict',
     secure: process.env.NODE_ENV === 'production'
   })
+}
+
+export const createAuthCookie = async (event: H3Event, email: string, password: string, role: string) => {
+
+  if (!isValidEmail(email) || !isValidPassword(password)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Identifiants invalides'
+    })
+  }
+
+  const result = await authenticateUser(email, password, role)
+
+  if (!result.success) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Identifiants invalides'
+    })
+  }
+
+  const token = createAuthToken(result.user._id.toString(), result.user.role)
+
+  setCookie(event, 'auth_token', token, {
+    httpOnly: true,
+    path: '/',
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production'
+  })
+
+  return { success: true, message: 'Connexion réussie' }
 }

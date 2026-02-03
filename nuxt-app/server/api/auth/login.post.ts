@@ -12,10 +12,13 @@ function isValidPassword(value: unknown): value is string {
     return value.length >= 1 && value.length <= MAX_PASSWORD_LENGTH
 }*/
 
-import { isValidEmail, isValidPassword } from '~/server/utils/auth.validation'
+//import { isValidEmail, isValidPassword } from '~/server/utils/auth.validation'
+import { createAuthCookie } from '~/server/utils/auth.service'
 
 export default defineEventHandler(async (event) => {
+
     const body = await readBody(event).catch(() => null)
+
     if (!body || typeof body !== 'object') {
         throw createError({
             statusCode: 400,
@@ -24,6 +27,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const { email, password, role } = body
+    /*
     if (!isValidEmail(email) || !isValidPassword(password)) {
         throw createError({
             statusCode: 400,
@@ -68,4 +72,12 @@ export default defineEventHandler(async (event) => {
     }
     */
 
+    try {
+
+        return await createAuthCookie(event, email, password, role)
+    } catch (error) {
+        // Ne pas rethrow createError(401) ; retourner une réponse 200 avec success: false
+        return { success: false, message: 'Identifiants incorrects ou accès non autorisé.' }
+        
+    }
 })
