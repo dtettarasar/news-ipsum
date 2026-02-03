@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
         return { authenticated: false }
     }
 
-    const decoded = verifyAuthToken(token) as { sub?: string; role?: string } | null
+    const decoded = verifyAuthToken(token) as { sub?: string } | null
 
     if (!decoded?.sub || typeof decoded.sub !== 'string') {
         return { authenticated: false }

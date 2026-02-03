@@ -60,7 +60,7 @@ export const authenticateUser = async (email: string, pass: string, requiredRole
     return { success: true, user }
 }
 
-export const createAuthToken = (userId: string, role: string) => {
+export const createAuthToken = (userId: string) => {
 
   const jwtSecret = getJwtSecret()
 
@@ -69,8 +69,9 @@ export const createAuthToken = (userId: string, role: string) => {
   const secureId = `${encrypted.iv}:${encrypted.encryptedStr}`
 
   // On utilise les noms définis dans nuxt.config.ts
+  // sub est l'identifiant de l'utilisateur chiffré, naming convention pour les JWT
   return jwt.sign(
-    { sub: secureId, role }, 
+    { sub: secureId }, 
     jwtSecret, 
     { expiresIn: '24h' }
   )
@@ -117,7 +118,7 @@ export const createAuthCookie = async (event: H3Event, email: string, password: 
     })
   }
 
-  const token = createAuthToken(result.user._id.toString(), result.user.role)
+  const token = createAuthToken(result.user._id.toString())
 
   setCookie(event, 'auth_token', token, {
     httpOnly: true,

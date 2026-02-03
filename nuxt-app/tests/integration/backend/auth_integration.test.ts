@@ -126,7 +126,7 @@ describe('Authentication Integration', () => {
     // 2. Tests de génération et vérification de token
 
     test('Should generate a signed token with an encrypted ID', async () => {
-        generatedToken = createAuthToken(adminDoc._id.toString(), adminDoc.role)
+        generatedToken = createAuthToken(adminDoc._id.toString())
         
         expect(generatedToken).toBeTypeOf('string')
         // Un JWT valide contient deux points (header.payload.signature)
@@ -137,7 +137,6 @@ describe('Authentication Integration', () => {
         const payload = verifyAuthToken(generatedToken) as any
         
         expect(payload).not.toBeNull()
-        expect(payload.role).toBe('admin')
         expect(payload.sub).toContain(':') // Format iv:encryptedStr
 
         // Extraction et décryptage pour boucler la boucle
