@@ -32,15 +32,21 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   }
 
+  // Quand on redirige vers login (non authentifié OU rôle insuffisant),
+  // on force un rechargement pour éviter un hydration mismatch
+  // (le DOM peut encore être celui de la page précédente / bfcache)
+  const redirectToLogin = () =>
+    navigateTo('/admin/login', { replace: true, external: true })
+
   if (!data.authenticated) {
-    return navigateTo('/admin/login', { replace: true })
+    return redirectToLogin()
   }
 
   if (requiredRole) {
     const userLevel = ROLE_LEVEL[data.user?.role ?? ''] ?? 0
     const requiredLevel = ROLE_LEVEL[requiredRole] ?? 0
     if (userLevel < requiredLevel) {
-      return navigateTo('/admin/login', { replace: true })
+      return redirectToLogin()
     }
   }
 })
