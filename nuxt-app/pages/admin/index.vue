@@ -4,7 +4,7 @@ const auth = useAuthStore()
 
 definePageMeta({
   middleware: 'auth',
-  auth: { requiredRole: 'editor' }
+  auth: { requiredRole: 'editor', redirectTo: '/admin/login' }
 })
 
 // Données utilisateur pour l’affichage et le store (contrôle d’accès = middleware uniquement)
