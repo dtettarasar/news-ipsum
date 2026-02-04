@@ -129,3 +129,56 @@ export const createAuthCookie = async (event: H3Event, email: string, password: 
 
   return { success: true, message: 'Connexion réussie' }
 }
+
+export const getUserByToken = async (token: string) => {
+
+
+  if (!token) {
+    console.warn('[Auth] Token manquant')
+    return { authenticated: false }
+  }
+
+  const decoded = verifyAuthToken(token) as { sub?: string } | null
+
+  if (!decoded?.sub || typeof decoded.sub !== 'string') {
+    console.warn('[Auth] Token invalide')
+    return { authenticated: false }
+  }
+
+  // Format attendu : "iv:encryptedStr" (un seul ':' entre iv et payload hex)
+  const parts = decoded.sub.split(':')
+
+  if (parts.length !== 2 || !parts[0] || !parts[1]) {
+    console.warn('[Auth] Format de token invalide')
+    return { authenticated: false }
+  }
+
+  try {
+
+      const userId = decryptString({ iv: parts[0], encryptedStr: parts[1] })
+      const user = await User.findById(userId).select('name email role')
+
+      if (!user) {
+        
+        console.warn('[Auth] Utilisateur non trouvé')
+        return { authenticated: false }
+
+      }
+
+      return {
+          authenticated: true,
+          user: {
+              name: user.name,
+              email: user.email,
+              role: user.role
+          }
+      }
+
+  } catch {
+
+      console.warn('[Auth] Erreur lors de la décryptage du token')
+      return { authenticated: false }
+
+  }
+
+}
