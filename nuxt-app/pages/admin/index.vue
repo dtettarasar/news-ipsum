@@ -3,15 +3,15 @@
 const auth = useAuthStore()
 
 definePageMeta({
-  middleware: 'auth'
+  middleware: 'auth',
+  auth: { requiredRole: 'editor' }
 })
 
-// useFetch utilise une clé unique pour partager le résultat entre SSR et Client
+// Données utilisateur pour l’affichage et le store (contrôle d’accès = middleware uniquement)
 const { data: authStatus } = await useFetch('/api/auth/me', {
-  key: 'admin-session' 
+  key: 'admin-session'
 })
 
-// Synchronisation avec le store
 if (authStatus.value?.authenticated) {
   auth.setUser(authStatus.value.user)
 }
@@ -21,13 +21,6 @@ const handleLogout = async () => {
   auth.logout()
   navigateTo('/admin/login')
 }
-
-// On surveille uniquement côté client pour la redirection
-onMounted(() => {
-  if (!authStatus.value?.authenticated) {
-    navigateTo('/admin/login')
-  }
-})
 
 </script>
 
