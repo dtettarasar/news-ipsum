@@ -5,12 +5,30 @@ const ROLE_LEVEL: Record<string, number> = {
   user: 1
 }
 
-type MeResponse = { authenticated: boolean; user?: { role: string; redirectTo?: string } }
+type MeResponse = { authenticated: boolean; user?: { role: string } }
+
+/** Meta attendue pour les pages protégées par le middleware auth */
+type AuthMeta = {
+  /** Formulaire de connexion pour cette zone (ex. /admin/login, /account/login). Requis. */
+  redirectTo: string
+  /** Rôle minimum requis (ex. 'editor', 'admin'). Si absent, seule l'authentification est vérifiée. */
+  requiredRole?: string
+  /** Si authentifié mais rôle insuffisant, rediriger ici (ex. /admin). Sinon on utilise redirectTo. */
+  insufficientRoleRedirect?: string
+}
+
+const DEFAULT_LOGIN_PATH = '/admin/login'
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  const meta = to.meta.auth as { requiredRole?: string } | undefined
+  const meta = to.meta.auth as AuthMeta | undefined
+
+  if (!meta?.redirectTo && import.meta.dev) {
+    console.warn('[Auth middleware] Page protégée sans auth.redirectTo dans definePageMeta; utilisation de la valeur par défaut.', to.path)
+  }
+
+  const redirectTo = meta?.redirectTo ?? DEFAULT_LOGIN_PATH
   const requiredRole = meta?.requiredRole
-  const redirectTo = meta?.redirectTo  // optionnel, ex. '/admin'
+  const insufficientRoleRedirect = meta?.insufficientRoleRedirect
 
   let data: MeResponse
 
@@ -33,24 +51,19 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   }
 
-  // Quand on redirige vers login (non authentifié OU rôle insuffisant),
-  // on force un rechargement pour éviter un hydration mismatch
-  // (le DOM peut encore être celui de la page précédente / bfcache)
-  const redirectToLogin = () =>
-    navigateTo('/admin/login', { replace: true, external: true })
+  const redirect = (target: string) =>
+    navigateTo(target, { replace: true, external: true })
 
   if (!data.authenticated) {
-    return redirectToLogin()
+    return redirect(redirectTo)
   }
 
   if (requiredRole) {
     const userLevel = ROLE_LEVEL[data.user?.role ?? ''] ?? 0
     const requiredLevel = ROLE_LEVEL[requiredRole] ?? 0
     if (userLevel < requiredLevel) {
-      // Authentifié mais rôle insuffisant : page de repli ou login
-      const target = redirectTo ?? '/admin/login'
-      return navigateTo(target, { replace: true, external: true })
+      const target = insufficientRoleRedirect ?? redirectTo
+      return redirect(target)
     }
   }
-  
 })

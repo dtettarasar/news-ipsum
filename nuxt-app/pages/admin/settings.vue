@@ -6,7 +6,8 @@ definePageMeta({
   middleware: 'auth',
   auth: {
     requiredRole: 'admin',
-    redirectTo: '/admin'
+    redirectTo: '/admin/login',
+    insufficientRoleRedirect: '/admin'
   }
 })
 
