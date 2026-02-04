@@ -212,7 +212,52 @@ Toutes les modifications listées ci-dessous ont été committées et sont prêt
 - **Remplacement par des tests Vitest** : Un test unitaire (mocks) et un test d'intégration (vraie MongoDB) couvrent désormais le modèle TestMessage (création + findById), dans `tests/unit/backend/test-message.test.ts` et `tests/integration/backend/test-message.integration.test.ts`.
 - **Règle pour la suite** : Ne pas créer de route API dont le but est uniquement de tester la base ou de créer/manipuler des objets en base sans authentification, validation ou usage métier légitime. Privilégier les tests automatisés (unitaires + intégration) pour ce type de vérifications.
 
----
+## 5. AUTHENTIFICATION ET CONTRÔLE D'ACCÈS (refactor)
 
-*Fin du rapport d’audit.*
+Cette section documente l'architecture actuelle de l'authentification et du contrôle d'accès par rôle (middleware, routes, service), telle que mise en place après refactor.
+
+### 5.1 Flux global
+
+1. **Connexion** : `LoginForm.vue` envoie `email`, `password` et `role` (ex. `editor`) vers `POST /api/auth/login`. La route appelle `createAuthCookie(event, email, password, role)` dans `auth.service.ts` (validation, `authenticateUser`, création du JWT, `setCookie`). En succès : réponse 200 avec `{ success: true }` ; en échec : 200 avec `{ success: false, message: '...' }` (pas de 401 pour éviter les problèmes d'affichage du message côté front).
+2. **Accès aux pages admin** : Les pages protégées (`admin/index.vue`, `admin/settings.vue`) déclarent le middleware `auth` et une meta `auth: { requiredRole: 'editor' | 'admin' }`. Le middleware appelle `/api/auth/me` (cookie transmis), vérifie `authenticated` puis la hiérarchie des rôles. Si échec : redirection vers `/admin/login` avec rechargement complet (`external: true`) pour éviter les erreurs d'hydration.
+3. **Données utilisateur pour l'affichage** : Les pages admin font un `useFetch('/api/auth/me', { key: 'admin-session' })` et synchronisent le store Pinia pour afficher nom, email, rôle. Le contrôle d'accès est fait uniquement par le middleware ; le store sert à l'affichage.
+
+### 5.2 Middleware `middleware/auth.ts`
+
+- **Hiérarchie des rôles** : `ROLE_LEVEL = { admin: 3, editor: 2, user: 1 }` (répliquée côté client, sans importer le serveur). Tout rôle non listé (ex. `subscriber`) vaut 0 → accès refusé.
+- **SSR** : En `import.meta.server`, le cookie est récupéré via `useRequestHeaders(['cookie'])` et transmis à `$fetch('/api/auth/me')` pour que l'appel interne reçoive le cookie (sans quoi l'API renverrait `authenticated: false` et l'utilisateur resterait bloqué sur login après un rechargement).
+- **Client** : `$fetch('/api/auth/me', { credentials: 'include', headers: { 'Cache-Control': 'no-store' } })` pour éviter le cache et voir les changements de rôle (ex. admin → subscriber en base).
+- **Redirection vers login** : `redirectToLogin()` utilise `navigateTo('/admin/login', { replace: true, external: true })` pour forcer un rechargement complet de la page et éviter un hydration mismatch (DOM resté celui de la page précédente / bfcache).
+- **Logique** : Si `!data.authenticated` → login. Si `requiredRole` et `userLevel < requiredLevel` → login. Sinon la navigation continue.
+
+**À faire (prévu)** : Paramètre de redirection (ex. `redirectTo: '/admin'`) dans la meta pour les pages comme settings : en cas de rôle insuffisant mais authentifié (ex. editor), rediriger vers l'index admin au lieu de la page de connexion.
+
+### 5.3 Routes API auth
+
+- **GET /api/auth/me** : Lit le cookie `auth_token`, appelle `getUserByToken(token)` (dans `auth.service.ts`). Retourne `{ authenticated: true, user: { name, email, role } }` ou `{ authenticated: false }`. Le rôle est toujours lu depuis la base (via `getUserByToken`), pas depuis le JWT.
+- **POST /api/auth/login** : Body `email`, `password`, `role`. Délègue à `createAuthCookie`. En erreur : retour 200 avec `{ success: false, message }` pour que le front affiche le message sans dépendre du rejet de la promesse.
+- **POST /api/auth/logout** : Appelle `deleteAuthToken(event)` (suppression du cookie), retourne `{ success: true }`.
+
+### 5.4 Service `server/utils/auth.service.ts`
+
+- **ROLE_HIERARCHY** : Même hiérarchie que le middleware (`admin`, `editor`, `user`). À garder synchronisée avec `ROLE_LEVEL` dans le middleware si de nouveaux rôles sont ajoutés.
+- **createAuthToken(userId)** : JWT avec uniquement `sub` (userId chiffré), pas de `role` dans le token ; le rôle est toujours récupéré en base.
+- **getUserByToken(token)** : Vérifie le token, déchiffre le `sub`, charge l'utilisateur en base, retourne `{ authenticated, user }` ou `{ authenticated: false }`. Utilisé par `me.get.ts` ; permet de centraliser la logique et de la réutiliser.
+- **createAuthCookie** : Validation email/password (auth.validation), `authenticateUser` (avec `requiredRole`), `createAuthToken`, `setCookie`. Gère tout le flux login côté serveur.
+- **deleteAuthToken(event)** : Supprime le cookie avec les mêmes options qu'à la création (path, httpOnly, sameSite, secure).
+
+### 5.5 Pages admin
+
+- **admin/index.vue** : `auth: { requiredRole: 'editor' }`. Accès : editor et admin.
+- **admin/settings.vue** : `auth: { requiredRole: 'admin' }`. Accès : admin uniquement.
+- **admin/login.vue** : Pas de middleware auth (éviter une boucle de redirection).
+
+Aucune redirection conditionnelle dans `onMounted` basée sur le store ; le contrôle d'accès est uniquement dans le middleware.
+
+### 5.6 Points d'attention
+
+- **Synchronisation des rôles** : Si un nouveau rôle est ajouté en base (ex. `subscriber`), l'ajouter dans `ROLE_LEVEL` (middleware) et dans `ROLE_HIERARCHY` (auth.service) pour que le login et le middleware restent cohérents.
+- **Hydration** : En cas de redirection « accès refusé » depuis le middleware, utiliser une navigation avec `external: true` vers la page de login pour éviter un décalage entre le DOM (ancienne page / bfcache) et le composant Vue (login).
+
+---
 
