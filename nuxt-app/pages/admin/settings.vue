@@ -4,7 +4,10 @@ const auth = useAuthStore()
 
 definePageMeta({
   middleware: 'auth',
-  auth: { requiredRole: 'admin' }
+  auth: {
+    requiredRole: 'admin',
+    redirectTo: '/admin'
+  }
 })
 
 // useFetch utilise une clé unique pour partager le résultat entre SSR et Client

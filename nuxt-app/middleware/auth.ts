@@ -5,11 +5,12 @@ const ROLE_LEVEL: Record<string, number> = {
   user: 1
 }
 
-type MeResponse = { authenticated: boolean; user?: { role: string } }
+type MeResponse = { authenticated: boolean; user?: { role: string; redirectTo?: string } }
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const meta = to.meta.auth as { requiredRole?: string } | undefined
   const requiredRole = meta?.requiredRole
+  const redirectTo = meta?.redirectTo  // optionnel, ex. '/admin'
 
   let data: MeResponse
 
@@ -46,7 +47,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const userLevel = ROLE_LEVEL[data.user?.role ?? ''] ?? 0
     const requiredLevel = ROLE_LEVEL[requiredRole] ?? 0
     if (userLevel < requiredLevel) {
-      return redirectToLogin()
+      // Authentifié mais rôle insuffisant : page de repli ou login
+      const target = redirectTo ?? '/admin/login'
+      return navigateTo(target, { replace: true, external: true })
     }
   }
+  
 })
