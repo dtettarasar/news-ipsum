@@ -1,5 +1,5 @@
 import { expect, test, describe, beforeAll, afterAll } from 'vitest'
-import { authenticateUser, createAuthToken, verifyAuthToken } from '../../../server/utils/auth.service'
+import { authenticateUser, createAuthToken, verifyAuthToken, getUserByToken, createAuthCookie } from '../../../server/utils/auth.service'
 import { decryptString } from '../../../server/utils/cypher'
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
@@ -153,5 +153,28 @@ describe('Authentication Integration', () => {
         expect(result).toBeNull()
         
     })
-    
+
+    // 3. Tests de récupération de l'utilisateur via le token
+    test('Should return the correct user when the token is valid', async () => {
+
+        const token = createAuthToken(adminDoc._id.toString())
+        const result = await getUserByToken(token)
+        expect(result.authenticated).toBe(true)
+        expect(result.user).toEqual({
+            name: adminDoc.name,
+            email: adminDoc.email,
+            role: adminDoc.role
+        })
+    })
+
+    test('Should reject a token with a user not found', async () => {
+        const result = await getUserByToken('invalid.token')
+        expect(result.authenticated).toBe(false)
+    })
+
+    test('Should reject a token with a malformed sub', async () => {
+        const result = await getUserByToken('invalid.token')
+        expect(result.authenticated).toBe(false)
+    })
+
 })
