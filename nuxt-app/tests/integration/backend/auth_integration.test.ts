@@ -1,4 +1,4 @@
-import { expect, test, describe, beforeAll, afterAll } from 'vitest'
+import { expect, test, describe, beforeAll, afterAll, vi } from 'vitest'
 import { authenticateUser, createAuthToken, verifyAuthToken, getUserByToken, createAuthCookie } from '../../../server/utils/auth.service'
 import { decryptString } from '../../../server/utils/cypher'
 import mongoose from 'mongoose'
@@ -170,7 +170,7 @@ describe('Authentication Integration', () => {
 
         expect(durationSeconds).toBeGreaterThanOrEqual(60 * 60 - 2)
         expect(durationSeconds).toBeLessThanOrEqual(60 * 60 + 2)
-        
+
     })
 
     test('Should reject a tampered or invalid token', () => {
@@ -195,12 +195,14 @@ describe('Authentication Integration', () => {
     })
 
     test('should return false when the token is empty', async () => {
+        const warnSpy = vi.spyOn(console, 'warn')
         const result = await getUserByToken('')
         expect(result.authenticated).toBe(false)
+        expect(warnSpy).toHaveBeenCalledWith('[Auth] Token manquant')
     })
 
     test('should reject a token with a deleted user', async () => {
-
+        const warnSpy = vi.spyOn(console, 'warn')
         const localAdminData = generateTestUserData('admin')
         const hashedPassword = await bcrypt.hash(localAdminData.password, 10)
         const localAdminDoc = await User.create({ ...localAdminData, password: hashedPassword })
@@ -209,7 +211,7 @@ describe('Authentication Integration', () => {
         const result = await getUserByToken(token)
         expect(result.authenticated).toBe(false)
         await User.deleteOne({ _id: localAdminDoc._id.toString() })
-        
+        expect(warnSpy).toHaveBeenCalledWith('[Auth] Utilisateur non trouvé')
     })
 
     test('should return the correct user when the token is valid with a custom expiration time', async () => {
@@ -231,9 +233,20 @@ describe('Authentication Integration', () => {
         expect(result.authenticated).toBe(false)
     })
 
-    test('should reject a token with a user not found', async () => {
+    test('should reject an invalid or malformed token string', async () => {
+        const warnSpy = vi.spyOn(console, 'warn')
         const result = await getUserByToken('invalid.token')
         expect(result.authenticated).toBe(false)
+        expect(warnSpy).toHaveBeenCalledWith('[Auth] Token invalide')
+    })
+
+    test('should reject an altered token', async () => {
+        const warnSpy = vi.spyOn(console, 'warn')
+        const token = createAuthToken(adminDoc._id.toString())
+        const alteredToken = token + 'xyz'
+        const result = await getUserByToken(alteredToken)
+        expect(result.authenticated).toBe(false)
+        expect(warnSpy).toHaveBeenCalledWith('[Auth] Token invalide')
     })
     
 })
