@@ -154,12 +154,23 @@ describe('Authentication Integration', () => {
         const durationSeconds = payload.exp - payload.iat
 
         // Vérification de l'expiration du token (24h par défaut)
-        console.log(`🕒 Token expiration duration: ${durationSeconds} seconds`)
+        // console.log(`🕒 Token expiration duration: ${durationSeconds} seconds`)
         expect(durationSeconds).toBeGreaterThanOrEqual(24 * 60 * 60 - 2)
-        console.log(`🕒 Token expiration duration: ${durationSeconds} seconds`)
+        //console.log(`🕒 Token expiration duration: ${durationSeconds} seconds`)
         expect(durationSeconds).toBeLessThanOrEqual(24 * 60 * 60 + 2)
-        console.log(`🕒 Token expiration duration: ${durationSeconds} seconds`)
+        //console.log(`🕒 Token expiration duration: ${durationSeconds} seconds`)
 
+    })
+
+    test('Should verify the expiration duration of the token with a custom expiration time', async () => {
+
+        const token = createAuthToken(adminDoc._id.toString(), '1h')
+        const payload = verifyAuthToken(token) as { iat: number; exp: number }
+        const durationSeconds = payload.exp - payload.iat
+
+        expect(durationSeconds).toBeGreaterThanOrEqual(60 * 60 - 2)
+        expect(durationSeconds).toBeLessThanOrEqual(60 * 60 + 2)
+        
     })
 
     test('Should reject a tampered or invalid token', () => {
