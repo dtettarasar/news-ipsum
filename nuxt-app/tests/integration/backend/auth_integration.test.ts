@@ -144,6 +144,22 @@ describe('Authentication Integration', () => {
         const decryptedId = decryptString({ iv, encryptedStr })
         
         expect(decryptedId).toBe(adminDoc._id.toString())
+
+    })
+
+    test('Should verify the default expiration duration of the token (24h)', async () => {
+
+        const token = createAuthToken(adminDoc._id.toString())
+        const payload = verifyAuthToken(token) as { iat: number; exp: number }
+        const durationSeconds = payload.exp - payload.iat
+
+        // Vérification de l'expiration du token (24h par défaut)
+        console.log(`🕒 Token expiration duration: ${durationSeconds} seconds`)
+        expect(durationSeconds).toBeGreaterThanOrEqual(24 * 60 * 60 - 2)
+        console.log(`🕒 Token expiration duration: ${durationSeconds} seconds`)
+        expect(durationSeconds).toBeLessThanOrEqual(24 * 60 * 60 + 2)
+        console.log(`🕒 Token expiration duration: ${durationSeconds} seconds`)
+
     })
 
     test('Should reject a tampered or invalid token', () => {
