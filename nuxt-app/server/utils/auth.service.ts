@@ -60,7 +60,7 @@ export const authenticateUser = async (email: string, pass: string, requiredRole
     return { success: true, user }
 }
 
-export const createAuthToken = (userId: string) => {
+export const createAuthToken = (userId: string, expirationTime?: string) => {
 
   const jwtSecret = getJwtSecret()
 
@@ -73,7 +73,7 @@ export const createAuthToken = (userId: string) => {
   return jwt.sign(
     { sub: secureId }, 
     jwtSecret, 
-    { expiresIn: '24h' }
+    { expiresIn: expirationTime || '24h' }
   )
 
 }

@@ -185,10 +185,28 @@ describe('Authentication Integration', () => {
         
     })
 
+    test('should return the correct user when the token is valid with a custom expiration time', async () => {
+        const token = createAuthToken(adminDoc._id.toString(), '1h')
+        const result = await getUserByToken(token)
+        expect(result.authenticated).toBe(true)
+        expect(result.user).toEqual({
+            name: adminDoc.name,
+            email: adminDoc.email,
+            role: adminDoc.role
+        })
+    })
+
+    test('should reject a token with an expired token', async () => {
+        const token = createAuthToken(adminDoc._id.toString(), '1ms')
+        // On attend 1 seconde pour être sûr que le token (expirant en 1 ms) soit bien expiré
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        const result = await getUserByToken(token)
+        expect(result.authenticated).toBe(false)
+    })
+
     test('should reject a token with a user not found', async () => {
         const result = await getUserByToken('invalid.token')
         expect(result.authenticated).toBe(false)
     })
     
-
 })
