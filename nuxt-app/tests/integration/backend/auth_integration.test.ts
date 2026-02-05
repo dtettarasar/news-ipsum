@@ -167,14 +167,28 @@ describe('Authentication Integration', () => {
         })
     })
 
-    test('Should reject a token with a user not found', async () => {
-        const result = await getUserByToken('invalid.token')
+    test('should return false when the token is empty', async () => {
+        const result = await getUserByToken('')
         expect(result.authenticated).toBe(false)
     })
 
-    test('Should reject a token with a malformed sub', async () => {
+    test('should reject a token with a deleted user', async () => {
+
+        const localAdminData = generateTestUserData('admin')
+        const hashedPassword = await bcrypt.hash(localAdminData.password, 10)
+        const localAdminDoc = await User.create({ ...localAdminData, password: hashedPassword })
+        const token = createAuthToken(localAdminDoc._id.toString())
+        await User.deleteOne({ _id: localAdminDoc._id.toString() })
+        const result = await getUserByToken(token)
+        expect(result.authenticated).toBe(false)
+        await User.deleteOne({ _id: localAdminDoc._id.toString() })
+        
+    })
+
+    test('should reject a token with a user not found', async () => {
         const result = await getUserByToken('invalid.token')
         expect(result.authenticated).toBe(false)
     })
+    
 
 })
