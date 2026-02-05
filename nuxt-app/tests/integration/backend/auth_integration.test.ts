@@ -248,5 +248,15 @@ describe('Authentication Integration', () => {
         expect(result.authenticated).toBe(false)
         expect(warnSpy).toHaveBeenCalledWith('[Auth] Token invalide')
     })
+
+    test('should reject a token when the user does not exist in the database', async () => {
+
+        const warnSpy = vi.spyOn(console, 'warn')
+        const token = createAuthToken(new mongoose.Types.ObjectId().toString())
+        const result = await getUserByToken(token)
+        expect(result.authenticated).toBe(false)
+        expect(warnSpy).toHaveBeenCalledWith('[Auth] Utilisateur non trouvé')
+
+    })
     
 })
