@@ -294,6 +294,17 @@ describe('Authentication Integration', () => {
             expect.stringContaining('auth_token=')
         )
 
+        // Récupère le cookie généré dans le header
+        const cookieCall = setHeader.mock.calls.find((c: any) => c[0] === 'set-cookie')
+        console.log("cookieCall:")
+        console.log(cookieCall)
+
+        const cookieValue = cookieCall?.[1] ?? ''
+
+        expect(cookieValue).toContain('HttpOnly')
+        expect(cookieValue).toContain('Path=/')
+        expect(cookieValue).toContain('SameSite=Strict')
+
     })
     
 })
