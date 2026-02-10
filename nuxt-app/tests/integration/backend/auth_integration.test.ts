@@ -263,10 +263,28 @@ describe('Authentication Integration', () => {
     // 4. Tests createAuthCookie (succès – flux complet avec DB)
 
     test('Should throw "Identifiants invalides" when credentials are wrong', async () => {
+        
+        /*
         const event = createEvent(new Request('http://localhost/'))
         await expect(
             createAuthCookie(event, adminData.email, 'WrongPassword123!', 'admin')
         ).rejects.toThrow('Identifiants invalides')
+        */
+
+        const setHeader = vi.fn()
+        const event = {
+            node: {
+                res: {
+                    getHeader: vi.fn().mockReturnValue(undefined),
+                    setHeader
+                }
+            }
+        } as any
+
+        await expect(
+            createAuthCookie(event, adminData.email, 'WrongPassword123!', 'admin')
+        ).rejects.toThrow('Identifiants invalides')
+
     })
 
     test('Should set auth_token cookie and return success when credentials are valid', async () => {
