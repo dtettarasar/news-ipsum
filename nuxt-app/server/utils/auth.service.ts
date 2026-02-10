@@ -2,7 +2,7 @@
 import { User } from '../../server/models/User.model'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { H3Event } from 'h3'
+import { H3Event, createError, setCookie, deleteCookie } from 'h3'
 
 import { encryptString, decryptString } from './cypher'
 import { isValidEmail, isValidPassword } from '../../server/utils/auth.validation'
