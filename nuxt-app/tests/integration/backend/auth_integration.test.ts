@@ -1,4 +1,5 @@
 import { expect, test, describe, beforeAll, afterAll, vi } from 'vitest'
+import { createEvent, getResponseHeader } from 'h3'
 import { authenticateUser, createAuthToken, verifyAuthToken, getUserByToken, createAuthCookie } from '../../../server/utils/auth.service'
 import { decryptString } from '../../../server/utils/cypher'
 import mongoose from 'mongoose'
@@ -256,6 +257,42 @@ describe('Authentication Integration', () => {
         const result = await getUserByToken(token)
         expect(result.authenticated).toBe(false)
         expect(warnSpy).toHaveBeenCalledWith('[Auth] Utilisateur non trouvé')
+
+    })
+
+    // 4. Tests createAuthCookie (succès – flux complet avec DB)
+
+    test('Should throw "Identifiants invalides" when credentials are wrong', async () => {
+        const event = createEvent(new Request('http://localhost/'))
+        await expect(
+            createAuthCookie(event, adminData.email, 'WrongPassword123!', 'admin')
+        ).rejects.toThrow('Identifiants invalides')
+    })
+
+    test('Should set auth_token cookie and return success when credentials are valid', async () => {
+        const setHeader = vi.fn()
+        const event = {
+            node: {
+                res: {
+                    getHeader: vi.fn().mockReturnValue(undefined),
+                    setHeader
+                }
+            }
+        } as any
+
+        const result = await createAuthCookie(
+            event,
+            adminData.email,
+            adminData.password,
+            'admin'
+        )
+
+        expect(result).toEqual({ success: true, message: 'Connexion réussie' })
+
+        expect(setHeader).toHaveBeenCalledWith(
+            'set-cookie',
+            expect.stringContaining('auth_token=')
+        )
 
     })
     
