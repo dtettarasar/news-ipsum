@@ -7,10 +7,21 @@
 <script setup>
 
 import DOMPurify from "isomorphic-dompurify"
-
 import { ref, computed } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useSiteTitleStore } from "@/stores/siteTitleStore"
 
-const rawTitle = ref("<strong>Hey, We're Blogxpress.</strong> See Our Thoughts, Stories And Ideas.") // source "brute"
-const title = computed(() => DOMPurify.sanitize(rawTitle.value)) // version sécurisée
+const siteTitleStore = useSiteTitleStore()
+
+/*
+await useAsyncData('siteTitle', () => {
+  siteTitleStore.fetchData()
+})*/
+
+await useAsyncData('siteTitle', () => siteTitleStore.fetchData())
+
+// const rawTitle = ref("<strong>Hey, We're Blogxpress.</strong> See Our Thoughts, Stories And Ideas.") // source "brute"
+const { data } = storeToRefs(siteTitleStore)
+const title = computed(() => DOMPurify.sanitize(data.value || ''))
 
 </script>

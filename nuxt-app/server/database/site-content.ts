@@ -13,7 +13,15 @@ export function getCategories() {
         { name: 'Spiritualité', image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500' },
         { name: 'Marketing', image: 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=500' },
         { name: 'Cuisine', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500' }
-        
+
       ]
+
+}
+
+export function getSiteTitle() {
+
+    const siteTitle = "<strong>Hey, We're Blogxpress.</strong> See Our Thoughts, Stories And Ideas."
+
+    return siteTitle
 
 }
