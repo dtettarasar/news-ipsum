@@ -4,14 +4,19 @@ const auth = useAuthStore()
 
 definePageMeta({
   middleware: 'auth',
-  auth: { requiredRole: 'editor', redirectTo: '/admin/login' }
+  auth: {
+    requiredRole: 'admin',
+    redirectTo: '/admin/login',
+    insufficientRoleRedirect: '/admin'
+  }
 })
 
-// Données utilisateur pour l’affichage et le store (contrôle d’accès = middleware uniquement)
+// useFetch utilise une clé unique pour partager le résultat entre SSR et Client
 const { data: authStatus } = await useFetch('/api/auth/me', {
-  key: 'admin-session'
+  key: 'admin-session' 
 })
 
+// Synchronisation avec le store
 if (authStatus.value?.authenticated) {
   auth.setUser(authStatus.value.user)
 }
@@ -36,13 +41,11 @@ const handleLogout = async () => {
       <h1 class="text-3xl font-bold">Bienvenue, {{ auth.user?.name }}</h1>
       <p class="text-gray-500">Rôle : {{ auth.user?.role }}</p>
 
-      <NuxtLink to="/admin/settings" class="mt-8 px-4 py-2 bg-blue-500 text-white rounded">
-        Modifier les paramètres
-      </NuxtLink>
+      <!-- TODO: Ajouter le formulaire de modification des paramètres -->
+        <!-- TODO ajouter un contrôle de rôle pour les utilisateurs qui ne sont pas admin -->
 
-      <button @click="handleLogout" class="mt-8 px-4 py-2 bg-red-500 text-white rounded">
-        Déconnexion
-      </button>
+    <p class="text-gray-500">Vous êtes sur la page de modification des paramètres.</p>
+
     </div>
   </div>
 </template>

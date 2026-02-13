@@ -1,5 +1,6 @@
-import { expect, test, describe, beforeAll, afterAll } from 'vitest'
-import { authenticateUser, createAuthToken, verifyAuthToken } from '../../../server/utils/auth.service'
+import { expect, test, describe, beforeAll, afterAll, vi } from 'vitest'
+import { createEvent, getResponseHeader } from 'h3'
+import { authenticateUser, createAuthToken, verifyAuthToken, getUserByToken, createAuthCookie } from '../../../server/utils/auth.service'
 import { decryptString } from '../../../server/utils/cypher'
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
@@ -126,7 +127,7 @@ describe('Authentication Integration', () => {
     // 2. Tests de génération et vérification de token
 
     test('Should generate a signed token with an encrypted ID', async () => {
-        generatedToken = createAuthToken(adminDoc._id.toString(), adminDoc.role)
+        generatedToken = createAuthToken(adminDoc._id.toString())
         
         expect(generatedToken).toBeTypeOf('string')
         // Un JWT valide contient deux points (header.payload.signature)
@@ -137,7 +138,6 @@ describe('Authentication Integration', () => {
         const payload = verifyAuthToken(generatedToken) as any
         
         expect(payload).not.toBeNull()
-        expect(payload.role).toBe('admin')
         expect(payload.sub).toContain(':') // Format iv:encryptedStr
 
         // Extraction et décryptage pour boucler la boucle
@@ -145,6 +145,33 @@ describe('Authentication Integration', () => {
         const decryptedId = decryptString({ iv, encryptedStr })
         
         expect(decryptedId).toBe(adminDoc._id.toString())
+
+    })
+
+    test('Should verify the default expiration duration of the token (24h)', async () => {
+
+        const token = createAuthToken(adminDoc._id.toString())
+        const payload = verifyAuthToken(token) as { iat: number; exp: number }
+        const durationSeconds = payload.exp - payload.iat
+
+        // Vérification de l'expiration du token (24h par défaut)
+        // console.log(`🕒 Token expiration duration: ${durationSeconds} seconds`)
+        expect(durationSeconds).toBeGreaterThanOrEqual(24 * 60 * 60 - 2)
+        //console.log(`🕒 Token expiration duration: ${durationSeconds} seconds`)
+        expect(durationSeconds).toBeLessThanOrEqual(24 * 60 * 60 + 2)
+        //console.log(`🕒 Token expiration duration: ${durationSeconds} seconds`)
+
+    })
+
+    test('Should verify the expiration duration of the token with a custom expiration time', async () => {
+
+        const token = createAuthToken(adminDoc._id.toString(), '1h')
+        const payload = verifyAuthToken(token) as { iat: number; exp: number }
+        const durationSeconds = payload.exp - payload.iat
+
+        expect(durationSeconds).toBeGreaterThanOrEqual(60 * 60 - 2)
+        expect(durationSeconds).toBeLessThanOrEqual(60 * 60 + 2)
+
     })
 
     test('Should reject a tampered or invalid token', () => {
@@ -153,6 +180,149 @@ describe('Authentication Integration', () => {
         const result = verifyAuthToken(tamperedToken)
         expect(result).toBeNull()
         
+    })
+
+    // 3. Tests de récupération de l'utilisateur via le token
+    test('Should return the correct user when the token is valid', async () => {
+
+        const token = createAuthToken(adminDoc._id.toString())
+        const result = await getUserByToken(token)
+        expect(result.authenticated).toBe(true)
+        expect(result.user).toEqual({
+            name: adminDoc.name,
+            email: adminDoc.email,
+            role: adminDoc.role
+        })
+    })
+
+    test('should return false when the token is empty', async () => {
+        const warnSpy = vi.spyOn(console, 'warn')
+        const result = await getUserByToken('')
+        expect(result.authenticated).toBe(false)
+        expect(warnSpy).toHaveBeenCalledWith('[Auth] Token manquant')
+    })
+
+    test('should reject a token with a deleted user', async () => {
+        const warnSpy = vi.spyOn(console, 'warn')
+        const localAdminData = generateTestUserData('admin')
+        const hashedPassword = await bcrypt.hash(localAdminData.password, 10)
+        const localAdminDoc = await User.create({ ...localAdminData, password: hashedPassword })
+        const token = createAuthToken(localAdminDoc._id.toString())
+        await User.deleteOne({ _id: localAdminDoc._id.toString() })
+        const result = await getUserByToken(token)
+        expect(result.authenticated).toBe(false)
+        await User.deleteOne({ _id: localAdminDoc._id.toString() })
+        expect(warnSpy).toHaveBeenCalledWith('[Auth] Utilisateur non trouvé')
+    })
+
+    test('should return the correct user when the token is valid with a custom expiration time', async () => {
+        const token = createAuthToken(adminDoc._id.toString(), '1h')
+        const result = await getUserByToken(token)
+        expect(result.authenticated).toBe(true)
+        expect(result.user).toEqual({
+            name: adminDoc.name,
+            email: adminDoc.email,
+            role: adminDoc.role
+        })
+    })
+
+    test('should reject a token with an expired token', async () => {
+        const token = createAuthToken(adminDoc._id.toString(), '1ms')
+        // On attend 1 seconde pour être sûr que le token (expirant en 1 ms) soit bien expiré
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        const result = await getUserByToken(token)
+        expect(result.authenticated).toBe(false)
+    })
+
+    test('should reject an invalid or malformed token string', async () => {
+        const warnSpy = vi.spyOn(console, 'warn')
+        const result = await getUserByToken('invalid.token')
+        expect(result.authenticated).toBe(false)
+        expect(warnSpy).toHaveBeenCalledWith('[Auth] Token invalide')
+    })
+
+    test('should reject an altered token', async () => {
+        const warnSpy = vi.spyOn(console, 'warn')
+        const token = createAuthToken(adminDoc._id.toString())
+        const alteredToken = token + 'xyz'
+        const result = await getUserByToken(alteredToken)
+        expect(result.authenticated).toBe(false)
+        expect(warnSpy).toHaveBeenCalledWith('[Auth] Token invalide')
+    })
+
+    test('should reject a token when the user does not exist in the database', async () => {
+
+        const warnSpy = vi.spyOn(console, 'warn')
+        const token = createAuthToken(new mongoose.Types.ObjectId().toString())
+        const result = await getUserByToken(token)
+        expect(result.authenticated).toBe(false)
+        expect(warnSpy).toHaveBeenCalledWith('[Auth] Utilisateur non trouvé')
+
+    })
+
+    // 4. Tests createAuthCookie (succès – flux complet avec DB)
+
+    test('Should throw "Identifiants invalides" when credentials are wrong', async () => {
+        
+        /*
+        const event = createEvent(new Request('http://localhost/'))
+        await expect(
+            createAuthCookie(event, adminData.email, 'WrongPassword123!', 'admin')
+        ).rejects.toThrow('Identifiants invalides')
+        */
+
+        const setHeader = vi.fn()
+        const event = {
+            node: {
+                res: {
+                    getHeader: vi.fn().mockReturnValue(undefined),
+                    setHeader
+                }
+            }
+        } as any
+
+        await expect(
+            createAuthCookie(event, adminData.email, 'WrongPassword123!', 'admin')
+        ).rejects.toThrow('Identifiants invalides')
+
+    })
+
+    test('Should set auth_token cookie and return success when credentials are valid', async () => {
+        const setHeader = vi.fn()
+        const event = {
+            node: {
+                res: {
+                    getHeader: vi.fn().mockReturnValue(undefined),
+                    setHeader
+                }
+            }
+        } as any
+
+        const result = await createAuthCookie(
+            event,
+            adminData.email,
+            adminData.password,
+            'admin'
+        )
+
+        expect(result).toEqual({ success: true, message: 'Connexion réussie' })
+
+        expect(setHeader).toHaveBeenCalledWith(
+            'set-cookie',
+            expect.stringContaining('auth_token=')
+        )
+
+        // Récupère le cookie généré dans le header
+        const cookieCall = setHeader.mock.calls.find((c: any) => c[0] === 'set-cookie')
+        console.log("cookieCall:")
+        console.log(cookieCall)
+
+        const cookieValue = cookieCall?.[1] ?? ''
+
+        expect(cookieValue).toContain('HttpOnly')
+        expect(cookieValue).toContain('Path=/')
+        expect(cookieValue).toContain('SameSite=Strict')
+
     })
     
 })

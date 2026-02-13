@@ -212,7 +212,101 @@ Toutes les modifications listées ci-dessous ont été committées et sont prêt
 - **Remplacement par des tests Vitest** : Un test unitaire (mocks) et un test d'intégration (vraie MongoDB) couvrent désormais le modèle TestMessage (création + findById), dans `tests/unit/backend/test-message.test.ts` et `tests/integration/backend/test-message.integration.test.ts`.
 - **Règle pour la suite** : Ne pas créer de route API dont le but est uniquement de tester la base ou de créer/manipuler des objets en base sans authentification, validation ou usage métier légitime. Privilégier les tests automatisés (unitaires + intégration) pour ce type de vérifications.
 
+## 5. AUTHENTIFICATION ET CONTRÔLE D'ACCÈS (refactor)
+
+Cette section documente l'architecture actuelle de l'authentification et du contrôle d'accès par rôle (middleware, routes, service), telle que mise en place après refactor.
+
+### 5.1 Flux global
+
+1. **Connexion** : `LoginForm.vue` envoie `email`, `password` et `role` (ex. `editor`) vers `POST /api/auth/login`. La route appelle `createAuthCookie(event, email, password, role)` dans `auth.service.ts` (validation, `authenticateUser`, création du JWT, `setCookie`). En succès : réponse 200 avec `{ success: true }` ; en échec : 200 avec `{ success: false, message: '...' }` (pas de 401 pour éviter les problèmes d'affichage du message côté front).
+2. **Accès aux pages admin** : Les pages protégées (`admin/index.vue`, `admin/settings.vue`) déclarent le middleware `auth` et une meta `auth: { requiredRole: 'editor' | 'admin' }`. Le middleware appelle `/api/auth/me` (cookie transmis), vérifie `authenticated` puis la hiérarchie des rôles. Si échec : redirection vers `/admin/login` avec rechargement complet (`external: true`) pour éviter les erreurs d'hydration.
+3. **Données utilisateur pour l'affichage** : Les pages admin font un `useFetch('/api/auth/me', { key: 'admin-session' })` et synchronisent le store Pinia pour afficher nom, email, rôle. Le contrôle d'accès est fait uniquement par le middleware ; le store sert à l'affichage.
+
+### 5.2 Middleware `middleware/auth.ts`
+
+- **Meta `auth` (type `AuthMeta`)** : Chaque page protégée doit définir dans `definePageMeta` :
+  - **`redirectTo`** (recommandé, sinon valeur par défaut) : URL du formulaire de connexion pour cette zone (ex. `/admin/login`, plus tard `/account/login`). Utilisé lorsque l'utilisateur n'est pas authentifié, et en fallback si rôle insuffisant sans `insufficientRoleRedirect`.
+  - **`requiredRole`** (optionnel) : Rôle minimum requis (ex. `editor`, `admin`). Si absent, seule l'authentification est vérifiée.
+  - **`insufficientRoleRedirect`** (optionnel) : Si authentifié mais rôle insuffisant, redirection vers cette URL (ex. `/admin`). Sinon on utilise `redirectTo`.
+- **Valeur par défaut** : `DEFAULT_LOGIN_PATH = '/admin/login'`. Si une page utilise le middleware sans `auth.redirectTo`, cette valeur est utilisée ; en dev, un `console.warn` rappelle de définir `redirectTo` (le log apparaît côté serveur en SSR ou dans la console navigateur en navigation client).
+- **Hiérarchie des rôles** : `ROLE_LEVEL = { admin: 3, editor: 2, user: 1 }` (répliquée côté client, sans importer le serveur). Tout rôle non listé (ex. `subscriber`) vaut 0 → accès refusé.
+- **SSR** : En `import.meta.server`, le cookie est récupéré via `useRequestHeaders(['cookie'])` et transmis à `$fetch('/api/auth/me')` pour que l'appel interne reçoive le cookie (sans quoi l'API renverrait `authenticated: false` et l'utilisateur resterait bloqué sur login après un rechargement).
+- **Client** : `$fetch('/api/auth/me', { credentials: 'include', headers: { 'Cache-Control': 'no-store' } })` pour éviter le cache et voir les changements de rôle (ex. admin → subscriber en base).
+- **Redirection** : Une seule helper `redirect(target)` fait `navigateTo(target, { replace: true, external: true })`. Non authentifié → `redirect(redirectTo)`. Rôle insuffisant → `redirect(insufficientRoleRedirect ?? redirectTo)`. Plus aucune URL en dur dans la logique (sauf `DEFAULT_LOGIN_PATH` en secours).
+- **Logique** : Si `!data.authenticated` → `redirect(redirectTo)`. Si `requiredRole` et `userLevel < requiredLevel` → `redirect(insufficientRoleRedirect ?? redirectTo)`. Sinon la navigation continue.
+
+### 5.3 Routes API auth
+
+- **GET /api/auth/me** : Lit le cookie `auth_token`, appelle `getUserByToken(token)` (dans `auth.service.ts`). Retourne `{ authenticated: true, user: { name, email, role } }` ou `{ authenticated: false }`. Le rôle est toujours lu depuis la base (via `getUserByToken`), pas depuis le JWT.
+- **POST /api/auth/login** : Body `email`, `password`, `role`. Délègue à `createAuthCookie`. En erreur : retour 200 avec `{ success: false, message }` pour que le front affiche le message sans dépendre du rejet de la promesse.
+- **POST /api/auth/logout** : Appelle `deleteAuthToken(event)` (suppression du cookie), retourne `{ success: true }`.
+
+### 5.4 Service `server/utils/auth.service.ts`
+
+- **ROLE_HIERARCHY** : Même hiérarchie que le middleware (`admin`, `editor`, `user`). À garder synchronisée avec `ROLE_LEVEL` dans le middleware si de nouveaux rôles sont ajoutés.
+- **createAuthToken(userId)** : JWT avec uniquement `sub` (userId chiffré), pas de `role` dans le token ; le rôle est toujours récupéré en base.
+- **getUserByToken(token)** : Vérifie le token, déchiffre le `sub`, charge l'utilisateur en base, retourne `{ authenticated, user }` ou `{ authenticated: false }`. Utilisé par `me.get.ts` ; permet de centraliser la logique et de la réutiliser.
+- **createAuthCookie** : Validation email/password (auth.validation), `authenticateUser` (avec `requiredRole`), `createAuthToken`, `setCookie`. Gère tout le flux login côté serveur.
+- **deleteAuthToken(event)** : Supprime le cookie avec les mêmes options qu'à la création (path, httpOnly, sameSite, secure).
+
+### 5.5 Pages admin
+
+- **admin/index.vue** : `auth: { requiredRole: 'editor', redirectTo: '/admin/login' }`. Accès : editor et admin. Pas de `insufficientRoleRedirect` : un utilisateur avec un rôle inférieur (ex. subscriber) est renvoyé vers `redirectTo` (login).
+- **admin/settings.vue** : `auth: { requiredRole: 'admin', redirectTo: '/admin/login', insufficientRoleRedirect: '/admin' }`. Accès : admin uniquement. Un editor authentifié est redirigé vers `/admin` (index admin) au lieu du login.
+- **admin/login.vue** : Pas de middleware auth (éviter une boucle de redirection).
+
+Aucune redirection conditionnelle dans `onMounted` basée sur le store ; le contrôle d'accès est uniquement dans le middleware.
+
+### 5.6 Points d'attention
+
+- **Synchronisation des rôles** : Si un nouveau rôle est ajouté en base (ex. `subscriber`), l'ajouter dans `ROLE_LEVEL` (middleware) et dans `ROLE_HIERARCHY` (auth.service) pour que le login et le middleware restent cohérents.
+- **Hydration** : En cas de redirection « accès refusé » depuis le middleware, utiliser une navigation avec `external: true` vers la page de login pour éviter un décalage entre le DOM (ancienne page / bfcache) et le composant Vue (login).
+
 ---
 
-*Fin du rapport d’audit.*
+## 6. TESTS : MISE À JOUR ET NOUVELLES CIBLES
+
+Cette section recense les scripts de tests existants liés à l’auth et au contrôle d’accès, et définit les **nouvelles fonctions ou comportements à couvrir** (ou à mettre à jour) suite aux changements décrits en section 5.
+
+### 6.1 État actuel des tests
+
+- **Intégration** : `tests/integration/backend/auth_integration.test.ts`
+  - Connexion à la base de test, création d’un utilisateur admin via `generateTestUserData('admin')`.
+  - **authenticateUser** : succès avec bons identifiants + rôle admin ; échec mot de passe incorrect ; échec email inconnu ; hiérarchie (admin peut accéder avec requiredRole `editor` ; editor refusé avec requiredRole `admin`).
+  - **createAuthToken** : génération d’un JWT (format 3 parties), pas de vérification du payload (anciennement `sub` + `role`, désormais `sub` seul).
+  - **verifyAuthToken** : payload avec `sub` au format `iv:encryptedStr`, décryptage et comparaison avec l’ID utilisateur ; rejet d’un token modifié.
+- **Unitaires** : Aucun test unitaire dédié à `auth.service.ts` ; la logique est couverte par les tests d’intégration ci‑dessus. `cypher.test.ts` et `database.test.ts` couvrent d’autres couches.
+
+### 6.2 Nouvelles fonctions à tester (auth.service.ts)
+
+| Fonction / comportement | Type de test recommandé | Description |
+|-------------------------|-------------------------|-------------|
+| **getUserByToken(token)** | Intégration | Token vide ou undefined → `{ authenticated: false }`. Token invalide ou expiré → `{ authenticated: false }`. Token valide (créé via createAuthToken) → `{ authenticated: true, user: { name, email, role } }`. Token avec `sub` malformé (pas de `:`, ou parties manquantes) → `{ authenticated: false }`. Utilisateur supprimé en base après émission du token → `{ authenticated: false }`. |
+| **createAuthCookie(event, email, password, role)** | Intégration (ou E2E) | Dépend de `H3Event` et de `setCookie` ; peut être testé via une requête POST vers `/api/auth/login` (intégration API) : body valide + rôle suffisant → cookie présent dans la réponse ; body invalide ou rôle insuffisant → pas de cookie, réponse 200 avec `success: false` ou throw. Les tests actuels de `authenticateUser` et `createAuthToken` couvrent déjà la logique métier ; l’intégration login.post + createAuthCookie peut être couverte par des tests d’intégration des routes. |
+| **deleteAuthToken(event)** | Intégration (route) | Via POST `/api/auth/logout` : après login, appel logout → cookie `auth_token` absent ou supprimé dans la réponse. |
+| **createAuthToken** (payload sans role) | Intégration (déjà partiellement couvert) | S’assurer que le payload vérifié ne contient que `sub` (et iat/exp), plus de clé `role`. Les tests existants vérifient déjà `payload.sub` ; ajouter si besoin une assertion explicite sur l’absence de `role` dans le payload. |
+
+### 6.3 Comportements à couvrir (routes API)
+
+| Route / comportement | Type de test | Description |
+|----------------------|--------------|-------------|
+| **GET /api/auth/me** | Intégration | Sans cookie → `{ authenticated: false }`. Avec cookie valide (token créé pour un user en base) → `{ authenticated: true, user: { name, email, role } }`. Avec cookie invalide ou expiré → `{ authenticated: false }`. Le rôle doit être celui en base (pas celui du JWT, le JWT ne contient plus le rôle). |
+| **POST /api/auth/login** | Intégration | Body `{ email, password, role }` valide et rôle suffisant → 200, `{ success: true }`, cookie `auth_token` présent. Body invalide (email malformé, password vide, etc.) ou identifiants incorrects / rôle insuffisant → 200, `{ success: false, message: '...' }`, pas de cookie. |
+| **POST /api/auth/logout** | Intégration | Avec cookie auth valide → 200, `{ success: true }`, cookie supprimé (ou absent dans la réponse). |
+
+### 6.4 Middleware auth (optionnel)
+
+Le middleware `auth.ts` s’exécute dans un contexte Nuxt (SSR + client) et dépend de `navigateTo`, `useRequestHeaders`, `$fetch`. Les options de couverture :
+
+- **Tests E2E** (Playwright, Cypress) : navigation vers une page protégée sans cookie → redirection vers `redirectTo` ; avec cookie mais rôle insuffisant → redirection vers `insufficientRoleRedirect` ou `redirectTo` ; avec cookie et rôle suffisant → accès à la page. Vérifier que la cible de redirection dépend bien de la meta (ex. settings → `/admin`, index → `/admin/login`).
+- **Tests unitaires du middleware** : possible en mockant `$fetch`, `navigateTo`, `to.meta.auth`, mais lourd ; priorité moindre si les routes API et le service sont bien couverts.
+
+### 6.5 Synthèse des priorités
+
+1. **À ajouter en priorité** : Tests d’intégration pour **getUserByToken** (token vide, invalide, valide, sub malformé, user supprimé).
+2. **À vérifier / mettre à jour** : **auth_integration.test.ts** — s’assurer que les assertions sur le payload JWT (verifyAuthToken) ne supposent plus la présence de `role` ; couvrir explicitement le fait que le token ne contient que `sub`.
+3. **Recommandé** : Tests d’intégration des routes **GET /api/auth/me**, **POST /api/auth/login** (réponse + cookie), **POST /api/auth/logout** (suppression du cookie), pour valider le flux complet avec `createAuthCookie` et `getUserByToken`.
+4. **Optionnel** : Tests E2E du middleware (redirections selon meta) ; tests unitaires du middleware avec mocks.
+
+---
 
