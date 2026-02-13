@@ -1,6 +1,9 @@
 // server/api/categories.get.ts
 import { Category } from '../models/Category.model'
 
+import { getCategories } from '../database/site-content'
+
+/*
 const MOCK_CATEGORIES = [
   { name: 'Technologie', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500' },
   { name: 'Politique', image: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=500' },
@@ -37,4 +40,8 @@ export default defineEventHandler(async (event) => {
     })
     
   }
+})*/
+
+export default defineEventHandler(() => {
+  return getCategories()
 })
