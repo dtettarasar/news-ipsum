@@ -1,5 +1,5 @@
 // server/api/categories.get.ts
-import { Category } from '../models/Category.model'
+// import { Category } from '../models/Category.model'
 
 import { getCategories } from '../database/site-content'
 
