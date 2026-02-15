@@ -10,6 +10,10 @@
       <category-content-carrousel></category-content-carrousel>
     </div>
 
+    <div>
+      <text-section-title></text-section-title>
+    </div>
+
   </div>
 
 </template>
