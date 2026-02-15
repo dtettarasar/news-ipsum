@@ -47,12 +47,39 @@ describe("unit test: section-title.vue", () => {
 
     it('applies textColor prop to the title', async () => {
         const wrapper = mount(sectionTitle, {
-            props: { textColor: '#ff0000' }
+            props: { textColor: '#ff1000' }
         })
         await wrapper.vm.$nextTick()
         const style = wrapper.find('h2').attributes('style')
         expect(style).toBeDefined()
-        expect(style).toMatch(/color:\s*#ff0000|color:\s*rgb\(255,\s*0,\s*0\)/i)
+
+        const hasExpectedColor = style.includes('#ff1000') || style.includes('rgb(255, 16, 0)')
+        expect(hasExpectedColor).toBe(true)
+
+    })
+
+    it('applies backgroundColor prop as half-height gradient', async () => {
+        const wrapper = mount(sectionTitle, {
+            props: { backgroundColor: '#3b82f6' }
+        })
+        await wrapper.vm.$nextTick()
+        const style = wrapper.attributes('style')
+        expect(style).toBeDefined()
+        expect(style).toContain('linear-gradient')
+
+        const hasExpectedColor = style.includes('#3b82f6') || style.includes('rgb(59, 130, 246)')
+        expect(hasExpectedColor).toBe(true)
+
+    })
+
+    it('applies no background when backgroundColor is empty', async () => {
+        const wrapper = mount(sectionTitle, {
+            props: { backgroundColor: '' }
+        })
+        await wrapper.vm.$nextTick()
+        const style = wrapper.attributes('style')
+        // soit pas de style, soit pas de "background"
+        expect(style === undefined || !style.includes('linear-gradient')).toBe(true)
     })
 
 })
