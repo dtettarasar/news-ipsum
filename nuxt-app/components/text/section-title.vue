@@ -13,16 +13,13 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  text: {
-    type: String,
-    default: "Section Title"
-  },
-  textColor: { type: String, default: '' },   // ex. #1a1a1a
-  backgroundColor: { type: String, default: '' }  // ex. #3b82f6
+  text: { type: String, default: "Section Title" },
+  textColor: { type: String, default: '#000000' },
+  backgroundColor: { type: String, default: '' }
 })
 
 const textStyle = computed(() => ({
-  color: props.textColor || '#000000'
+  color: props.textColor
 }))
 
 </script>
