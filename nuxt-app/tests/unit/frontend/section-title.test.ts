@@ -45,4 +45,14 @@ describe("unit test: section-title.vue", () => {
         expect(wrapper.text()).toContain('Bad guy')
     })
 
+    it('applies textColor prop to the title', async () => {
+        const wrapper = mount(sectionTitle, {
+            props: { textColor: '#ff0000' }
+        })
+        await wrapper.vm.$nextTick()
+        const style = wrapper.find('h2').attributes('style')
+        expect(style).toBeDefined()
+        expect(style).toMatch(/color:\s*#ff0000|color:\s*rgb\(255,\s*0,\s*0\)/i)
+    })
+
 })
