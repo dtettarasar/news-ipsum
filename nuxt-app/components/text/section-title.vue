@@ -3,15 +3,16 @@
         class="text-2xl md:text-3xl lg:text-5xl font-bold inline-block"
         :style="sectionStyle"
     >
-        <h2 :style="textStyle">
-            {{ text }}
-        </h2>
+    
+      <h2 :style="textStyle" v-html="sanitizedText"></h2>
+
     </div>
 </template>
 
 <script setup>
 
 import { computed } from 'vue'
+import DOMPurify from "isomorphic-dompurify"
 
 const props = defineProps({
   text: { type: String, default: "Section Title" },
@@ -28,5 +29,7 @@ const sectionStyle = computed(() => ({
     ? `linear-gradient(to top, ${props.backgroundColor} 0%, ${props.backgroundColor} 50%, transparent 50%)`
     : undefined
 }))
+
+const sanitizedText = computed(() => DOMPurify.sanitize(props.text || ''))
 
 </script>
