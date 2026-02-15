@@ -11,7 +11,7 @@
     </div>
 
     <div>
-      <text-section-title text="Top Stories" ></text-section-title>
+      <text-section-title text="Top Stories" backgroundColor="#90f6b7" ></text-section-title>
     </div>
 
   </div>
