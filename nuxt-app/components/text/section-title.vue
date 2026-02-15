@@ -1,6 +1,6 @@
 <template>
     <div
-        class="md:text-2xl lg:text-5xl font-bold inline-block"
+        class="text-2xl md:text-3xl lg:text-5xl font-bold inline-block"
         :style="sectionStyle"
     >
         <h2 :style="textStyle">
