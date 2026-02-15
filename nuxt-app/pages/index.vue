@@ -11,7 +11,7 @@
     </div>
 
     <div>
-      <text-section-title></text-section-title>
+      <text-section-title text="Top Stories" ></text-section-title>
     </div>
 
   </div>
@@ -19,4 +19,6 @@
 </template>
 
 <script setup lang="ts">
+
+
 </script>
