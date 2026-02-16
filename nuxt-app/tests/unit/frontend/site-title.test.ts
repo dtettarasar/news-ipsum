@@ -39,6 +39,16 @@ describe('site-title.vue', () => {
         expect(wrapper.text()).toBe('Hello world')
         expect(wrapper.html()).not.toContain('<strong>')
     })
+
+    it('renders HTML tags when present', async () => {
+
+        store.data = '<strong>Hello world</strong>'
+        await wrapper.vm.$nextTick()
+
+        expect(wrapper.html()).toContain('<strong>')
+        expect(wrapper.text()).toBe('Hello world')
+
+    })
     
 })
 
