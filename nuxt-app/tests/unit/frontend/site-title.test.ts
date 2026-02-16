@@ -49,6 +49,17 @@ describe('site-title.vue', () => {
         expect(wrapper.text()).toBe('Hello world')
 
     })
+
+    it('sanitizes malicious HTML', async () => {
+
+        store.data = '<img src=x onerror="alert(1)"> Bad guy'
+        await wrapper.vm.$nextTick()
+
+        // Le onerror doit avoir été supprimé par DOMPurify
+        expect(wrapper.html()).not.toContain('onerror')
+        expect(wrapper.text()).toContain('Bad guy')
+
+    })
     
 })
 
