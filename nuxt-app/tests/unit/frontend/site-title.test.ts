@@ -32,6 +32,13 @@ describe('site-title.vue', () => {
         await nextTick()
         expect(wrapper.text()).toContain('Hello!!')
     })
+
+    it('renders plain text without HTML tags', async () => {
+        store.data = 'Hello world'   // met à jour le store initialisé en beforeEach
+        await nextTick()             // laisse Vue propager la mise à jour dans le DOM
+        expect(wrapper.text()).toBe('Hello world')
+        expect(wrapper.html()).not.toContain('<strong>')
+    })
     
 })
 
