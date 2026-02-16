@@ -79,7 +79,7 @@ import { storeToRefs } from 'pinia'
 
 const categoryStore = useCategoryStore()
 // storeToRefs permet de garder la réactivité sur les variables du store
-const { categories, loading } = storeToRefs(categoryStore)
+const { data: categories, loading } = storeToRefs(categoryStore)
 
 // Couleurs de fallback pour les catégories sans image
 const fallbackColors = ['#FF6F61', '#4ECDC4', '#FFC312', '#2C3A47', '#F5F6FA']
@@ -92,7 +92,7 @@ const isReady = ref(false)
 onMounted(async () => {
 
   // 1. On demande au store de charger les catégories
-    await categoryStore.fetchCategories()
+    await categoryStore.fetchData()
 
     // 2. IMPORTANT : On pré-décale les données pour le défilement infini
     // On vérifie qu'on a bien des données avant de manipuler
