@@ -6,22 +6,24 @@
 
 <script setup>
 
-import DOMPurify from "isomorphic-dompurify"
-import { ref, computed } from 'vue'
+import DOMPurify from 'isomorphic-dompurify'
+import { computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSiteTitleStore } from "@/stores/siteTitleStore"
 
 const siteTitleStore = useSiteTitleStore()
-
-/*
-await useAsyncData('siteTitle', () => {
-  siteTitleStore.fetchData()
-})*/
-
-await useAsyncData('siteTitle', () => siteTitleStore.fetchData())
-
-// const rawTitle = ref("<strong>Hey, We're Blogxpress.</strong> See Our Thoughts, Stories And Ideas.") // source "brute"
 const { data } = storeToRefs(siteTitleStore)
+
+// non-bloquant — Nuxt exécute au bon moment (SSR)
+useAsyncData('siteTitle', () => siteTitleStore.fetchData())
+
+// fallback CSR si nécessaire
+onMounted(() => {
+  if (!data.value) {
+    siteTitleStore.fetchData().catch(() => {})
+  }
+})
+
 const title = computed(() => DOMPurify.sanitize(data.value || ''))
 
 </script>
