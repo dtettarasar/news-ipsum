@@ -92,19 +92,23 @@ describe('Carousel.vue', () => {
 
     // attendre l'apparition du bouton "→" (max 10 cycles microtasks)
     let nextButton = undefined
+    let prevButton = undefined
 
     for (let i = 0; i < 10; i++) {
 
       const buttons = wrapper.findAll('button')
       nextButton = buttons.find(b => b.text().includes('→'))
+      prevButton = buttons.find(b => b.text().includes('←'))
 
-      if (nextButton) break
+      if (nextButton && prevButton) break
       await nextTick()
 
     }
 
     expect(nextButton).toBeDefined()
     expect(nextButton?.exists()).toBe(true)
+    expect(prevButton).toBeDefined()
+    expect(prevButton?.exists()).toBe(true)
 
     /*
     const buttons = wrapper.findAll('button')
