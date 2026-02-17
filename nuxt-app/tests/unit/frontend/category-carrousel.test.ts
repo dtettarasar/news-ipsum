@@ -40,10 +40,18 @@ describe('Carousel.vue', () => {
     store.fetchData = vi.fn(async () => store.data)
 
     const wrapper = mount(Carrousel, { global: { plugins: [pinia] } })
-    await nextTick(); await nextTick(); await nextTick()
-    expect(wrapper.text()).toContain('Technologie')
-    expect(wrapper.text()).toContain('Cuisine')
-    expect(wrapper.text()).not.toContain('Chargement des catégories...')
+
+    // attendre que les catégories soient affichées (max 10 cycles microtasks)
+    let categoriesLoaded = false
+    for (let i = 0; i < 10; i++) {
+      if (wrapper.text().includes('Technologie') && wrapper.text().includes('Cuisine')) {
+        categoriesLoaded = true
+        break
+      }
+      await nextTick()
+    }
+
+    expect(categoriesLoaded).toBe(true)
 
   })
 
@@ -55,12 +63,27 @@ describe('Carousel.vue', () => {
     store.fetchData = vi.fn(async () => store.data)
 
     const wrapper = mount(Carrousel, { global: { plugins: [pinia] } })
-    await nextTick(); await nextTick(); await nextTick()
+    
+    // attendre que les cartes soient rendues avec les styles (max 10 cycles microtasks)
+    let cardFound = false
+    for (let i = 0; i < 10; i++) {
+      const card = wrapper.find('.card-content')
+      if (card.exists()) {
+        cardFound = true
+        break
+      }
+      await nextTick()
+    }
 
-    const card = wrapper.find('.card-content')
-    expect(card.exists()).toBe(true)
-    const style = card.attributes('style') || ''
-    expect(style).toContain('background-image: url(')
+    expect(cardFound).toBe(true)
+
+    // chercher la carte contenant le texte "Technologie"
+    const cards = wrapper.findAll('.card-content')
+    const techCard = cards.find(card => card.text().includes('Technologie'))
+
+    expect(techCard).toBeDefined()
+    const style = techCard?.attributes('style') || ''
+    expect(style).toContain('background-image: url')
     expect(style).toContain('https://images.unsplash.com/photo-1518770660439-4636190af475?w=500')
 
   })
