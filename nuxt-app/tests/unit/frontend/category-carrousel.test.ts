@@ -110,19 +110,24 @@ describe('Carousel.vue', () => {
     expect(prevButton).toBeDefined()
     expect(prevButton?.exists()).toBe(true)
 
-    // click + attendre effet concret (ex: change de transform)
-    const before = wrapper.find('.inner').attributes('style') || ''
+    // lire le style inline actuel de .inner (attribut style)
+    const beforeStyle = wrapper.find('.inner').attributes('style') || ''
 
+    // simuler le click sur le bouton "→"
     await nextButton?.trigger('click')
 
-    let changed = false
-    
-    for (let i=0; i<10; i++) {
-      if ((wrapper.find('.inner').attributes('style') || '') !== before) { changed = true; break }
+    // attendre que l'attribut style change (max 10 ticks)
+    let styleChanged = false
+    for (let i = 0; i < 10; i++) {
+      const currentStyle = wrapper.find('.inner').attributes('style') || ''
+      if (currentStyle !== beforeStyle) { styleChanged = true; break }
       await nextTick()
     }
 
-    expect(changed).toBe(true)
+    // Assertions concrètes : l'attribut `style` a changé et contient bien une translation
+    expect(styleChanged).toBe(true)
+    const newStyle = wrapper.find('.inner').attributes('style') || ''
+    expect(newStyle).toContain('translateX') // prouve qu'une translation a été appliquée
     
   })
 
