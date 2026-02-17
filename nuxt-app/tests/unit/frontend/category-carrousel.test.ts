@@ -110,17 +110,19 @@ describe('Carousel.vue', () => {
     expect(prevButton).toBeDefined()
     expect(prevButton?.exists()).toBe(true)
 
-    /*
-    const buttons = wrapper.findAll('button')
-    // On cherche spécifiquement le bouton avec la flèche
-    const nextButton = buttons.find(b => b.text().includes('→'))
-
-    expect(nextButton).toBeDefined()
-    expect(nextButton?.exists()).toBe(true)
+    // click + attendre effet concret (ex: change de transform)
+    const before = wrapper.find('.inner').attributes('style') || ''
 
     await nextButton?.trigger('click')
-    expect(wrapper.exists()).toBe(true)
-    */
+
+    let changed = false
+    
+    for (let i=0; i<10; i++) {
+      if ((wrapper.find('.inner').attributes('style') || '') !== before) { changed = true; break }
+      await nextTick()
+    }
+
+    expect(changed).toBe(true)
     
   })
 
