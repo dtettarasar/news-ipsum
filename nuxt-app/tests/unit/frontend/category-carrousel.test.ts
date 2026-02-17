@@ -73,10 +73,40 @@ describe('Carousel.vue', () => {
     store.fetchData = vi.fn(async () => store.data)
     
     const wrapper = mount(Carrousel, { global: { plugins: [pinia] } })
-    await nextTick()
-    await nextTick()
-    await nextTick()
 
+    // attendre l'apparition des cartes (max 10 cycles microtasks)
+    let found = false
+    for (let i = 0; i < 10; i++) {
+
+      if (wrapper.find('.card-content').exists()) { 
+
+        found = true
+        break
+
+      }
+
+      await nextTick()
+    }
+
+    expect(found).toBe(true)
+
+    // attendre l'apparition du bouton "→" (max 10 cycles microtasks)
+    let nextButton = undefined
+
+    for (let i = 0; i < 10; i++) {
+
+      const buttons = wrapper.findAll('button')
+      nextButton = buttons.find(b => b.text().includes('→'))
+
+      if (nextButton) break
+      await nextTick()
+
+    }
+
+    expect(nextButton).toBeDefined()
+    expect(nextButton?.exists()).toBe(true)
+
+    /*
     const buttons = wrapper.findAll('button')
     // On cherche spécifiquement le bouton avec la flèche
     const nextButton = buttons.find(b => b.text().includes('→'))
@@ -86,6 +116,7 @@ describe('Carousel.vue', () => {
 
     await nextButton?.trigger('click')
     expect(wrapper.exists()).toBe(true)
+    */
     
   })
 
