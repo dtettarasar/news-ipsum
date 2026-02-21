@@ -264,49 +264,106 @@ Aucune redirection conditionnelle dans `onMounted` basée sur le store ; le cont
 
 ---
 
-## 6. TESTS : MISE À JOUR ET NOUVELLES CIBLES
+## 6. TESTS : MISE À JOUR, ÉTAT ET NOUVELLES CIBLES
 
-Cette section recense les scripts de tests existants liés à l’auth et au contrôle d’accès, et définit les **nouvelles fonctions ou comportements à couvrir** (ou à mettre à jour) suite aux changements décrits en section 5.
+Cette section recense les scripts de tests existants liés à l'auth et au contrôle d'accès, et définit les **nouvelles fonctions ou comportements à couvrir** (ou à mettre à jour) suite aux changements décrits en section 5. Elle inclut aussi l'état des tests frontend, les leçons apprises, et les améliorations recommandées.
 
 ### 6.1 État actuel des tests
 
-- **Intégration** : `tests/integration/backend/auth_integration.test.ts`
-  - Connexion à la base de test, création d’un utilisateur admin via `generateTestUserData('admin')`.
-  - **authenticateUser** : succès avec bons identifiants + rôle admin ; échec mot de passe incorrect ; échec email inconnu ; hiérarchie (admin peut accéder avec requiredRole `editor` ; editor refusé avec requiredRole `admin`).
-  - **createAuthToken** : génération d’un JWT (format 3 parties), pas de vérification du payload (anciennement `sub` + `role`, désormais `sub` seul).
-  - **verifyAuthToken** : payload avec `sub` au format `iv:encryptedStr`, décryptage et comparaison avec l’ID utilisateur ; rejet d’un token modifié.
-- **Unitaires** : Aucun test unitaire dédié à `auth.service.ts` ; la logique est couverte par les tests d’intégration ci‑dessus. `cypher.test.ts` et `database.test.ts` couvrent d’autres couches.
+#### Frontend (✅ Tous passant)
 
-### 6.2 Nouvelles fonctions à tester (auth.service.ts)
+- **tests/unit/frontend/site-title.test.ts** : ✅ 1 test passant
+  - Vérifie que le composant affiche le titre du site, gère le HTML, et applique la sanitisation XSS via DOMPurify.
+  - Pattern : Pinia initialisée dans `beforeEach` avant le mount du composant ; store pré-rempli avec données mock.
+- **tests/unit/frontend/category-carrousel.test.ts** : ✅ 4 tests passant
+  - État de chargement, rendu des cartes, vérification des styles (transform), clic sur le bouton « suivant ».
+  - Pattern : Initialisation Pinia + boucles d'attente conditionnelle (`for` loop avec `nextTick()`) pour synchroniser les mises à jour asynchrones.
+- **tests/unit/frontend/section-title.test.ts** : ✅ Retiré (test redondant, fonctionnalité couverte par site-title)
+- **Intégration frontend** : Possible via tests E2E (non prioritaire actuellement).
+
+#### Backend auth (État validé)
+
+- **tests/integration/backend/auth_integration.test.ts** : ✅ Couvre les briques fondamentales
+  - Connexion à la base de test, création d'un utilisateur admin via `generateTestUserData('admin')`.
+  - **authenticateUser** : succès avec bons identifiants + rôle admin ; échec mot de passe incorrect ; échec email inconnu ; hiérarchie (admin peut accéder avec requiredRole `editor` ; editor refusé avec requiredRole `admin`).
+  - **createAuthToken** : génération d'un JWT (format 3 parties), payload contient uniquement `sub` (plus de `role` dans le token).
+  - **verifyAuthToken** : payload avec `sub` au format `iv:encryptedStr`, décryptage et comparaison avec l'ID utilisateur ; rejet d'un token modifié.
+- **Unitaires backend** : `cypher.test.ts` et `database.test.ts` couvrent les couches de base.
+
+### 6.2 Leçons apprises (session test fix)
+
+Lors de la correction des 6 tests frontend échoués après refactor, les patterns suivants ont été établis :
+
+#### Anti-pattern : top-level `await useAsyncData`
+
+- **Problème** : Si un composant exécute `const { data } = await useAsyncData(...)` au niveau du module (pas dans `onMounted`), le code attend que la promesse se résolve avant que le module ne soit entièrement évalué. Pendant ce temps, si un test importe le composant avant que Pinia ne soit initialisée, le store voit un état vide/par défaut.
+- **Solution** : Utiliser `useAsyncData(fetchFn)` sans `await` (non-bloquant) + un `onMounted` fallback pour le côté client. Nuxt gère l'orchestration SSR/hydration automatiquement.
+  ```javascript
+  // ✅ Bon
+  const { data } = useAsyncData('key', () => store.fetchData());
+  onMounted(() => { if (!data.value) store.fetchData(); });
+  
+  // ❌ Mauvais
+  const { data } = await useAsyncData('key', () => store.fetchData());
+  ```
+
+#### Pattern : Initialisation Pinia dans les tests
+
+- **Avant (échec)** : Créer Pinia après import du composant.
+- **Après (succès)** : Créer Pinia dans `beforeEach`, l'activer avec `setActivePinia(pinia)`, pré-remplir le store, puis monter le composant.
+  ```javascript
+  beforeEach(() => {
+    pinia = createPinia();
+    setActivePinia(pinia);
+    store = useSomeStore();
+    store.data = mockData; // Pré-remplir
+  });
+  
+  it('should render', () => {
+    const wrapper = mount(Component, { global: { plugins: [pinia] } });
+    // Composant voit `store.data` pré-rempli
+  });
+  ```
+
+#### Pattern : Attentes conditionnelles
+
+- **Avant (fragile)** : `await nextTick(); await nextTick(); await nextTick();` (nombre arbitraire, peut suffire ou non).
+- **Après (robuste)** : Boucle qui teste une condition jusqu'à 10 itérations max, avec `nextTick()` entre chaque.
+  ```javascript
+  for (let i = 0; i < 10; i++) {
+    if (wrapper.find('.element').exists()) break;
+    await nextTick();
+  }
+  ```
+
+### 6.3 Nouvelles fonctions à tester (auth.service.ts)
 
 | Fonction / comportement | Type de test recommandé | Description |
 |-------------------------|-------------------------|-------------|
 | **getUserByToken(token)** | Intégration | Token vide ou undefined → `{ authenticated: false }`. Token invalide ou expiré → `{ authenticated: false }`. Token valide (créé via createAuthToken) → `{ authenticated: true, user: { name, email, role } }`. Token avec `sub` malformé (pas de `:`, ou parties manquantes) → `{ authenticated: false }`. Utilisateur supprimé en base après émission du token → `{ authenticated: false }`. |
-| **createAuthCookie(event, email, password, role)** | Intégration (ou E2E) | Dépend de `H3Event` et de `setCookie` ; peut être testé via une requête POST vers `/api/auth/login` (intégration API) : body valide + rôle suffisant → cookie présent dans la réponse ; body invalide ou rôle insuffisant → pas de cookie, réponse 200 avec `success: false` ou throw. Les tests actuels de `authenticateUser` et `createAuthToken` couvrent déjà la logique métier ; l’intégration login.post + createAuthCookie peut être couverte par des tests d’intégration des routes. |
-| **deleteAuthToken(event)** | Intégration (route) | Via POST `/api/auth/logout` : après login, appel logout → cookie `auth_token` absent ou supprimé dans la réponse. |
-| **createAuthToken** (payload sans role) | Intégration (déjà partiellement couvert) | S’assurer que le payload vérifié ne contient que `sub` (et iat/exp), plus de clé `role`. Les tests existants vérifient déjà `payload.sub` ; ajouter si besoin une assertion explicite sur l’absence de `role` dans le payload. |
+| **createAuthCookie(event, email, password, role)** | Intégration (route) | Testé via une requête POST vers `/api/auth/login` (voir section 6.4). |
+| **deleteAuthToken(event)** | Intégration (route) | Testé via POST `/api/auth/logout` : après login, appel logout → cookie `auth_token` absent ou supprimé dans la réponse. |
 
-### 6.3 Comportements à couvrir (routes API)
+### 6.4 Comportements à couvrir (routes API)
 
 | Route / comportement | Type de test | Description |
 |----------------------|--------------|-------------|
 | **GET /api/auth/me** | Intégration | Sans cookie → `{ authenticated: false }`. Avec cookie valide (token créé pour un user en base) → `{ authenticated: true, user: { name, email, role } }`. Avec cookie invalide ou expiré → `{ authenticated: false }`. Le rôle doit être celui en base (pas celui du JWT, le JWT ne contient plus le rôle). |
-| **POST /api/auth/login** | Intégration | Body `{ email, password, role }` valide et rôle suffisant → 200, `{ success: true }`, cookie `auth_token` présent. Body invalide (email malformé, password vide, etc.) ou identifiants incorrects / rôle insuffisant → 200, `{ success: false, message: '...' }`, pas de cookie. |
-| **POST /api/auth/logout** | Intégration | Avec cookie auth valide → 200, `{ success: true }`, cookie supprimé (ou absent dans la réponse). |
+| **POST /api/auth/login** | Intégration | Body `{ email, password, role }` valide et rôle suffisant → 200, `{ success: true }`, cookie `auth_token` présent. Body invalide (email malformé, password vide) ou identifiants incorrects / rôle insuffisant → 200, `{ success: false, message: '...' }`, pas de cookie. |
+| **POST /api/auth/logout** | Intégration | Avec cookie auth valide → 200, `{ success: true }`, cookie supprimé ou absent dans la réponse. Sans cookie ou cookie invalide → 200, `{ success: true }` (idempotent). |
 
-### 6.4 Middleware auth (optionnel)
+### 6.5 Frontend : améliorations recommandées
 
-Le middleware `auth.ts` s’exécute dans un contexte Nuxt (SSR + client) et dépend de `navigateTo`, `useRequestHeaders`, `$fetch`. Les options de couverture :
+- **Carrousel « bouton précédent »** : Ajouter un test pour vérifier que clickPrev() fonctionne (contrairement à clickNext déjà couvert).
+- **LoginForm validation** : Tester la soumission du formulaire (champs vides, email malformé, réponse serveur success/error, redirection).
+- **Responsive design** : Test de resize du carrousel (reflow, recalcul des étapes).
+- **E2E (optionnel futur)** : Navigation complète login → page protégée → logout via Playwright ou Cypress.
 
-- **Tests E2E** (Playwright, Cypress) : navigation vers une page protégée sans cookie → redirection vers `redirectTo` ; avec cookie mais rôle insuffisant → redirection vers `insufficientRoleRedirect` ou `redirectTo` ; avec cookie et rôle suffisant → accès à la page. Vérifier que la cible de redirection dépend bien de la meta (ex. settings → `/admin`, index → `/admin/login`).
-- **Tests unitaires du middleware** : possible en mockant `$fetch`, `navigateTo`, `to.meta.auth`, mais lourd ; priorité moindre si les routes API et le service sont bien couverts.
+### 6.6 Synthèse des priorités
 
-### 6.5 Synthèse des priorités
+1. **Immédiat (À ajouter)** : Tests d'intégration pour **getUserByToken** (couverture complète des cas d'usage). Tests des routes API `GET /api/auth/me`, `POST /api/auth/login`, `POST /api/auth/logout` avec vraie base de test.
+2. **Court terme (À vérifier)** : **auth_integration.test.ts** — s'assurer que les assertions sur le payload JWT (verifyAuthToken) ne supposent pas la présence de `role` ; couvrir explicitement que le token ne contient que `sub`.
+3. **Recommandé** : Tests frontend pour LoginForm (soumission, erreurs, redirection). Test du carrousel « bouton précédent ». Appliquer le pattern d'initialisation Pinia à tous les tests Vue (si d'autres composants utilisant un store sont ajoutés).
+4. **Optionnel** : Tests E2E du middleware (redirections selon meta et rôle) ; E2E login complet → accès page admin → logout.
 
-1. **À ajouter en priorité** : Tests d’intégration pour **getUserByToken** (token vide, invalide, valide, sub malformé, user supprimé).
-2. **À vérifier / mettre à jour** : **auth_integration.test.ts** — s’assurer que les assertions sur le payload JWT (verifyAuthToken) ne supposent plus la présence de `role` ; couvrir explicitement le fait que le token ne contient que `sub`.
-3. **Recommandé** : Tests d’intégration des routes **GET /api/auth/me**, **POST /api/auth/login** (réponse + cookie), **POST /api/auth/logout** (suppression du cookie), pour valider le flux complet avec `createAuthCookie` et `getUserByToken`.
-4. **Optionnel** : Tests E2E du middleware (redirections selon meta) ; tests unitaires du middleware avec mocks.
-
----
 

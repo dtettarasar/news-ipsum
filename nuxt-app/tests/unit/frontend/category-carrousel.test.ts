@@ -1,80 +1,157 @@
+import { describe, it, beforeEach, expect, vi } from 'vitest'
+import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+import { useCategoryStore } from '@/stores/categoryStore'
+
 import Carrousel from '@/components/category-content/carrousel.vue'
-import { createTestingPinia } from '@pinia/testing'
+
+let pinia = createPinia()
+beforeEach(() => {
+  pinia = createPinia()
+  setActivePinia(pinia)
+})
+
+const categoriesMock = [
+  { _id: '1', name: 'Technologie', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500' },
+  { _id: '10', name: 'Cuisine', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500' }
+]
 
 describe('Carousel.vue', () => {
 
-  const factory = (initialState = {}) => {
-    return mount(Carrousel, {
-      global: {
-        plugins: [
-          createTestingPinia({
-            createSpy: vi.fn,
-            initialState: {
-              category: {
-                categories: [
-                  { id: 1, name: 'Technologie', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500' },
-                  { id: 10, name: 'Cuisine', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500' }
-                ],
-                loading: false
-              },
-              ...initialState
-            }
-          })
-        ]
-      }
-    })
-  }
-  
-  it('shows loading message initially', () => {
-    // Ici on simule un store vide et en cours de chargement
-    const wrapper = factory({
-      category: { categories: [], loading: true }
-    })
+  it('shows loading message initially', async () => {
+
+    const store = useCategoryStore()
+    store.data = []
+    store.loading = true
+    store.fetchData = vi.fn(async () => store.data)
+
+    const wrapper = mount(Carrousel, { global: { plugins: [pinia] } })
+    await nextTick()
     expect(wrapper.text()).toContain('Chargement des catégories...')
+
   })
 
   it('renders categories after mount', async () => {
-    const wrapper = factory() // Utilisation systématique
-    
-    await wrapper.vm.$nextTick() // Cycle 1 : Le composant est monté (onMounted). L'action Pinia fetchCategories est appelée.
-    await wrapper.vm.$nextTick() // Cycle 2 : Les catégories sont mises à jour dans le store Pinia.
-    await wrapper.vm.$nextTick() // Cycle 3 : Le DOM est mis à jour avec les nouvelles catégories.
-    
-    expect(wrapper.text()).toContain('Technologie')
-    expect(wrapper.text()).not.toContain('Chargement des catégories...')
+
+    const store = useCategoryStore()
+    store.data = categoriesMock
+    store.loading = false
+    store.fetchData = vi.fn(async () => store.data)
+
+    const wrapper = mount(Carrousel, { global: { plugins: [pinia] } })
+
+    // attendre que les catégories soient affichées (max 10 cycles microtasks)
+    let categoriesLoaded = false
+    for (let i = 0; i < 10; i++) {
+      if (wrapper.text().includes('Technologie') && wrapper.text().includes('Cuisine')) {
+        categoriesLoaded = true
+        break
+      }
+      await nextTick()
+    }
+
+    expect(categoriesLoaded).toBe(true)
+
   })
 
   it('applies correct background image from category data', async () => {
-    const wrapper = factory()
 
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
+    const store = useCategoryStore()
+    store.data = categoriesMock
+    store.loading = false
+    store.fetchData = vi.fn(async () => store.data)
 
-    const card = wrapper.find('.card-content')
-    expect(card.exists()).toBe(true)
+    const wrapper = mount(Carrousel, { global: { plugins: [pinia] } })
     
-    const style = card.attributes('style')
-    expect(style).toContain('background-image: url(')
+    // attendre que les cartes soient rendues avec les styles (max 10 cycles microtasks)
+    let cardFound = false
+    for (let i = 0; i < 10; i++) {
+      const card = wrapper.find('.card-content')
+      if (card.exists()) {
+        cardFound = true
+        break
+      }
+      await nextTick()
+    }
+
+    expect(cardFound).toBe(true)
+
+    // chercher la carte contenant le texte "Technologie"
+    const cards = wrapper.findAll('.card-content')
+    const techCard = cards.find(card => card.text().includes('Technologie'))
+
+    expect(techCard).toBeDefined()
+    const style = techCard?.attributes('style') || ''
+    expect(style).toContain('background-image: url')
+    expect(style).toContain('https://images.unsplash.com/photo-1518770660439-4636190af475?w=500')
+
   })
 
   it('has functional next/prev buttons', async () => {
-    const wrapper = factory()
-    
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
 
-    const buttons = wrapper.findAll('button')
-    // On cherche spécifiquement le bouton avec la flèche
-    const nextButton = buttons.find(b => b.text().includes('→'))
+    const store = useCategoryStore()
+    store.data = categoriesMock
+    store.loading = false
+    store.fetchData = vi.fn(async () => store.data)
+    
+    const wrapper = mount(Carrousel, { global: { plugins: [pinia] } })
+
+    // attendre l'apparition des cartes (max 10 cycles microtasks)
+    let found = false
+    for (let i = 0; i < 10; i++) {
+
+      if (wrapper.find('.card-content').exists()) { 
+
+        found = true
+        break
+
+      }
+
+      await nextTick()
+    }
+
+    expect(found).toBe(true)
+
+    // attendre l'apparition du bouton "→" (max 10 cycles microtasks)
+    let nextButton = undefined
+    let prevButton = undefined
+
+    for (let i = 0; i < 10; i++) {
+
+      const buttons = wrapper.findAll('button')
+      nextButton = buttons.find(b => b.text().includes('→'))
+      prevButton = buttons.find(b => b.text().includes('←'))
+
+      if (nextButton && prevButton) break
+      await nextTick()
+
+    }
 
     expect(nextButton).toBeDefined()
     expect(nextButton?.exists()).toBe(true)
+    expect(prevButton).toBeDefined()
+    expect(prevButton?.exists()).toBe(true)
 
+    // lire le style inline actuel de .inner (attribut style)
+    const beforeStyle = wrapper.find('.inner').attributes('style') || ''
+
+    // simuler le click sur le bouton "→"
     await nextButton?.trigger('click')
-    expect(wrapper.exists()).toBe(true)
+
+    // attendre que l'attribut style change (max 10 ticks)
+    let styleChanged = false
+    for (let i = 0; i < 10; i++) {
+      const currentStyle = wrapper.find('.inner').attributes('style') || ''
+      if (currentStyle !== beforeStyle) { styleChanged = true; break }
+      await nextTick()
+    }
+
+    // Assertions concrètes : l'attribut `style` a changé et contient bien une translation
+    expect(styleChanged).toBe(true)
+    const newStyle = wrapper.find('.inner').attributes('style') || ''
+    expect(newStyle).toContain('translateX') // prouve qu'une translation a été appliquée
+    
   })
+
 })
