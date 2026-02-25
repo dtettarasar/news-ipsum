@@ -1,88 +1,67 @@
 // stores/categoryStore.ts
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
+// ===== INTERFACES TYPESCRIPT =====
 interface CategoryItem {
-  _id: string; // On utilise maintenant l'ID de MongoDB
-  name: string;
-  image: string;
+  _id: string
+  name: string
+  image: string
+  color?: string
 }
 
-interface CategoryState {
+// ===== STORE =====
+export const useCategoryStore = defineStore('category', () => {
+  // ===== STATE =====
+  const data = ref<CategoryItem[]>([])
+  const loading = ref<boolean>(false)
+  const error = ref<string | null>(null)
 
-  data: CategoryItem[]
-  loading: boolean
-  error: string | null
-
-}
-
-export const useCategoryStore = defineStore('category', {
-
-  state: (): CategoryState => ({
-
-    data: [],
-    loading: false,
-    error: null as string | null,
-
-  }),
-
-  actions: {
-
-    async fetchData() {
-
-      if (this.data.length > 0) { 
-
-        return this.data
-        
-      }
-
-      this.loading = true
-      this.error = null
-
-      try {
-
-        this.data = await $fetch<string[]>('/api/categories')
-        return this.data
-
-      } catch(err: any) {
-
-        this.error = err?.statusMessage ?? err?.message ?? 'Erreur lors du chargement des catégories'
-        return []
-
-      } finally {
-        this.loading = false
-      }
-
+  // ===== ACTIONS =====
+  async function fetchData(): Promise<CategoryItem[]> {
+    // Éviter re-fetch si données déjà chargées
+    if (data.value.length > 0) {
+      return data.value
     }
 
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await $fetch<CategoryItem[]>('/api/categories')
+      data.value = response
+      return data.value
+    } catch (err: any) {
+      console.error('Failed to fetch categories:', err)
+      error.value = err?.statusMessage ?? err?.message ?? 'Erreur lors du chargement des catégories'
+      return []
+    } finally {
+      loading.value = false
+    }
   }
 
+  // ===== GETTERS =====
+  function getCategoryBySlug(slug: string): CategoryItem | undefined {
+    return data.value.find(cat => cat.name.toLowerCase() === slug.toLowerCase())
+  }
+
+  function getCategoryCount(): number {
+    return data.value.length
+  }
+
+  // ===== RETURN =====
+  return {
+    // State
+    data,
+    loading,
+    error,
+
+    // Actions
+    fetchData,
+
+    // Getters
+    getCategoryBySlug,
+    getCategoryCount,
+  }
 })
-
-/*
-export const useCategoryStore = defineStore('category', {
-  state: () => ({
-    categories: [] as Category[],
-    loading: false,
-    error: null as string | null
-  }),
-
-  actions: {
-    async fetchCategories() {
-      if (this.categories.length > 0) return
-
-      this.loading = true
-      this.error = null
-
-      try {
-        // Appelle ta nouvelle route API Nitro
-        const data = await $fetch<Category[]>('/api/categories')
-        this.categories = data
-      } catch (err: any) {
-        this.error = err.statusMessage || "Erreur lors de la récupération des catégories"
-      } finally {
-        this.loading = false
-      }
-    }
-  }
-})*/
 
