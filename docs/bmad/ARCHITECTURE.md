@@ -44,6 +44,170 @@ nuxt-app/
 └── tests/               # Tests (Vitest)
 ```
 
+### 1.3 Infrastructure Docker
+
+Le projet est entièrement containerisé avec Docker Compose. L'architecture permet deux modes d'exécution : **développement** et **production**.
+
+#### Architecture des conteneurs
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        DOCKER NETWORK                            │
+├─────────────────┬─────────────────┬─────────────────────────────┤
+│                 │                 │                             │
+│   ┌─────────┐   │   ┌─────────┐   │   ┌─────────────────────┐   │
+│   │  CADDY  │   │   │  NUXT   │   │   │      MONGODB        │   │
+│   │         │◄──┼───│  APP    │───┼──►│                     │   │
+│   │ :80/443 │   │   │  :3000  │   │   │  mongo:8.0          │   │
+│   └─────────┘   │   └─────────┘   │   │  Volume: ./data/db  │   │
+│                 │                 │   └─────────────────────┘   │
+│                 │                 │                             │
+│                 │   ┌─────────┐   │   (Dev only)                │
+│                 │   │ MONGO   │   │                             │
+│                 │   │ EXPRESS │   │                             │
+│                 │   │  :8081  │   │                             │
+│                 │   └─────────┘   │                             │
+└─────────────────┴─────────────────┴─────────────────────────────┘
+```
+
+#### Fichiers de configuration
+
+| Fichier | Description |
+|---------|-------------|
+| `docker-compose.yml` | Configuration de base (production) |
+| `docker-compose.dev.yml` | Surcharge pour le développement |
+| `nuxt-app/Dockerfile` | Build multi-stage de l'app Nuxt |
+| `Caddyfile` | Configuration du reverse proxy |
+| `Makefile` | Commandes raccourcies |
+
+#### Services Docker
+
+**1. nuxt-app** (Application Nuxt)
+```yaml
+# Production : Image optimisée multi-stage
+build:
+  context: ./nuxt-app
+  dockerfile: Dockerfile
+expose:
+  - "3000"
+
+# Dev : Hot reload avec volumes
+volumes:
+  - ./nuxt-app:/usr/src/app
+entrypoint: ["npm", "run", "dev"]
+```
+
+**2. mongodb** (Base de données)
+```yaml
+image: mongo:8.0
+volumes:
+  - ./data/news-ipsum-db:/data/db  # Persistance locale
+environment:
+  - MONGO_INITDB_ROOT_USERNAME
+  - MONGO_INITDB_ROOT_PASSWORD
+```
+
+**3. caddy** (Reverse Proxy / SSL)
+```yaml
+image: caddy:2.8.4
+ports:
+  - "80:80"
+  - "443:443"
+volumes:
+  - ./Caddyfile:/etc/caddy/Caddyfile:ro
+```
+
+**4. mongo-express** (Dev only - GUI MongoDB)
+```yaml
+image: mongo-express
+ports:
+  - "8081:8081"
+```
+
+#### Dockerfile (Multi-stage build)
+
+```dockerfile
+# ÉTAPE 1: BUILD
+FROM node:20 AS builder
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install --include=dev
+COPY . .
+RUN npm run build
+
+# ÉTAPE 2: PRODUCTION (Image légère)
+FROM node:20-slim
+WORKDIR /usr/src/app
+COPY --from=builder /usr/src/app/.output ./.output
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/server ./server
+COPY --from=builder /usr/src/app/scripts ./scripts
+EXPOSE 3000
+CMD ["node", ".output/server/index.mjs"]
+```
+
+#### Commandes Makefile
+
+| Commande | Description |
+|----------|-------------|
+| **Développement** | |
+| `make dev` | Lance le stack dev (hot reload + mongo-express) |
+| `make dev-down` | Arrête le stack dev |
+| **Production** | |
+| `make prod-nuxt` | Rebuild et lance nuxt-app uniquement |
+| `make prod-all` | Rebuild tout le stack |
+| `make down` | Arrête le stack production |
+| **Logs** | |
+| `make logs` | Tous les logs |
+| `make nuxt-logs` | Logs de nuxt-app |
+| `make caddy-logs` | Logs de Caddy |
+| **Tests** | |
+| `make test` | Tous les tests (unit + integration) |
+| `make test-unit` | Tests unitaires uniquement |
+| `make test-integration` | Tests d'intégration (nécessite MongoDB) |
+| `make test-coverage` | Tests avec couverture |
+| **Utilitaires** | |
+| `make create-admin` | Créer un utilisateur admin |
+| `make generate-secrets` | Générer les secrets (JWT, encryption) |
+| **Maintenance** | |
+| `make df` | Espace disque Docker |
+| `make clean` | Nettoyage sécurisé |
+| `make clean-all` | Nettoyage profond (images, cache) |
+
+#### Environnement Dev vs Prod
+
+| Aspect | Dev | Prod |
+|--------|-----|------|
+| **Hot Reload** | ✅ Oui (volume mount) | ❌ Non |
+| **Build** | À la volée | Multi-stage optimisé |
+| **Mongo Express** | ✅ Port 8081 | ❌ Non exposé |
+| **Console logs** | ✅ Visibles | ❌ Supprimés (esbuild drop) |
+| **Source maps** | ✅ Oui | ❌ Non |
+| **Commande** | `npm run dev` | `node .output/server/index.mjs` |
+
+#### Variables d'environnement
+
+Les secrets sont injectés via `.env` (non versionné) :
+
+```bash
+# MongoDB
+MONGO_INITDB_ROOT_USERNAME=
+MONGO_INITDB_ROOT_PASSWORD=
+MONGO_DB_NAME=
+
+# Auth & Security
+JWT_SECRET=
+ENCRYPTION_KEY=
+SESSION_PASSWORD=
+
+# SEO
+NUXT_PUBLIC_SEO_INDEX=false
+
+# Mongo Express (dev only)
+ME_CONFIG_BASICAUTH_USERNAME=
+ME_CONFIG_BASICAUTH_PASSWORD=
+```
+
 ---
 
 ## 2. Décisions d'architecture (ADR)
