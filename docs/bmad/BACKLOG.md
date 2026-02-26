@@ -225,6 +225,98 @@
 
 ---
 
+## Epic 6: Code Quality & Conventions
+
+### US-012: Harmoniser le nommage des composants ⬜ P2
+
+**En tant que** développeur  
+**Je veux** que tous les fichiers composants suivent les mêmes conventions de nommage  
+**Afin de** garantir la cohérence du codebase et respecter les standards Nuxt
+
+**Critères d'acceptance:**
+- [ ] Tous les composants utilisent le format PascalCase (`SectionTitle.vue`, pas `section-title.vue`)
+- [ ] Les dossiers de composants sont en kebab-case (convention Nuxt)
+- [ ] Les auto-imports Nuxt fonctionnent correctement après renommage
+- [ ] Les imports manuels (`import ... from`) sont mis à jour
+- [ ] Les références dans les templates (`<text-section-title>` / `<TextSectionTitle>`) sont cohérentes
+- [ ] Les tests unitaires existants sont mis à jour si impactés
+- [ ] Aucune régression (tous les tests passent)
+
+**Technical notes:**
+- Fichiers concernés : `components/text/site-title.vue`, `section-title.vue`, `components/forms/SearchBar.vue`, `components/layout/nav-bar.vue`, `footer.vue`, `components/category-content/carrousel.vue`, `components/article/Card.vue`, `TopStories.vue`
+- Convention cible : fichiers en PascalCase, dossiers en kebab-case
+- Vérifier l'auto-import Nuxt (`components/article/Card.vue` → `<ArticleCard />`)
+
+---
+
+## Epic 7: Tests
+
+### US-013: Test unitaire — Article Card ⬜ P1
+
+**En tant que** développeur  
+**Je veux** un script de test unitaire pour le composant Article Card  
+**Afin de** valider le rendu visuel et le comportement du composant de manière isolée
+
+**Critères d'acceptance:**
+- [ ] Vérifie le rendu du titre via la prop `title`
+- [ ] Vérifie l'affichage du badge catégorie via la prop `category`
+- [ ] Vérifie l'affichage de l'auteur (nom + avatar)
+- [ ] Vérifie le formatage des vues (ex: 9000 → "9k")
+- [ ] Vérifie le temps de lecture affiché
+- [ ] Vérifie que le lien "Read Full Article" contient le bon slug
+- [ ] Vérifie le fallback quand `image` ou `authorAvatar` est vide
+- [ ] Vérifie le `line-clamp-3` sur le titre
+
+**Technical notes:**
+- Fichier: `tests/unit/frontend/article-card.test.ts`
+- Outils: Vitest + Vue Test Utils
+- Monter le composant avec des props mock
+
+---
+
+### US-014: Test unitaire — Top Stories ⬜ P1
+
+**En tant que** développeur  
+**Je veux** un script de test unitaire pour le composant Top Stories  
+**Afin de** valider le chargement conditionnel et l'affichage de la grille d'articles
+
+**Critères d'acceptance:**
+- [ ] Vérifie l'affichage du message "Chargement des articles..." quand `isReady` est false
+- [ ] Vérifie l'affichage de la grille de cards quand `isReady` est true
+- [ ] Vérifie que le bon nombre de `<article-card>` est rendu selon les données du store
+- [ ] Vérifie que les props sont correctement passées à chaque card
+- [ ] Vérifie le titre de section "Top Stories"
+
+**Technical notes:**
+- Fichier: `tests/unit/frontend/top-stories.test.ts`
+- Outils: Vitest + Vue Test Utils
+- Nécessite un mock du store Pinia (`articlesStore`)
+- Nécessite un stub de `useAsyncData`
+
+---
+
+### US-015: Test d'intégration — Articles Store ⬜ P1
+
+**En tant que** développeur  
+**Je veux** un test d'intégration pour le store articles  
+**Afin de** valider le cycle complet fetch → state → cache
+
+**Critères d'acceptance:**
+- [ ] Vérifie que `fetchTopStories` appelle la bonne API et peuple `topStories`
+- [ ] Vérifie que `fetchRecentByCategory` appelle la bonne API et peuple `recent`
+- [ ] Vérifie que `fetchPopular` appelle la bonne API et peuple `popular`
+- [ ] Vérifie que le cache empêche un second fetch pour `topStories`
+- [ ] Vérifie les flags `loading` (true pendant le fetch, false après)
+- [ ] Vérifie la gestion d'erreur (API en échec → state inchangé, pas de crash)
+
+**Technical notes:**
+- Fichier: `tests/integration/articles-store.test.ts`
+- Outils: Vitest + Pinia testing
+- Mock de `$fetch` pour simuler les réponses API
+- Tester en isolation sans composant Vue
+
+---
+
 ## Sprint actuel: Homepage MVP
 
 **Objectif**: Homepage fonctionnelle avec Top Stories
