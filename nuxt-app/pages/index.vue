@@ -14,6 +14,14 @@
       <text-section-title text="Top Stories" backgroundColor="#90f6b7" ></text-section-title>
     </div>
 
+    <div class="mt-6 grid grid-cols-5 gap-6">
+      <article-card />
+      <article-card />
+      <article-card />
+      <article-card />
+      <article-card />
+    </div>
+
   </div>
 
 </template>
