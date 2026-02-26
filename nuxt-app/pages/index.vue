@@ -15,10 +15,18 @@
     </div>
 
     <div class="mt-6 grid p-2 sm:grid-cols-1 md:p-0 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <article-card />
-      <article-card />
-      <article-card />
-      <article-card />
+      <article-card
+        v-for="article in topStories"
+        :key="article._id"
+        :title="article.title"
+        :slug="article.slug"
+        :image="article.image"
+        :category="article.category"
+        :author-name="article.author.name"
+        :author-avatar="article.author.avatar"
+        :read-time="article.readTime"
+        :views="article.views"
+      />
     </div>
 
   </div>
