@@ -14,8 +14,7 @@
       <text-section-title text="Top Stories" backgroundColor="#90f6b7" ></text-section-title>
     </div>
 
-    <div class="mt-6 grid grid-cols-5 gap-6">
-      <article-card />
+    <div class="mt-6 grid p-2 sm:grid-cols-1 md:p-0 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <article-card />
       <article-card />
       <article-card />

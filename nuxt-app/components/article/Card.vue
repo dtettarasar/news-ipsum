@@ -1,6 +1,6 @@
 <template>
   <article
-    class="rounded-xl p-4"
+    class="rounded-xl p-4 md:p-6"
     :style="{ backgroundColor: cardBackground }"
   >
     <div class="h-44 rounded-xl bg-white/60 flex items-center justify-center">
@@ -10,25 +10,41 @@
     <div class="pt-4">
       <div class="flex items-center justify-between gap-3">
         <span
-          class="inline-flex items-center px-3 py-1 rounded-full bg-white/70 text-xs font-bold uppercase tracking-wide"
+          class="inline-flex items-center px-3 py-1 rounded-full bg-white/70 text-sm md:text-base lg:text-lg uppercase tracking-wide border border-black border-2"
         >
           Tech
         </span>
 
-        <span class="text-xs font-semibold text-gray-700">26 fév. 2026</span>
+        <!--<span class="text-xs font-semibold text-gray-700">26 fév. 2026</span>-->
+
       </div>
 
-      <h3 class="mt-3 text-lg font-bold leading-tight">
+      <h3 class="mt-3 text-lg lg:text-2xl xl:text-3xl font-bold leading-tight">
         Titre de l’article — maquette à valider
       </h3>
 
-      <p class="mt-2 text-sm text-gray-700 leading-relaxed">
-        Petit résumé sur 2–3 lignes pour voir l’équilibre typographique et les espacements de la card.
-      </p>
+      <div class="mt-4 flex items-center gap-2 text-sm md:text-base text-gray-700">
+        <!-- Auteur -->
+        <div class="flex items-center gap-1.5">
+          <div class="w-6 h-6 rounded-full border border-black bg-gray-300 flex-shrink-0"></div>
+          <span class="font-semibold whitespace-nowrap">Kristin Watson</span>
+        </div>
 
-      <div class="mt-4 flex items-center justify-between">
-        <span class="text-xs font-semibold text-gray-700">5 min</span>
-        <span class="text-xs font-bold uppercase tracking-widest">Lire →</span>
+        <span class="text-gray-400">|</span>
+
+        <!-- Temps de lecture -->
+        <div class="flex items-center gap-1">
+          <Icon name="mdi:clock-outline" class="w-4 h-4" />
+          <span>9 min read</span>
+        </div>
+
+        <span class="text-gray-400">|</span>
+
+        <!-- Nombre de vues -->
+        <div class="flex items-center gap-1">
+          <Icon name="mdi:eye-outline" class="w-4 h-4" />
+          <span>9k</span>
+        </div>
       </div>
     </div>
   </article>
