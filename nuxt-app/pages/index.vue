@@ -32,7 +32,10 @@ import { storeToRefs } from 'pinia'
 const articlesStore = useArticlesStore()
 const { topStories } = storeToRefs(articlesStore)
 
-await useAsyncData('topStories', () => articlesStore.fetchTopStories(4))
+await useAsyncData('topStories', async () => {
+  await articlesStore.fetchTopStories(4)
+  return topStories.value
+})
 
 console.log('Top Stories:', topStories.value)
 </script>

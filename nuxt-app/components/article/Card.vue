@@ -50,16 +50,16 @@
       <!-- Lien vers l'article -->
       <div class="mt-4 flex items-center gap-3">
         <span class="text-sm md:text-base font-semibold">Read Full Article</span>
-        <NuxtLink
-          to="/article/read/future-web-development"
+        <a
+          href="/article/read/future-web-development"
           class="w-10 h-10 bg-white border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
         >
           <Icon name="mdi:arrow-top-right" class="w-5 h-5" />
-        </NuxtLink>
+        </a>
       </div>
     </div>
   </article>
-  
+
 </template>
 
 <script setup lang="ts">
