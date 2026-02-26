@@ -30,7 +30,7 @@
         {{ props.title }}
       </h3>
 
-      <div class="mt-4 flex items-center gap-2 text-sm md:text-base text-gray-700">
+      <div class="mt-4 flex flex-wrap items-center gap-2 text-sm md:text-base text-gray-700">
         <!-- Auteur -->
         <div class="flex items-center gap-1.5">
           <img
@@ -100,7 +100,12 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const fallbackColors = ['#c5fbe1', '#f0fecd', '#f1d0fb', '#fdebdd', '#fddddd', '#dde5fd']
-const cardBackground = fallbackColors[Math.floor(Math.random() * fallbackColors.length)]
+
+// useState : la couleur est générée une seule fois côté serveur,
+// puis sérialisée et réutilisée côté client (pas de hydration mismatch).
+const cardBackground = useState<string>(`card-bg-${props.slug}`, () => {
+  return fallbackColors[Math.floor(Math.random() * fallbackColors.length)]
+})
 
 const formattedViews = computed(() => {
   if (props.views >= 1000) return `${(props.views / 1000).toFixed(0)}k`
