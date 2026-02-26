@@ -83,7 +83,7 @@ const categoryStore = useCategoryStore()
 const { data: categories, loading } = storeToRefs(categoryStore)
 
 // Couleurs de fallback pour les catégories sans image
-const fallbackColors = ['#FF6F61', '#4ECDC4', '#FFC312', '#2C3A47', '#F5F6FA']
+const fallbackColors = ['#c5fbe1', '#f0fecd', '#f1d0fb', '#fdebdd', '#fddddd', "#dde5fd"]
 
 const inner = ref(null)
 const step = ref('')
