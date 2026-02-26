@@ -26,7 +26,7 @@
 
       </div>
 
-      <h3 class="mt-3 text-lg lg:text-2xl xl:text-3xl font-bold leading-tight">
+      <h3 class="mt-3 text-lg lg:text-2xl xl:text-3xl font-bold leading-tight line-clamp-3">
         {{ props.title }}
       </h3>
 

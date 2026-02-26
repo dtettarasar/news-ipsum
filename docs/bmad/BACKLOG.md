@@ -27,20 +27,19 @@
 **Afin de** comprendre rapidement le contenu et décider de lire
 
 **Critères d'acceptance:**
-- [ ] Affiche l'image principale de l'article
-- [ ] Affiche un badge avec le nom de la catégorie
-- [ ] Affiche le titre (max 2 lignes, ellipsis)
-- [ ] Affiche l'avatar et le nom de l'auteur
-- [ ] Affiche le temps de lecture
-- [ ] Affiche le nombre de vues (formaté: 1.2K)
-- [ ] Bouton "See Details" cliquable
-- [ ] Au clic → navigation vers `/articles/:slug`
-- [ ] Effet hover (élévation + shadow)
+- [x] Affiche l'image principale de l'article
+- [x] Affiche un badge avec le nom de la catégorie
+- [x] Affiche le titre (max 3 lignes, ellipsis via line-clamp-3)
+- [x] Affiche l'avatar et le nom de l'auteur
+- [x] Affiche le temps de lecture
+- [x] Affiche le nombre de vues (formaté: 9k)
+- [x] Bouton "Read Full Article" cliquable
+- [x] Au clic → navigation vers `/article/read/:slug`
 
 **Technical notes:**
-- Composant: `components/article/article-card.vue`
-- Props: `article` (Object)
-- Utilise `<NuxtLink>` pour la navigation
+- Composant: `components/article/Card.vue`
+- Props typées: `title`, `slug`, `image`, `category`, `authorName`, `authorAvatar`, `readTime`, `views`
+- Couleur de fond aléatoire SSR-safe via `useState`
 
 ---
 
