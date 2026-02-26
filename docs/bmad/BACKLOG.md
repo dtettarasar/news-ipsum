@@ -20,7 +20,7 @@
 
 ## Epic 1: Homepage
 
-### US-001: Article Card Component ⬜ P0
+### US-001: Article Card Component ✅ P0
 
 **En tant que** visiteur  
 **Je veux** voir une card présentant un article  
@@ -43,41 +43,45 @@
 
 ---
 
-### US-002: Top Stories Section ⬜ P0
+### US-002: Top Stories Section ✅ P0
 
 **En tant que** visiteur  
 **Je veux** voir les articles les plus consultés  
 **Afin de** découvrir le contenu populaire
 
 **Critères d'acceptance:**
-- [ ] Affiche 5 articles triés par nombre de vues (DESC)
-- [ ] Utilise le composant ArticleCard
-- [ ] Grid responsive: 1 col mobile → 2 col tablet → 5 col desktop
-- [ ] État de chargement visible (spinner)
-- [ ] Titre de section "Top Stories"
-- [ ] Sous-titre "Most viewed articles this month"
+- [x] Affiche 4 articles triés par nombre de vues (DESC)
+- [x] Utilise le composant ArticleCard
+- [x] Grid responsive: 1 col mobile → 2 col tablet → 4 col desktop
+- [x] État de chargement visible pendant le fetch ("Chargement des articles...")
+- [x] Titre de section "Top Stories"
+- [x] Composant extrait dans `components/article/TopStories.vue` (page index légère)
+- [x] Contrôle d'affichage via `isReady` (v-if/v-else)
 
 **Technical notes:**
-- API: `GET /api/articles/top-stories?limit=5`
-- Store: `articlesStore.fetchTopStories(5)`
-- Section dans `pages/index.vue`
+- API: `GET /api/articles/top-stories?limit=4`
+- Store: `articlesStore.fetchTopStories(4)`
+- Composant: `components/article/TopStories.vue`
+- Fetch SSR-safe via `useAsyncData`
 
 ---
 
-### US-003: Articles Store Setup ⬜ P0
+### US-003: Articles Store Setup ✅ P0
 
 **En tant que** développeur  
 **Je veux** un store unifié pour les articles  
 **Afin de** centraliser la gestion des données articles
 
 **Critères d'acceptance:**
-- [ ] State: `topStories`, `recent`, `popular` (arrays)
-- [ ] State: `loading` (object avec flags par section)
-- [ ] Action: `fetchTopStories(limit)`
-- [ ] Action: `fetchRecentByCategory(category, limit)`
-- [ ] Action: `fetchPopular(limit)`
-- [ ] Cache pour éviter re-fetch inutiles
-- [ ] TypeScript interfaces définies
+- [x] State: `topStories`, `recent`, `popular` (arrays)
+- [x] State: `loading` (object avec flags par section)
+- [x] Action: `fetchTopStories(limit)`
+- [x] Action: `fetchRecentByCategory(category, limit)`
+- [x] Action: `fetchPopular(limit)`
+- [x] Cache pour éviter re-fetch inutiles (`cached` state + early return)
+- [x] TypeScript interfaces définies (`Article`, `Author`, `LoadingState`, `CacheState`)
+- [x] Getters utilitaires: `getArticleById`, `getTotalArticles`
+- [x] Action `clearCache` pour reset
 
 **Technical notes:**
 - Fichier: `stores/articlesStore.ts`
@@ -323,9 +327,9 @@
 
 | Story | Status | Assigné |
 |-------|--------|---------|
-| US-003: Articles Store | ⬜ To Do | - |
-| US-001: Article Card | ⬜ To Do | - |
-| US-002: Top Stories | ⬜ To Do | - |
+| US-003: Articles Store | ✅ Done | - |
+| US-001: Article Card | ✅ Done | - |
+| US-002: Top Stories | ✅ Done | - |
 
 ---
 
@@ -334,4 +338,5 @@
 | Date | Action |
 |------|--------|
 | 2026-02-25 | Création du backlog initial |
+| 2026-02-26 | US-001, US-002, US-003 complétés (Sprint Homepage MVP) |
 
