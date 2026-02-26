@@ -26,6 +26,13 @@
 </template>
 
 <script setup lang="ts">
+import { useArticlesStore } from '@/stores/articlesStore'
+import { storeToRefs } from 'pinia'
 
+const articlesStore = useArticlesStore()
+const { topStories } = storeToRefs(articlesStore)
 
+await useAsyncData('topStories', () => articlesStore.fetchTopStories(4))
+
+console.log('Top Stories:', topStories.value)
 </script>
