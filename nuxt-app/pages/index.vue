@@ -10,15 +10,11 @@
       <category-content-carrousel></category-content-carrousel>
     </div>
 
-    <div>
-      <text-section-title text="Top Stories" backgroundColor="#90f6b7" ></text-section-title>
-    </div>
+    <article-top-stories />
 
   </div>
 
 </template>
 
 <script setup lang="ts">
-
-
 </script>

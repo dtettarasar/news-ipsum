@@ -270,14 +270,38 @@ Cette section recense les scripts de tests existants liés à l'auth et au contr
 
 ### 6.1 État actuel des tests
 
-#### Frontend (✅ Tous passant)
+**Totaux : 11 fichiers, 73 tests — tous passant ✅**
 
-- **tests/unit/frontend/site-title.test.ts** : ✅ 1 test passant
-  - Vérifie que le composant affiche le titre du site, gère le HTML, et applique la sanitisation XSS via DOMPurify.
+#### Frontend — tests unitaires (✅ Tous passant)
+
+- **tests/unit/frontend/site-title.test.ts** : ✅ 4 tests
+  - Vérifie l'affichage du titre du site, gère le HTML, et applique la sanitisation XSS via DOMPurify.
   - Pattern : Pinia initialisée dans `beforeEach` avant le mount du composant ; store pré-rempli avec données mock.
-- **tests/unit/frontend/category-carrousel.test.ts** : ✅ 4 tests passant
+- **tests/unit/frontend/category-carrousel.test.ts** : ✅ 4 tests
   - État de chargement, rendu des cartes, vérification des styles (transform), clic sur le bouton « suivant ».
   - Pattern : Initialisation Pinia + boucles d'attente conditionnelle (`for` loop avec `nextTick()`) pour synchroniser les mises à jour asynchrones.
+- **tests/unit/frontend/section-title.test.ts** : ✅ 7 tests
+  - Rendu du texte, couleur de fond, props par défaut.
+- **tests/unit/frontend/nav-bar.test.ts** : ✅ 2 tests
+  - Rendu de la barre de navigation et éléments principaux.
+- **tests/unit/frontend/article-card.test.ts** : ✅ 21 tests
+  - Rendu de toutes les props (titre, catégorie, auteur, avatar, temps de lecture, vues).
+  - Formatage des vues (9000 → "9k"), line-clamp-3, lien "Read Full Article" avec slug.
+  - Fallbacks pour image et avatar vides. Composant monté avec et sans props.
+- **tests/unit/frontend/top-stories.test.ts** : ✅ 9 tests
+  - Titre de section, état de chargement, grille de cards, nombre de cards, titres corrects.
+  - Pattern : Composant async setup (`useAsyncData`) wrappé dans `<Suspense>` via `defineComponent` + `h()`.
+  - Stubs pour `ArticleCard` et `TextSectionTitle` (isolation des composants enfants).
+
+#### Frontend — tests d'intégration (✅ Tous passant)
+
+- **tests/integration/frontend/articles-store.test.ts** : ✅ 17 tests
+  - `fetchTopStories` : appel API correct, peuplement du state, loading flags, cache, gestion d'erreur.
+  - `fetchRecentByCategory` : appel API avec catégorie et limit, loading flags, gestion d'erreur.
+  - `fetchPopular` : appel API, peuplement, cache, gestion d'erreur.
+  - `clearCache` : reset des flags, re-fetch possible après clear.
+  - Getters : `getArticleById` (cross-collection), `getTotalArticles`.
+  - Pattern : Mock de `$fetch` via `globalThis.$fetch`, Pinia en environnement node.
 - **tests/unit/frontend/section-title.test.ts** : ✅ Retiré (test redondant, fonctionnalité couverte par site-title)
 - **Intégration frontend** : Possible via tests E2E (non prioritaire actuellement).
 
