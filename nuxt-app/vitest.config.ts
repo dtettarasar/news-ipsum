@@ -13,7 +13,7 @@ export default defineConfig({
           environment: 'node',
         },
       },
-      // 2. Intégration – vraie connexion MongoDB (nécessite make dev ou stack Docker)
+      // 2. Intégration backend – vraie connexion MongoDB (nécessite make dev ou stack Docker)
       {
         test: {
           name: 'integration',
@@ -21,7 +21,21 @@ export default defineConfig({
           environment: 'node',
         },
       },
-      // 3. Frontend (environnement Nuxt)
+      // 3. Intégration frontend – store Pinia avec $fetch mocké
+      {
+        test: {
+          name: 'integration-frontend',
+          include: ['tests/integration/frontend/**/*.{test,spec}.ts'],
+          environment: 'node',
+        },
+        resolve: {
+          alias: {
+            '@': path.resolve(__dirname, './'),
+            '~': path.resolve(__dirname, './'),
+          },
+        },
+      },
+      // 4. Frontend (environnement Nuxt)
       await defineVitestProject({
         test: {
           name: 'frontend',

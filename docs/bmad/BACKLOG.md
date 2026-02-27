@@ -300,25 +300,27 @@
 
 ---
 
-### US-015: Test d'intégration — Articles Store ⬜ P1
+### US-015: Test d'intégration — Articles Store ✅ Done
 
 **En tant que** développeur  
 **Je veux** un test d'intégration pour le store articles  
 **Afin de** valider le cycle complet fetch → state → cache
 
 **Critères d'acceptance:**
-- [ ] Vérifie que `fetchTopStories` appelle la bonne API et peuple `topStories`
-- [ ] Vérifie que `fetchRecentByCategory` appelle la bonne API et peuple `recent`
-- [ ] Vérifie que `fetchPopular` appelle la bonne API et peuple `popular`
-- [ ] Vérifie que le cache empêche un second fetch pour `topStories`
-- [ ] Vérifie les flags `loading` (true pendant le fetch, false après)
-- [ ] Vérifie la gestion d'erreur (API en échec → state inchangé, pas de crash)
+- [x] Vérifie que `fetchTopStories` appelle la bonne API et peuple `topStories`
+- [x] Vérifie que `fetchRecentByCategory` appelle la bonne API et peuple `recent`
+- [x] Vérifie que `fetchPopular` appelle la bonne API et peuple `popular`
+- [x] Vérifie que le cache empêche un second fetch pour `topStories`
+- [x] Vérifie les flags `loading` (true pendant le fetch, false après)
+- [x] Vérifie la gestion d'erreur (API en échec → state inchangé, pas de crash)
 
 **Technical notes:**
-- Fichier: `tests/integration/articles-store.test.ts`
+- Fichier: `tests/integration/frontend/articles-store.test.ts`
 - Outils: Vitest + Pinia testing
-- Mock de `$fetch` pour simuler les réponses API
-- Tester en isolation sans composant Vue
+- Mock de `$fetch` via `globalThis.$fetch` pour simuler les réponses API
+- Tester en isolation sans composant Vue (environnement node)
+- Projet Vitest dédié `integration-frontend` avec alias `@/` configuré
+- 17 tests (fetchTopStories, fetchRecentByCategory, fetchPopular, clearCache, getters) — tous passés ✅
 
 ---
 
@@ -331,6 +333,9 @@
 | US-003: Articles Store | ✅ Done | - |
 | US-001: Article Card | ✅ Done | - |
 | US-002: Top Stories | ✅ Done | - |
+| US-013: Article Card Tests | ✅ Done | - |
+| US-014: Top Stories Tests | ✅ Done | - |
+| US-015: Store Integration Tests | ✅ Done | - |
 
 ---
 
@@ -340,4 +345,5 @@
 |------|--------|
 | 2026-02-25 | Création du backlog initial |
 | 2026-02-26 | US-001, US-002, US-003 complétés (Sprint Homepage MVP) |
+| 2026-02-27 | US-013, US-014, US-015 complétés (Tests unitaires & intégration) |
 
