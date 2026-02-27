@@ -255,21 +255,21 @@
 
 ## Epic 7: Tests
 
-### US-013: Test unitaire — Article Card ⬜ P1
+### US-013: Test unitaire — Article Card ✅ P1
 
 **En tant que** développeur  
 **Je veux** un script de test unitaire pour le composant Article Card  
 **Afin de** valider le rendu visuel et le comportement du composant de manière isolée
 
 **Critères d'acceptance:**
-- [ ] Vérifie le rendu du titre via la prop `title`
-- [ ] Vérifie l'affichage du badge catégorie via la prop `category`
-- [ ] Vérifie l'affichage de l'auteur (nom + avatar)
-- [ ] Vérifie le formatage des vues (ex: 9000 → "9k")
-- [ ] Vérifie le temps de lecture affiché
-- [ ] Vérifie que le lien "Read Full Article" contient le bon slug
-- [ ] Vérifie le fallback quand `image` ou `authorAvatar` est vide
-- [ ] Vérifie le `line-clamp-3` sur le titre
+- [x] Vérifie le rendu du titre via la prop `title`
+- [x] Vérifie l'affichage du badge catégorie via la prop `category`
+- [x] Vérifie l'affichage de l'auteur (nom + avatar)
+- [x] Vérifie le formatage des vues (ex: 9000 → "9k")
+- [x] Vérifie le temps de lecture affiché
+- [x] Vérifie que le lien "Read Full Article" contient le bon slug
+- [x] Vérifie le fallback quand `image` ou `authorAvatar` est vide
+- [x] Vérifie le `line-clamp-3` sur le titre
 
 **Technical notes:**
 - Fichier: `tests/unit/frontend/article-card.test.ts`
