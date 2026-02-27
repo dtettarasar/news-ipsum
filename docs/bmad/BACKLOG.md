@@ -278,24 +278,25 @@
 
 ---
 
-### US-014: Test unitaire — Top Stories ⬜ P1
+### US-014: Test unitaire — Top Stories ✅ Done
 
 **En tant que** développeur  
 **Je veux** un script de test unitaire pour le composant Top Stories  
 **Afin de** valider le chargement conditionnel et l'affichage de la grille d'articles
 
 **Critères d'acceptance:**
-- [ ] Vérifie l'affichage du message "Chargement des articles..." quand `isReady` est false
-- [ ] Vérifie l'affichage de la grille de cards quand `isReady` est true
-- [ ] Vérifie que le bon nombre de `<article-card>` est rendu selon les données du store
-- [ ] Vérifie que les props sont correctement passées à chaque card
-- [ ] Vérifie le titre de section "Top Stories"
+- [x] Vérifie l'affichage du message "Chargement des articles..." quand `isReady` est false
+- [x] Vérifie l'affichage de la grille de cards quand `isReady` est true
+- [x] Vérifie que le bon nombre de `<article-card>` est rendu selon les données du store
+- [x] Vérifie que les props sont correctement passées à chaque card
+- [x] Vérifie le titre de section "Top Stories"
 
 **Technical notes:**
 - Fichier: `tests/unit/frontend/top-stories.test.ts`
 - Outils: Vitest + Vue Test Utils
 - Nécessite un mock du store Pinia (`articlesStore`)
-- Nécessite un stub de `useAsyncData`
+- Composant async setup (`useAsyncData`) → wrappé dans `<Suspense>` pour les tests
+- 9 tests — tous passés ✅
 
 ---
 
