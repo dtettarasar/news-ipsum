@@ -89,22 +89,78 @@
 
 ---
 
-### US-004: Recent by Category Section ⬜ P1
+### US-004: Recent Articles Section ⬜ P1
 
 **En tant que** visiteur  
-**Je veux** voir les articles récents d'une catégorie  
-**Afin de** explorer le contenu par thème
+**Je veux** voir les articles les plus récemment publiés  
+**Afin de** découvrir les dernières publications du site
+
+**Description** : Section affichée sur la homepage, juste en dessous de "Top Stories". Affiche les 5 articles les plus récents dans un layout à 2 colonnes (desktop).
+
+#### US-004a: Section Recent Articles (composant parent) ⬜ P1
+
+**En tant que** visiteur  
+**Je veux** voir une section "Recent Articles" sur la homepage  
+**Afin de** accéder aux dernières publications
 
 **Critères d'acceptance:**
-- [ ] Dropdown pour sélectionner la catégorie
-- [ ] Affiche 6 articles de la catégorie sélectionnée
-- [ ] Triés par date (récents en premier)
-- [ ] Changement de catégorie recharge les articles
-- [ ] État de chargement
+- [ ] Titre de section "Recent Articles"
+- [ ] Layout desktop : 2 colonnes (gauche = featured card, droite = grille 2×2 de small cards)
+- [ ] Les 2 colonnes ont la même hauteur
+- [ ] Affiche les 5 articles les plus récents (triés par `createdAt` DESC)
+- [ ] Données récupérées depuis le store via `useAsyncData` (SSR-safe, comme TopStories)
+- [ ] État de chargement visible pendant le fetch
+- [ ] Composant extrait dans `components/article/RecentArticles.vue`
 
 **Technical notes:**
-- API: `GET /api/articles/recent?category=X&limit=6`
-- Store: `articlesStore.fetchRecentByCategory(cat, 6)`
+- API: `GET /api/articles/recent?limit=5`
+- Store: `articlesStore.fetchRecent(5)` (ou adaptation de `fetchRecentByCategory`)
+- Pattern identique à TopStories : `useAsyncData` → `isReady` → v-if/v-else
+- Responsive : 1 colonne en mobile (featured card en haut, puis les 4 small cards empilées)
+
+---
+
+#### US-004b: Featured Article Card (grande card) ⬜ P1
+
+**En tant que** visiteur  
+**Je veux** voir l'article le plus récent mis en avant dans une grande card  
+**Afin de** identifier rapidement la dernière publication
+
+**Critères d'acceptance:**
+- [ ] Occupe la colonne gauche (environ 50% de la largeur desktop)
+- [ ] Image principale de l'article en background (couvre toute la card)
+- [ ] Badge catégorie en style "pill" (comme les cards TopStories)
+- [ ] Titre de l'article en blanc, aligné à gauche, positionné en bas de la card
+- [ ] Catégorie positionnée au-dessus du titre, en bas de la card
+- [ ] La card fait la même hauteur que la grille 2×2 à droite
+- [ ] Au clic → navigation vers `/article/read/:slug`
+
+**Technical notes:**
+- Composant: `components/article/FeaturedCard.vue`
+- Props: `title`, `slug`, `image`, `category`
+- Design : overlay sombre en dégradé sur l'image pour lisibilité du texte blanc
+- Pas d'auteur, pas de durée de lecture, pas de nombre de vues, pas de bouton "Read Full Article"
+
+---
+
+#### US-004c: Recent Article Card (petite card) ⬜ P1
+
+**En tant que** visiteur  
+**Je veux** voir les articles récents dans des cards compactes  
+**Afin de** parcourir rapidement les publications récentes
+
+**Critères d'acceptance:**
+- [ ] Affichée dans la colonne droite, grille 2×2 (4 cards)
+- [ ] Image principale de l'article
+- [ ] Badge catégorie en style "pill"
+- [ ] Titre de l'article
+- [ ] Design simplifié par rapport à la card TopStories : pas d'auteur, pas de durée de lecture, pas de nombre de vues, pas de bouton "Read Full Article"
+- [ ] Au clic → navigation vers `/article/read/:slug`
+
+**Technical notes:**
+- Composant: `components/article/RecentCard.vue`
+- Props: `title`, `slug`, `image`, `category`
+- Design similaire aux ArticleCard TopStories, mais allégé (image + catégorie + titre uniquement)
 
 ---
 
