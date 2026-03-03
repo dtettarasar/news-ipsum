@@ -58,9 +58,13 @@
 | **Recent Articles** | 5 articles les plus récents (featured card + grille 2×2) | P1 | Medium |
 | **Most Popular** | Articles par likes | P1 | Medium |
 | **Article Detail Page** | Page complète d'un article | P1 | Large |
+| **Inscription utilisateur** | Création de compte lecteur (publique) | P2 | Medium |
+| **Tags** | Système de tags complémentaire aux catégories | P2 | Medium |
+| **Admin User Management** | Gestion des comptes et rôles (admin) | P2 | Medium |
 | **Search** | Recherche d'articles | P2 | Medium |
-| **Comments** | Système de commentaires | P2 | Large |
+| **Comments** | Système de commentaires (nécessite inscription) | P2 | Large |
 | **Admin Dashboard** | Interface admin complète | P2 | Large |
+| **Récupération mot de passe** | Reset password par email | P3 | Medium |
 | **User Profile** | Page profil utilisateur | P3 | Medium |
 | **Newsletter** | Inscription newsletter | P3 | Small |
 
@@ -228,9 +232,22 @@
 
 ---
 
-## 7. Historique des révisions
+## 7. Évolutions futures (hors scope formation)
+
+Les fonctionnalités suivantes sont envisagées comme des évolutions à long terme de la plateforme, au-delà du périmètre de la formation Ilaria Digital School :
+
+| Feature | Description |
+|---------|-------------|
+| **Abonnements / Premium** | Système d'abonnement, contenu réservé aux abonnés, achat à la carte, intégration paiement |
+| **Événementiel** | Pages événements, inscription en ligne, gestion admin |
+| **VOD / Vidéo** | Player vidéo intégré, catalogue VOD, contenu gratuit et premium |
+
+---
+
+## 8. Historique des révisions
 
 | Date | Version | Changements | Auteur |
 |------|---------|-------------|--------|
 | 2026-02-25 | 1.0 | Création initiale | Dylan |
+| 2026-03-03 | 1.1 | Alignement cahier des charges Ilaria : contexte pédagogique, accessibilité, types de contenu, Recent Articles (ex Recent by Category), inscription utilisateur, récupération mdp, tags, gestion admin utilisateurs, évolutions futures | Dylan |
 

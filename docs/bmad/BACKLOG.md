@@ -243,6 +243,57 @@
 
 ---
 
+### US-018: Inscription utilisateur (lecteur) ⬜ P2
+
+**En tant que** visiteur
+**Je veux** créer un compte lecteur sur le site
+**Afin de** pouvoir commenter des articles et accéder aux fonctionnalités réservées aux membres
+
+**Contexte** : Le formulaire de connexion actuel est réservé aux rôles administratifs (admin, editor). Il faut un système d'inscription publique permettant aux visiteurs de créer un compte avec le rôle "user" (lecteur). Ce compte servira de base pour les fonctionnalités d'engagement (commentaires, likes) et, à terme, pour des fonctionnalités avancées (abonnements, contenu premium).
+
+**Critères d'acceptance:**
+- [ ] Page d'inscription publique accessible depuis le header
+- [ ] Formulaire : nom, email, mot de passe, confirmation mot de passe
+- [ ] Validation côté client (email valide, mot de passe min 8 caractères, confirmation identique)
+- [ ] Validation côté serveur (email unique, sanitisation des inputs)
+- [ ] Création du compte avec le rôle `user` (lecteur) par défaut
+- [ ] Connexion automatique après inscription réussie
+- [ ] Message d'erreur si l'email est déjà utilisé
+- [ ] Redirection vers la page d'origine après inscription
+
+**Technical notes:**
+- Page : `pages/auth/register.vue`
+- API : `POST /api/auth/register` (à créer)
+- Utilise `nuxt-auth-utils` pour la session (dépend de US-016)
+- Hashage du mot de passe côté serveur (bcrypt)
+- Prérequis : US-016 (migration auth)
+
+---
+
+### US-019: Récupération de mot de passe ⬜ P3
+
+**En tant que** utilisateur enregistré
+**Je veux** pouvoir réinitialiser mon mot de passe si je l'ai oublié
+**Afin de** récupérer l'accès à mon compte
+
+**Critères d'acceptance:**
+- [ ] Lien "Mot de passe oublié" sur la page de connexion
+- [ ] Formulaire de saisie de l'email
+- [ ] Envoi d'un email avec un lien de réinitialisation (token temporaire)
+- [ ] Page de réinitialisation : nouveau mot de passe + confirmation
+- [ ] Le token expire après un délai (ex: 1h)
+- [ ] Message de confirmation après réinitialisation réussie
+- [ ] Redirige vers la page de connexion
+
+**Technical notes:**
+- Pages : `pages/auth/forgot-password.vue`, `pages/auth/reset-password.vue`
+- API : `POST /api/auth/forgot-password`, `POST /api/auth/reset-password`
+- Token stocké en base avec expiration
+- Service d'envoi d'email à configurer (ex: Resend, Nodemailer)
+- Prérequis : US-016, US-018
+
+---
+
 ## Epic 4: Admin Dashboard
 
 ### US-017: Intégration de Nuxt UI pour l'interface d'administration ⬜ P2
@@ -302,6 +353,54 @@
 
 ---
 
+### US-020: Système de Tags ⬜ P2
+
+**En tant qu'** admin
+**Je veux** gérer des tags sur les articles
+**Afin de** permettre une classification fine du contenu, complémentaire aux catégories
+
+**Contexte** : Le cahier des charges mentionne l'affichage des articles par "catégories et tags". Les catégories sont déjà implémentées (CRUD + carrousel). Les tags apportent une granularité supplémentaire (un article peut avoir plusieurs tags transversaux, indépendants de sa catégorie).
+
+**Critères d'acceptance:**
+- [ ] Modèle `Tag` en base (nom, slug)
+- [ ] API CRUD pour les tags (`/api/tags`)
+- [ ] Champ `tags` (array de références) ajouté au modèle Article
+- [ ] Interface admin pour gérer les tags (ajout, modification, suppression)
+- [ ] Sélection de tags lors de la création/édition d'un article (multi-select)
+- [ ] Affichage des tags sur la page détail d'un article
+- [ ] Recherche/filtre par tag côté frontend
+
+**Technical notes:**
+- Modèle Mongoose : `Tag { name, slug, createdAt }`
+- Relation many-to-many : `Article.tags: [ObjectId]` → ref Tag
+- API : `GET/POST/PUT/DELETE /api/tags`
+- Composant admin : intégré au formulaire d'édition d'article (US-008)
+- Affichage frontend : badges cliquables sur la page article (US-006)
+
+---
+
+### US-021: Admin — Gestion des utilisateurs ⬜ P2
+
+**En tant qu'** admin
+**Je veux** voir et gérer les comptes utilisateurs
+**Afin de** contrôler les accès et les rôles sur la plateforme
+
+**Critères d'acceptance:**
+- [ ] Page admin listant tous les utilisateurs (tableau)
+- [ ] Colonnes : nom, email, rôle, date d'inscription, statut
+- [ ] Pagination et recherche par nom/email
+- [ ] Modification du rôle d'un utilisateur (user → editor, editor → admin, etc.)
+- [ ] Désactivation/suppression d'un compte
+- [ ] Seul un admin peut accéder à cette page
+
+**Technical notes:**
+- Page : `pages/admin/users.vue`
+- API : `GET /api/admin/users`, `PUT /api/admin/users/:id`, `DELETE /api/admin/users/:id`
+- Middleware : vérification rôle admin
+- Utilise les composants Nuxt UI (UTable, UModal) — dépend de US-017
+
+---
+
 ## Epic 5: Search & Navigation
 
 ### US-009: Search Functionality ⬜ P2
@@ -336,16 +435,23 @@
 
 ### US-011: Comments System ⬜ P3
 
-**En tant que** visiteur connecté  
+**En tant que** utilisateur connecté (lecteur, editor ou admin)  
 **Je veux** commenter un article  
 **Afin de** participer à la discussion
 
+**Contexte** : Nécessite que les visiteurs puissent créer un compte (US-018) pour s'authentifier avant de commenter.
+
 **Critères d'acceptance:**
-- [ ] Section commentaires sous article
-- [ ] Formulaire de commentaire
+- [ ] Section commentaires sous article (page détail US-006)
+- [ ] Formulaire de commentaire (visible uniquement si connecté)
+- [ ] Message invitant à se connecter/s'inscrire si visiteur non authentifié
 - [ ] Affichage chronologique
 - [ ] Réponses imbriquées (1 niveau)
-- [ ] Modération (admin)
+- [ ] Modération par admin (ajout, modification, suppression)
+- [ ] Notification à l'auteur de l'article quand un nouveau commentaire est posté (optionnel)
+
+**Technical notes:**
+- Prérequis : US-006 (page détail), US-018 (inscription lecteur)
 
 ---
 
@@ -441,6 +547,52 @@
 - Tester en isolation sans composant Vue (environnement node)
 - Projet Vitest dédié `integration-frontend` avec alias `@/` configuré
 - 17 tests (fetchTopStories, fetchRecentByCategory, fetchPopular, clearCache, getters) — tous passés ✅
+
+---
+
+## Epic 9: Évolutions futures (hors scope formation)
+
+> Les fonctionnalités ci-dessous sont identifiées comme des évolutions potentielles de la plateforme, mais **ne font pas partie du périmètre de la formation Ilaria Digital School**. Elles sont documentées ici pour anticiper l'architecture et faciliter leur implémentation future.
+
+### US-F01: Abonnements et contenu premium ⬜ Future
+
+**En tant que** lecteur  
+**Je veux** souscrire à un abonnement  
+**Afin d'** accéder à des contenus exclusifs ou premium
+
+**Périmètre envisagé :**
+- Système d'abonnement (gratuit / premium)
+- Contenus réservés aux abonnés (articles payants, accès anticipé)
+- Achat de contenu à la carte
+- Intégration paiement (Stripe ou équivalent)
+
+---
+
+### US-F02: Événementiel ⬜ Future
+
+**En tant que** visiteur  
+**Je veux** consulter et m'inscrire à des événements  
+**Afin de** participer aux activités proposées par le média
+
+**Périmètre envisagé :**
+- Pages de présentation d'événements
+- Système d'inscription en ligne
+- Gestion admin des événements (CRUD)
+- Rappels / notifications
+
+---
+
+### US-F03: VOD / Contenu vidéo ⬜ Future
+
+**En tant que** visiteur  
+**Je veux** regarder du contenu vidéo  
+**Afin de** consommer du contenu multimédia proposé par le média
+
+**Périmètre envisagé :**
+- Player vidéo intégré
+- Catalogue VOD avec catégorisation
+- Contenu vidéo gratuit et/ou premium
+- Hébergement vidéo (externe type Vimeo/YouTube ou self-hosted)
 
 ---
 
