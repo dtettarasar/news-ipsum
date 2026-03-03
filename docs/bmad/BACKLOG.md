@@ -117,6 +117,7 @@
 - Store: `articlesStore.fetchRecent(5)` (ou adaptation de `fetchRecentByCategory`)
 - Pattern identique à TopStories : `useAsyncData` → `isReady` → v-if/v-else
 - Responsive : 1 colonne en mobile (featured card en haut, puis les 4 small cards empilées)
+- En mobile, la featured card conserve son design (image background + titre blanc) mais fait la même hauteur que les petites cards
 
 ---
 
@@ -132,7 +133,8 @@
 - [ ] Badge catégorie en style "pill" (comme les cards TopStories)
 - [ ] Titre de l'article en blanc, aligné à gauche, positionné en bas de la card
 - [ ] Catégorie positionnée au-dessus du titre, en bas de la card
-- [ ] La card fait la même hauteur que la grille 2×2 à droite
+- [ ] Desktop : la card fait la même hauteur que la grille 2×2 à droite
+- [ ] Mobile : la card fait la même hauteur que les petites cards (layout 1 colonne)
 - [ ] Au clic → navigation vers `/article/read/:slug`
 
 **Technical notes:**
