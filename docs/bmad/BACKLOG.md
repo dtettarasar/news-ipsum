@@ -558,6 +558,112 @@ _Évolutions futures (hors scope) :_
 
 ---
 
+## Epic 10: Contact Page
+
+### US-026: Page Contact (layout) ⬜ P2
+
+**En tant que** visiteur  
+**Je veux** accéder à une page de contact  
+**Afin de** pouvoir contacter l'équipe du site par différents moyens
+
+**Contexte** : Les maquettes présentent une page contact complète avec plusieurs composants : formulaire de contact, FAQ, localisation (map), appel téléphonique, live chat et inscription newsletter. Cette US décrit le layout parent de la page.
+
+**Critères d'acceptance:**
+- [ ] Page accessible depuis la navigation principale
+- [ ] Route : `/contact`
+- [ ] Layout organisant les différents composants de la page (formulaire, FAQ, map, etc.)
+- [ ] Responsive : adaptation mobile/desktop
+- [ ] Meta tags SEO
+
+**Technical notes:**
+- Page : `pages/contact.vue`
+- Composants enfants : US-027 à US-030 + composant newsletter (US-023, réutilisé)
+
+---
+
+### US-027: Formulaire de contact ⬜ P2
+
+**En tant que** visiteur  
+**Je veux** envoyer un message à l'équipe du site via un formulaire  
+**Afin de** poser une question ou signaler un problème
+
+**Critères d'acceptance:**
+- [ ] Champs : nom, email, sujet, message
+- [ ] Validation côté client (champs requis, email valide)
+- [ ] Validation côté serveur (sanitisation des inputs)
+- [ ] Message de confirmation après envoi réussi
+- [ ] Gestion des erreurs (affichage message d'erreur)
+- [ ] Protection anti-spam (à définir : honeypot, rate limiting, ou captcha)
+
+**Technical notes:**
+- Composant : `components/contact/ContactForm.vue`
+- API : `POST /api/contact` (envoi d'email ou stockage en base)
+- Service d'email nécessaire (même infra que US-019 et US-023)
+
+---
+
+### US-028: FAQ Accordéon ⬜ P2
+
+**En tant que** visiteur  
+**Je veux** consulter les questions fréquentes sur la page contact  
+**Afin de** trouver rapidement une réponse sans contacter l'équipe
+
+**Critères d'acceptance:**
+- [ ] Composant accordéon (expand/collapse)
+- [ ] Chaque item : question (titre cliquable) + réponse (contenu dépliable)
+- [ ] Un seul item ouvert à la fois (ou plusieurs, à définir)
+- [ ] Animation fluide à l'ouverture/fermeture
+- [ ] Accessibilité : navigation clavier, `aria-expanded`, `aria-controls`, rôle `button`
+- [ ] Données FAQ : statiques (hardcodées ou fichier de contenu) ou dynamiques (API admin)
+
+**Technical notes:**
+- Composant : `components/contact/FaqAccordion.vue`
+- Données : initialement hardcodées dans un fichier de contenu (type `site-content.ts`), avec possibilité d'évolution vers un CRUD admin
+- Accessibilité : pattern WAI-ARIA Accordion
+
+---
+
+### US-029: Widget localisation (Google Maps) ⬜ P3
+
+**En tant que** visiteur  
+**Je veux** voir l'emplacement des bureaux du site sur une carte  
+**Afin de** localiser physiquement l'équipe
+
+**Critères d'acceptance:**
+- [ ] Intégration d'une carte interactive (Google Maps ou alternative)
+- [ ] Marqueur positionné sur l'adresse des bureaux
+- [ ] Adresse affichée en texte à côté ou en dessous de la carte
+- [ ] Responsive : carte adaptée aux différentes tailles d'écran
+- [ ] Fallback si la carte ne charge pas (affichage de l'adresse seule)
+
+**Technical notes:**
+- Composant : `components/contact/LocationMap.vue`
+- Options d'intégration : iframe Google Maps embed (gratuit, sans clé API), Google Maps JS API (clé requise), ou alternative open-source (Leaflet + OpenStreetMap)
+- Chargement lazy (`<ClientOnly>` + intersection observer ou `loading="lazy"` sur iframe)
+- L'adresse sera configurable (variable d'environnement ou fichier de contenu)
+
+---
+
+### US-030: Bouton appel téléphonique ⬜ P3
+
+**En tant que** visiteur  
+**Je veux** lancer un appel téléphonique depuis la page contact  
+**Afin de** contacter directement l'équipe par téléphone
+
+**Critères d'acceptance:**
+- [ ] Composant affichant le numéro de téléphone et un bouton d'appel
+- [ ] Lien `tel:` fonctionnel (ouvre l'app téléphone sur mobile, Skype/Teams/etc. sur desktop)
+- [ ] Numéro formaté lisiblement
+- [ ] Icône téléphone + label accessible
+- [ ] Horaires de disponibilité affichés (optionnel)
+
+**Technical notes:**
+- Composant : `components/contact/PhoneCall.vue`
+- Simple lien `<a href="tel:+33XXXXXXXXX">` — implémentation légère
+- Numéro configurable (fichier de contenu ou variable d'environnement)
+
+---
+
 ## Epic 7: Code Quality & Conventions
 
 ### US-022: Audit accessibilité des maquettes ⬜ P1
@@ -759,6 +865,18 @@ _Évolutions futures (hors scope) :_
 
 **Statut** : ❓ À clarifier — une US-025 est créée dans le backlog en P3
 
+### 7. Page Contact — fonctionnalités des maquettes
+
+**Constat** : Les maquettes présentent une page contact riche avec plusieurs composants. Certains sont classiques (formulaire, FAQ, localisation), mais d'autres ne sont pas mentionnés dans le cahier des charges.
+
+**Questions :**
+- [ ] La page contact fait-elle partie du périmètre évalué par Ilaria ? (le cahier des charges ne la mentionne pas explicitement)
+- [ ] Le **live chat** est-il attendu ? C'est une fonctionnalité complexe (temps réel, interface opérateur). Une alternative serait d'intégrer un service tiers.
+- [ ] Pour la **carte de localisation** : Google Maps (clé API payante au-delà d'un seuil) ou alternative open-source (Leaflet/OpenStreetMap) ?
+- [ ] Les données FAQ doivent-elles être gérées dynamiquement depuis l'admin, ou un contenu statique suffit ?
+
+**Statut** : ❓ À clarifier — US-026 à US-030 créées dans le backlog, live chat classé en évolution future (US-F04)
+
 ---
 
 ## Epic 9: Évolutions futures (hors scope formation)
@@ -807,6 +925,23 @@ _Évolutions futures (hors scope) :_
 
 ---
 
+### US-F04: Live Chat ⬜ Future
+
+**En tant que** visiteur  
+**Je veux** communiquer en temps réel avec l'équipe du site  
+**Afin d'** obtenir une réponse rapide à mes questions
+
+**Contexte** : Les maquettes de la page contact incluent un composant de live chat. Cette fonctionnalité n'est **pas mentionnée dans le cahier des charges** Ilaria et représente une complexité significative (WebSocket, gestion de sessions, interface opérateur). Probablement hors scope de la formation.
+
+**Périmètre envisagé :**
+- Widget de chat intégré sur la page contact (ou flottant sur tout le site)
+- Communication en temps réel (WebSocket / Server-Sent Events)
+- Interface opérateur côté admin pour répondre aux messages
+- Historique des conversations
+- Alternative : intégrer un service tiers (Crisp, Intercom, Tawk.to)
+
+---
+
 ## Sprint actuel: Homepage MVP
 
 **Objectif**: Homepage fonctionnelle avec Top Stories
@@ -829,5 +964,5 @@ _Évolutions futures (hors scope) :_
 | 2026-02-25 | Création du backlog initial |
 | 2026-02-26 | US-001, US-002, US-003 complétés (Sprint Homepage MVP) |
 | 2026-02-27 | US-013, US-014, US-015 complétés (Tests unitaires & intégration) |
-| 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-025 ajoutées, Epic 9 (futures), points à clarifier avec Ilaria |
+| 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-030 ajoutées, Epic 9 + 10, points à clarifier avec Ilaria |
 
