@@ -664,6 +664,72 @@ _Évolutions futures (hors scope) :_
 
 ---
 
+## Epic 11: About Page
+
+### US-031: Page About (contenu éditorial) ⬜ P2
+
+**En tant que** visiteur  
+**Je veux** consulter la page À propos du site  
+**Afin de** découvrir l'histoire, la mission et l'équipe derrière le média
+
+**Contexte** : Les maquettes présentent une page About avec 4 sections de contenu éditorial. Le contenu sera initialement hardcodé puis éditable depuis l'interface admin.
+
+**Critères d'acceptance:**
+- [ ] Page accessible depuis la navigation principale
+- [ ] Route : `/about`
+- [ ] Meta tags SEO
+- [ ] Responsive : adaptation mobile/desktop
+
+_Section 1 — "Our Story" :_
+- [ ] Layout 2 colonnes : texte à gauche, image à droite
+- [ ] Mobile : empilé (image puis texte, ou inverse)
+
+_Section 2 — "The Professional Business Platform" :_
+- [ ] Layout 2 colonnes : image à gauche, texte à droite
+- [ ] Mobile : empilé
+
+_Section 3 — "Our Growing News Network" :_
+- [ ] Layout 2 colonnes : texte à gauche, image à droite
+- [ ] Mobile : empilé
+
+_Section 4 — "Meet Our Team" :_
+- [ ] Grille de cartes présentant les membres de l'équipe
+- [ ] Par carte : photo, prénom + nom, titre/rôle, liens réseaux sociaux
+- [ ] Responsive : adapté selon le nombre de membres
+
+**Technical notes:**
+- Page : `pages/about.vue`
+- Composants possibles : `components/about/TeamMemberCard.vue` (carte équipe), sections réutilisables texte+image
+- Données initialement hardcodées (fichier `site-content.ts` ou directement dans le template)
+- Les sections texte+image suivent un pattern alterné (image droite / image gauche) — envisager un composant générique `ContentSection.vue` avec une prop `imagePosition: 'left' | 'right'`
+
+---
+
+### US-032: Admin — Édition du contenu des pages statiques ⬜ P3
+
+**En tant qu'** admin  
+**Je veux** éditer le contenu des pages statiques (About, Contact FAQ) depuis l'interface admin  
+**Afin de** mettre à jour le contenu éditorial sans toucher au code
+
+**Critères d'acceptance:**
+- [ ] Interface admin pour éditer les textes des sections de la page About
+- [ ] Interface admin pour gérer les membres de l'équipe (CRUD : ajouter, modifier, supprimer, réordonner)
+- [ ] Upload/modification des images des sections
+- [ ] Interface admin pour gérer les entrées FAQ de la page Contact (CRUD)
+- [ ] Preview des modifications avant publication
+- [ ] Les pages frontend affichent le contenu depuis la base de données au lieu du hardcodé
+
+**Technical notes:**
+- Modèles Mongoose possibles :
+  - `PageContent { pageSlug, sectionKey, title, body, image, order }` (contenu générique)
+  - `TeamMember { name, title, photo, socialLinks: { twitter?, linkedin?, instagram? }, order }`
+  - `FaqEntry { question, answer, order }` (utilisé par US-028)
+- API : `GET/PUT /api/admin/pages/:slug`, `GET/POST/PUT/DELETE /api/admin/team-members`, `GET/POST/PUT/DELETE /api/admin/faq`
+- Dépend de : US-017 (Nuxt UI), US-031 (page About), US-028 (FAQ)
+- À détailler davantage lors de la phase d'implémentation admin
+
+---
+
 ## Epic 7: Code Quality & Conventions
 
 ### US-022: Audit accessibilité des maquettes ⬜ P1
@@ -964,5 +1030,5 @@ _Évolutions futures (hors scope) :_
 | 2026-02-25 | Création du backlog initial |
 | 2026-02-26 | US-001, US-002, US-003 complétés (Sprint Homepage MVP) |
 | 2026-02-27 | US-013, US-014, US-015 complétés (Tests unitaires & intégration) |
-| 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-030 ajoutées, Epic 9 + 10, points à clarifier avec Ilaria |
+| 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-032 ajoutées, Epic 9 à 11, points à clarifier avec Ilaria |
 
