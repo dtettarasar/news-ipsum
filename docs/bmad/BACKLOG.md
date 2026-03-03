@@ -523,6 +523,41 @@ _Évolutions futures (hors scope) :_
 
 ---
 
+### US-025: Widget Météo (sidebar page article) ⬜ P3
+
+**En tant que** visiteur  
+**Je veux** voir la météo actuelle dans la sidebar de la page article  
+**Afin de** consulter rapidement les conditions météorologiques locales
+
+**Contexte** : Les maquettes de la page article incluent un widget météo dans la sidebar. Cette fonctionnalité n'est **pas mentionnée dans le cahier des charges** Ilaria (voir section "Points à clarifier"). Ce n'est pas une fonctionnalité principale du site, mais un élément d'enrichissement de l'expérience utilisateur.
+
+**Critères d'acceptance:**
+- [ ] Widget affiché dans la sidebar de la page article
+- [ ] Affiche les conditions météo actuelles : température, icône météo, description, localité
+- [ ] Géolocalisation de l'utilisateur via l'API Geolocation du navigateur
+- [ ] Requête vers une API météo externe avec les coordonnées obtenues
+- [ ] **Cas de refus géolocalisation** : comportement de fallback à définir (masquer le widget, ou afficher la météo d'un lieu par défaut, ex: Paris)
+- [ ] Gestion des erreurs (API indisponible, timeout) : le widget ne doit pas bloquer le chargement de la page
+- [ ] Données météo cachées côté client pour éviter les appels API répétés (ex: durée de cache 30 min ou 1h)
+- [ ] L'autorisation de géolocalisation ne doit pas être redemandée à chaque article — exploiter la persistance du navigateur (permission API) et/ou stocker les coordonnées en `localStorage`/`sessionStorage`
+- [ ] Stratégie de cache : stocker localement les dernières données météo + timestamp, ne re-fetch que si les données sont expirées
+
+**Technical notes:**
+- Composant : `components/widgets/WeatherWidget.vue`
+- API géolocalisation : `navigator.geolocation.getCurrentPosition()` (côté client uniquement). Note : le navigateur gère la persistance de la permission (grant/deny) par domaine — une fois accordée, il ne repropose pas la popup. Mais les coordonnées ne sont pas conservées entre les pages → les stocker dans `localStorage` avec un TTL.
+- Stratégie de performance recommandée :
+  1. Vérifier `localStorage` pour des coordonnées récentes (< 1h)
+  2. Si absent/expiré → appel `getCurrentPosition()`
+  3. Vérifier `localStorage` pour des données météo récentes (< 30 min)
+  4. Si absent/expiré → appel API météo via proxy Nitro
+  5. Stocker le résultat avec timestamp
+- API météo à explorer : OpenWeatherMap (gratuit, clé API requise), WeatherAPI, Open-Meteo (gratuit sans clé)
+- Proxy des appels API météo via le serveur Nitro (évite d'exposer la clé API côté client)
+- Chargement lazy / client-only (`<ClientOnly>`) car dépend de la géolocalisation navigateur
+- Non bloquant : le widget se charge indépendamment du contenu article
+
+---
+
 ## Epic 7: Code Quality & Conventions
 
 ### US-022: Audit accessibilité des maquettes ⬜ P1
@@ -712,6 +747,18 @@ _Évolutions futures (hors scope) :_
 
 **Statut** : ❓ À clarifier — une US-023 est créée dans le backlog avec les deux scénarios (avec/sans compte) en prévision
 
+### 6. Widget Météo (sidebar page article)
+
+**Constat** : Les maquettes de la page article affichent un widget météo dans la sidebar. Cette fonctionnalité **n'est pas mentionnée dans le cahier des charges**.
+
+**Questions :**
+- [ ] Le widget météo fait-il partie du périmètre attendu par Ilaria ?
+- [ ] Si oui, quelle API météo utiliser ? (OpenWeatherMap, Open-Meteo, autre ?)
+- [ ] Quel comportement en cas de refus de géolocalisation par l'utilisateur ? (masquer le widget vs lieu par défaut)
+- [ ] La précision de la localisation est-elle importante (ville exacte vs région) ?
+
+**Statut** : ❓ À clarifier — une US-025 est créée dans le backlog en P3
+
 ---
 
 ## Epic 9: Évolutions futures (hors scope formation)
@@ -782,5 +829,5 @@ _Évolutions futures (hors scope) :_
 | 2026-02-25 | Création du backlog initial |
 | 2026-02-26 | US-001, US-002, US-003 complétés (Sprint Homepage MVP) |
 | 2026-02-27 | US-013, US-014, US-015 complétés (Tests unitaires & intégration) |
-| 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-024 ajoutées, Epic 9 (futures), points à clarifier avec Ilaria |
+| 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-025 ajoutées, Epic 9 (futures), points à clarifier avec Ilaria |
 
