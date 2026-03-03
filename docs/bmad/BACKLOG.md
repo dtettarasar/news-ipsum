@@ -457,6 +457,39 @@
 
 ## Epic 7: Code Quality & Conventions
 
+### US-022: Audit accessibilité des maquettes ⬜ P1
+
+**En tant que** développeur  
+**Je veux** auditer et ajuster les composants par rapport aux normes d'accessibilité WCAG  
+**Afin de** garantir que le site est utilisable par tous les utilisateurs, y compris ceux en situation de handicap
+
+**Contexte** : Le cahier des charges Ilaria insiste sur l'accessibilité comme axe majeur du projet. Cependant, les maquettes fournies présentent plusieurs éléments qui posent potentiellement des problèmes d'accessibilité. Il faudra ajuster l'implémentation par rapport aux maquettes pour respecter les normes WCAG AA, tout en restant aussi fidèle que possible au design.
+
+**Écarts identifiés sur les maquettes :**
+- **Taille du texte** : certains composants utilisent du texte de petite taille, problématique pour les personnes malvoyantes. Vérifier que les tailles minimales sont respectées (16px base recommandé).
+- **Contrastes insuffisants** : sur la page article, la section citation utilise du texte gris clair sur fond pêche pastel — contraste potentiellement insuffisant (WCAG AA exige un ratio ≥ 4.5:1 pour le texte normal, ≥ 3:1 pour le texte large).
+- **Icônes de petite taille** : la page article contient de nombreuses petites icônes dont la lisibilité et la zone de clic (min 44×44px) doivent être vérifiées.
+- **Absence d'option d'ajustement** : pas de mécanisme pour agrandir la taille du texte (optionnel mais recommandé).
+- **Boutons et liens sociaux** : nombreux boutons et liens avec des zones interactives à vérifier.
+- **Section Instagram en footer** : images avec boutons superposés — complexe pour la navigation clavier et la lisibilité (voir US-023).
+
+**Critères d'acceptance:**
+- [ ] Audit de contraste sur tous les composants implémentés (outils : axe DevTools, Lighthouse)
+- [ ] Tailles de texte minimales respectées (≥ 14px, idéalement 16px pour le body)
+- [ ] Toutes les zones interactives font au minimum 44×44px (WCAG 2.5.5)
+- [ ] Navigation clavier fonctionnelle sur l'ensemble du site (focus visible, ordre logique)
+- [ ] Tous les éléments non-textuels ont des alternatives (alt text, aria-label)
+- [ ] Les contrastes respectent WCAG AA (ratio ≥ 4.5:1 texte normal, ≥ 3:1 texte large)
+- [ ] Les ajustements de design par rapport aux maquettes sont documentés et justifiés
+
+**Technical notes:**
+- Outils de vérification : axe DevTools, Google Lighthouse, WAVE
+- Les écarts avec les maquettes doivent être signalés à Ilaria si le design compromet l'accessibilité
+- Cette US est transversale : s'applique à chaque composant au fil de l'implémentation
+- Focus prioritaire sur les composants déjà implémentés (ArticleCard, TopStories) puis les nouveaux
+
+---
+
 ### US-012: Harmoniser le nommage des composants ⬜ P2
 
 **En tant que** développeur  
@@ -550,6 +583,57 @@
 
 ---
 
+---
+
+## Points à clarifier avec Ilaria
+
+> Éléments issus des maquettes qui nécessitent une discussion/validation. Les maquettes suggèrent des fonctionnalités ou des designs qui ne sont pas mentionnés dans le cahier des charges ou qui posent des questions de faisabilité/accessibilité.
+
+### 1. Section Instagram Feed (footer)
+
+**Constat** : Les maquettes montrent une section en bas de page avec un feed Instagram intégré. Le design présente les photos des posts dans des carrés de couleur avec un bouton "Follow" superposé sur les images.
+
+**Questions :**
+- [ ] Cette fonctionnalité est-elle attendue par Ilaria ? Elle n'est pas mentionnée dans le cahier des charges.
+- [ ] L'API Instagram (Instagram Basic Display API) impose des contraintes : authentification OAuth, tokens à renouveler, limites de requêtes. Est-ce réaliste dans le cadre du projet ?
+- [ ] Le design des maquettes semble éloigné du format standard d'un embed Instagram — est-ce un design custom souhaité, ou peut-on utiliser un embed officiel Instagram ?
+- [ ] Alternative possible : un faux feed avec des images statiques pour la démo, en documentant la solution cible en production.
+- [ ] **Accessibilité** : les images avec boutons superposés posent des problèmes pour la navigation clavier et les lecteurs d'écran.
+
+**Statut** : ❓ À clarifier avant implémentation
+
+### 2. Ajustements accessibilité vs maquettes
+
+**Constat** : Plusieurs éléments des maquettes ne respectent pas les normes WCAG AA que le cahier des charges exige.
+
+**Questions :**
+- [ ] Est-ce acceptable de modifier certains aspects visuels des maquettes (contrastes, tailles de texte) pour respecter l'accessibilité ? En cas de conflit entre maquette et accessibilité, quelle est la priorité ?
+- [ ] Faut-il documenter les écarts entre maquettes et implémentation finale ?
+
+**Statut** : ❓ À clarifier — l'accessibilité est mentionnée comme prioritaire dans le cahier des charges, ce qui devrait primer sur la fidélité pixel-perfect aux maquettes.
+
+### 3. Liens / boutons sociaux
+
+**Constat** : Les maquettes montrent de nombreux boutons de partage social (Facebook, Twitter, etc.) et liens vers les réseaux sociaux du média.
+
+**Questions :**
+- [ ] S'agit-il de liens simples vers les profils sociaux, ou de boutons de partage fonctionnels (Share API) ?
+- [ ] Les icônes de réseaux sociaux doivent-elles ouvrir dans un nouvel onglet ?
+- [ ] Quels réseaux sont prioritaires ?
+
+**Statut** : ❓ À clarifier — ne bloque pas l'implémentation frontend (on peut mettre des liens placeholder)
+
+### 4. Option d'ajustement de la taille du texte
+
+**Constat** : Aucune option de personnalisation de la taille du texte n'est prévue dans les maquettes, mais le cahier des charges insiste sur l'accessibilité.
+
+**Questions :**
+- [ ] Faut-il implémenter un mécanisme d'accessibilité (barre d'accessibilité type widget, ou simplement s'assurer que le zoom navigateur fonctionne bien) ?
+
+**Statut** : ❓ À clarifier — au minimum, vérifier que le zoom navigateur jusqu'à 200% ne casse pas le layout
+
+---
+
 ## Epic 9: Évolutions futures (hors scope formation)
 
 > Les fonctionnalités ci-dessous sont identifiées comme des évolutions potentielles de la plateforme, mais **ne font pas partie du périmètre de la formation Ilaria Digital School**. Elles sont documentées ici pour anticiper l'architecture et faciliter leur implémentation future.
@@ -618,4 +702,5 @@
 | 2026-02-25 | Création du backlog initial |
 | 2026-02-26 | US-001, US-002, US-003 complétés (Sprint Homepage MVP) |
 | 2026-02-27 | US-013, US-014, US-015 complétés (Tests unitaires & intégration) |
+| 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-021 ajoutées, Epic 9 (futures), US-022 (accessibilité), points à clarifier avec Ilaria |
 
