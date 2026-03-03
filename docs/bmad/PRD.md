@@ -8,7 +8,7 @@
 
 ### 1.1 Résumé
 
-**News Ipsum** est une plateforme de publication d'articles de type magazine/blog, construite avec une stack moderne (Nuxt 4, MongoDB, Pinia) pour démontrer les compétences en développement web full-stack.
+**News Ipsum** est une plateforme de publication d'actualités (articles, interviews, reportages) construite avec une stack moderne (Nuxt 4, MongoDB, Pinia). Ce projet est réalisé dans le cadre du programme final de la **Ilaria Digital School**, avec pour objectif de démontrer les compétences en développement web full-stack, en conception responsive et en accessibilité web.
 
 ### 1.2 Objectifs
 
@@ -16,6 +16,8 @@
 |----------|-------------|----------|
 | **Portfolio** | Démontrer les compétences techniques modernes | Haute |
 | **Apprentissage** | Maîtriser Nuxt 4, Composition API, SSR | Haute |
+| **Responsive** | Expérience optimale sur tous les appareils (mobile, tablette, desktop) | Haute |
+| **Accessibilité** | Respecter les principes WCAG pour un site utilisable par tous, y compris les personnes en situation de handicap | Haute |
 | **Production-ready** | Code sécurisé, testé, documenté | Haute |
 | **Évolutif** | Architecture scalable pour futures features | Moyenne |
 
@@ -53,7 +55,7 @@
 
 | Feature | Description | Priority | Effort |
 |---------|-------------|----------|--------|
-| **Recent by Category** | Articles récents par catégorie | P1 | Medium |
+| **Recent Articles** | 5 articles les plus récents (featured card + grille 2×2) | P1 | Medium |
 | **Most Popular** | Articles par likes | P1 | Medium |
 | **Article Detail Page** | Page complète d'un article | P1 | Large |
 | **Search** | Recherche d'articles | P2 | Medium |
@@ -82,8 +84,8 @@
 │              TOP STORIES                     │
 │  5 articles les plus vus (cards)            │
 ├─────────────────────────────────────────────┤
-│           RECENT BY CATEGORY                 │
-│  6 articles récents - filtre par catégorie  │
+│           RECENT ARTICLES                    │
+│  5 articles récents (featured + grille 2×2) │
 ├─────────────────────────────────────────────┤
 │              MOST POPULAR                    │
 │  12 articles les plus likés (cards)         │
@@ -112,16 +114,23 @@
 
 **API** : `GET /api/articles/top-stories?limit=5`
 
-### 3.3 Section Recent by Category
+### 3.3 Section Recent Articles
 
-**Description** : 6 articles récents, filtrable par catégorie
+**Description** : Affiche les 5 articles les plus récemment publiés (triés par `createdAt` DESC), sans filtre par catégorie.
 
-**Comportement** :
-- Dropdown pour sélectionner la catégorie
-- Au changement : recharge les articles de cette catégorie
-- Tri par `createdAt` DESC
+**Layout desktop** : 2 colonnes
+- **Colonne gauche** : Featured card (article le plus récent) — image en background, badge catégorie pill, titre en blanc en bas, overlay dégradé sombre
+- **Colonne droite** : Grille 2×2 de petites cards (4 articles suivants) — image, badge catégorie pill, titre uniquement (pas d'auteur, pas de vues, pas de bouton)
+- Les 2 colonnes font la même hauteur
 
-**API** : `GET /api/articles/recent?category=Technologie&limit=6`
+**Layout mobile** : 1 colonne — featured card en haut (même hauteur que les petites cards, conserve son design distinctif), puis les 4 petites cards empilées
+
+**Composants** :
+- `RecentArticles.vue` : Section parent (fetch + layout)
+- `FeaturedCard.vue` : Grande card article mis en avant
+- `RecentCard.vue` : Petite card simplifiée
+
+**API** : `GET /api/articles/recent?limit=5`
 
 ### 3.4 Section Most Popular
 
