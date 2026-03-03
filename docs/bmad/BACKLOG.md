@@ -245,6 +245,33 @@
 
 ## Epic 4: Admin Dashboard
 
+### US-017: Intégration de Nuxt UI pour l'interface d'administration ⬜ P2
+
+**En tant que** développeur  
+**Je veux** remplacer PreBuilt UI par Nuxt UI pour l'interface d'administration  
+**Afin de** bénéficier d'une librairie de composants standard, maintenue par l'écosystème Nuxt, cohérente avec le reste du stack
+
+**Contexte** : L'interface admin actuelle utilise des composants de PreBuilt UI (https://prebuiltui.com). Nuxt UI (https://ui.nuxt.com/) offre une librairie complète de composants (formulaires, tableaux, modals, notifications, etc.) intégrée nativement à Nuxt, avec support TypeScript, theming, et accessibilité. La migration vers Nuxt UI permettra de construire le dashboard admin plus rapidement et de manière plus maintenable.
+
+**Critères d'acceptance:**
+- [ ] Installation et configuration de Nuxt UI dans `nuxt.config.ts`
+- [ ] Migration du `LoginForm.vue` : remplacement des composants PreBuilt UI par les équivalents Nuxt UI (UInput, UButton, UForm, etc.)
+- [ ] Suppression des dépendances PreBuilt UI du `package.json`
+- [ ] Le formulaire de login fonctionne comme avant (soumission, affichage erreur, redirection)
+- [ ] Les pages admin existantes utilisent Nuxt UI
+- [ ] Base de composants Nuxt UI prête pour la construction du dashboard (US-007, US-008)
+- [ ] Aucune régression sur les fonctionnalités existantes
+
+**Technical notes:**
+- Librairie: Nuxt UI — https://ui.nuxt.com/
+- À installer : `npx nuxi module add ui`
+- Composants clés : `UForm`, `UInput`, `UButton`, `UTable`, `UModal`, `UNotification`
+- Fichiers impactés initialement : `components/admin/LoginForm.vue`, pages admin
+- Prérequis : à implémenter **avant** ou **en parallèle** des US du dashboard admin (US-007, US-008)
+- Nuxt UI inclut son propre système de theming (compatible Tailwind) — vérifier la cohérence avec le CSS existant du site public
+
+---
+
 ### US-007: Admin Article List ⬜ P2
 
 **En tant qu'** admin  
