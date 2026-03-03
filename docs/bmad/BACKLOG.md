@@ -455,6 +455,74 @@
 
 ---
 
+### US-023: Inscription Newsletter ⬜ P2
+
+**En tant que** visiteur (avec ou sans compte)  
+**Je veux** m'inscrire à la newsletter du site  
+**Afin de** recevoir par email les dernières actualités et publications
+
+**Contexte** : Les maquettes incluent un composant d'inscription à la newsletter sur la homepage — fonctionnalité non mentionnée dans le cahier des charges Ilaria (voir section "Points à clarifier"). Deux scénarios d'inscription doivent être gérés : visiteurs anonymes (email seul) et utilisateurs connectés (lié au compte).
+
+**Critères d'acceptance:**
+
+_Inscription sans compte :_
+- [ ] Composant formulaire visible sur la homepage (champ email + bouton)
+- [ ] Validation de l'email côté client et serveur
+- [ ] Message de confirmation après inscription
+- [ ] Stockage de l'email en base (collection dédiée ou modèle `NewsletterSubscriber`)
+- [ ] Lien de désinscription fonctionnel dans chaque email de newsletter reçu
+
+_Inscription avec compte :_
+- [ ] L'utilisateur connecté peut s'inscrire depuis le même composant (email pré-rempli)
+- [ ] L'inscription est liée à son compte utilisateur (référence `userId`)
+- [ ] Gestion de l'inscription/désinscription depuis les réglages du compte (US-024)
+- [ ] Le lien de désinscription dans les emails fonctionne également
+
+_Gestion des données :_
+- [ ] Gestion en base des deux types d'abonnés (avec et sans compte) — architecture à définir
+- [ ] Pas de doublon : si un visiteur inscrit sans compte crée ensuite un compte avec le même email, les entrées doivent être fusionnées
+- [ ] Conformité RGPD : consentement explicite, possibilité de désinscription à tout moment
+
+**Technical notes:**
+- Composant : `components/newsletter/SubscribeForm.vue`
+- API : `POST /api/newsletter/subscribe`, `POST /api/newsletter/unsubscribe`
+- Modèle possible : `NewsletterSubscriber { email, userId? (ref User), subscribedAt, active, unsubscribeToken }`
+- Alternative : champ `newsletterSubscribed: Boolean` sur le modèle User + collection séparée pour les abonnés sans compte
+- Architecture de données à affiner (à explorer ensemble)
+- Service d'envoi d'email nécessaire (même infra que US-019 récupération mdp)
+
+---
+
+### US-024: Page réglages du compte utilisateur ⬜ P3
+
+**En tant que** utilisateur connecté  
+**Je veux** accéder à une page de réglages de mon compte  
+**Afin de** gérer mes préférences, mon profil et mes abonnements
+
+**Contexte** : Cette page centralisera les paramètres utilisateur. Initialement focalisée sur le profil et la newsletter, elle sera enrichie au fil du temps avec de nouvelles fonctionnalités.
+
+**Critères d'acceptance:**
+
+_V1 (scope formation) :_
+- [ ] Page accessible depuis le menu utilisateur (header)
+- [ ] Section profil : modifier nom, avatar, bio
+- [ ] Section newsletter : activer/désactiver l'inscription
+- [ ] Section commentaires : voir et gérer ses commentaires postés
+- [ ] Section sécurité : changer son mot de passe
+
+_Évolutions futures (hors scope) :_
+- Articles sauvegardés / favoris
+- Gestion d'un abonnement premium
+- Historique des contenus achetés à la carte
+
+**Technical notes:**
+- Page : `pages/account/settings.vue`
+- API : `GET/PUT /api/account/settings`, `GET /api/account/comments`
+- Middleware : authentification requise
+- Prérequis : US-018 (inscription), US-016 (auth migration)
+
+---
+
 ## Epic 7: Code Quality & Conventions
 
 ### US-022: Audit accessibilité des maquettes ⬜ P1
@@ -632,6 +700,18 @@
 
 **Statut** : ❓ À clarifier — au minimum, vérifier que le zoom navigateur jusqu'à 200% ne casse pas le layout
 
+### 5. Newsletter
+
+**Constat** : Les maquettes incluent un composant d'inscription à la newsletter sur la homepage. Cependant, **aucune fonctionnalité relative à la newsletter n'est mentionnée dans le cahier des charges** fourni par Ilaria.
+
+**Questions :**
+- [ ] La newsletter fait-elle partie du périmètre attendu par Ilaria pour la formation, ou est-ce un ajout des maquettes non requis ?
+- [ ] Si oui, quel est le niveau d'attente ? Juste le composant d'inscription frontend, ou le système complet (envoi d'emails, gestion des abonnés, désinscription) ?
+- [ ] Y a-t-il un outil d'emailing imposé ou recommandé par Ilaria ?
+- [ ] La gestion RGPD (consentement, désinscription) est-elle évaluée ?
+
+**Statut** : ❓ À clarifier — une US-023 est créée dans le backlog avec les deux scénarios (avec/sans compte) en prévision
+
 ---
 
 ## Epic 9: Évolutions futures (hors scope formation)
@@ -702,5 +782,5 @@
 | 2026-02-25 | Création du backlog initial |
 | 2026-02-26 | US-001, US-002, US-003 complétés (Sprint Homepage MVP) |
 | 2026-02-27 | US-013, US-014, US-015 complétés (Tests unitaires & intégration) |
-| 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-021 ajoutées, Epic 9 (futures), US-022 (accessibilité), points à clarifier avec Ilaria |
+| 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-024 ajoutées, Epic 9 (futures), points à clarifier avec Ilaria |
 
