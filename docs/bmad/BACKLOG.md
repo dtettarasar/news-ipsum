@@ -208,7 +208,42 @@
 
 ---
 
-## Epic 3: Admin Dashboard
+## Epic 3: Auth — Migration vers nuxt-auth-utils
+
+### US-016: Migration du système d'authentification vers nuxt-auth-utils ⬜ P2
+
+**En tant que** développeur  
+**Je veux** remplacer le système d'authentification maison par le module `nuxt-auth-utils`  
+**Afin de** bénéficier d'une solution standard, maintenue par l'écosystème Nuxt, plus fiable et plus simple à maintenir
+
+**Contexte** : Le système actuel (JWT maison, cookie manuel, middleware custom, chiffrement/déchiffrement du sub) a été construit à partir de code issu de projets précédents en JavaScript. Il fonctionne mais présente une complexité élevée et un risque de failles comparé à un module dédié. Le module `nuxt-auth-utils` (https://nuxt.com/modules/auth-utils) fournit des utilitaires serveur et client pour la gestion de session, l'authentification par credentials, et les providers OAuth.
+
+**Critères d'acceptance:**
+- [ ] Installation et configuration du module `nuxt-auth-utils` dans `nuxt.config.ts`
+- [ ] Remplacement du login admin (`POST /api/auth/admin-login` ou `/api/auth/login`) par le mécanisme de session du module
+- [ ] Remplacement de `GET /api/auth/me` par les utilitaires de session du module (`useUserSession`, `getUserSession`)
+- [ ] Remplacement de `POST /api/auth/logout` par `clearUserSession` du module
+- [ ] Suppression du code maison devenu inutile : `createAuthToken`, `verifyAuthToken`, `getUserByToken`, `createAuthCookie`, `deleteAuthToken` dans `auth.service.ts`
+- [ ] Suppression du chiffrement/déchiffrement du `sub` JWT (`cypher.ts`) si plus nécessaire
+- [ ] Le middleware `auth.ts` utilise la session du module au lieu de `$fetch('/api/auth/me')`
+- [ ] Les rôles (admin, editor, user) restent gérés et vérifiés (hiérarchie conservée)
+- [ ] Les pages admin protégées fonctionnent comme avant (redirection si non authentifié ou rôle insuffisant)
+- [ ] Le composant `LoginForm.vue` fonctionne avec le nouveau système
+- [ ] Les tests existants (auth unitaires + intégration) sont mis à jour ou remplacés
+- [ ] Aucune régression sur les fonctionnalités existantes
+
+**Technical notes:**
+- Module: `nuxt-auth-utils` — https://nuxt.com/modules/auth-utils
+- À installer : `npx nuxi module add auth-utils`
+- Côté serveur : `setUserSession(event, { user })`, `getUserSession(event)`, `clearUserSession(event)`
+- Côté client : `useUserSession()` composable (remplace le fetch manuel de `/api/auth/me`)
+- Fichiers impactés : `server/utils/auth.service.ts`, `server/api/auth/*.ts`, `middleware/auth.ts`, `components/admin/LoginForm.vue`, `server/utils/cypher.ts`
+- Prérequis : à implémenter **avant** les US du dashboard admin (US-007, US-008)
+- Le script `create-admin.ts` reste nécessaire (création du premier admin en base)
+
+---
+
+## Epic 4: Admin Dashboard
 
 ### US-007: Admin Article List ⬜ P2
 
@@ -240,7 +275,7 @@
 
 ---
 
-## Epic 4: Search & Navigation
+## Epic 5: Search & Navigation
 
 ### US-009: Search Functionality ⬜ P2
 
@@ -256,7 +291,7 @@
 
 ---
 
-## Epic 5: User Engagement
+## Epic 6: User Engagement
 
 ### US-010: Like System ⬜ P3
 
@@ -287,7 +322,7 @@
 
 ---
 
-## Epic 6: Code Quality & Conventions
+## Epic 7: Code Quality & Conventions
 
 ### US-012: Harmoniser le nommage des composants ⬜ P2
 
@@ -311,7 +346,7 @@
 
 ---
 
-## Epic 7: Tests
+## Epic 8: Tests
 
 ### US-013: Test unitaire — Article Card ✅ P1
 
