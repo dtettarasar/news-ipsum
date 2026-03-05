@@ -63,6 +63,21 @@ export const useArticlesStore = defineStore('articles', () => {
     }
   }
 
+  async function fetchRecent(limit: number = 5): Promise<void> {
+    if (cached.value.recent) return
+
+    loading.value.recent = true
+    try {
+      const response = await $fetch(`/api/articles/recent?limit=${limit}`)
+      recent.value = response.data
+      cached.value.recent = true
+    } catch (error) {
+      console.error('Failed to fetch recent articles:', error)
+    } finally {
+      loading.value.recent = false
+    }
+  }
+
   async function fetchRecentByCategory(
     category: string,
     limit: number = 6
@@ -127,6 +142,7 @@ export const useArticlesStore = defineStore('articles', () => {
 
     // Actions
     fetchTopStories,
+    fetchRecent,
     fetchRecentByCategory,
     fetchPopular,
     clearCache,
