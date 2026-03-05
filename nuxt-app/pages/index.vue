@@ -10,7 +10,13 @@
       <category-content-carrousel></category-content-carrousel>
     </div>
 
-    <article-top-stories />
+    <div class="my-12">
+      <article-top-stories />
+    </div>
+    
+    <div class="my-12">
+      <article-recent />
+    </div>
 
   </div>
 
