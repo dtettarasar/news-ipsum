@@ -14,8 +14,10 @@ interface Article {
   image: string
   category: string
   views: number
+  likes: number
   readTime: number
   author: Author
+  createdAt: string
 }
 
 interface LoadingState {

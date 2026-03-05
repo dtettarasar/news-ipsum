@@ -6,15 +6,17 @@ export default defineEventHandler(async (event) => {
   const popular = articlesData
     .sort((a, b) => (b.likes || 0) - (a.likes || 0))
     .slice(0, limit)
-    .map(({ _id, title, image, category, likes, readTime, author, slug }) => ({
+    .map(({ _id, title, image, category, views, likes, readTime, author, slug, createdAt }) => ({
       _id,
       title,
       image,
       category,
+      views,
       likes,
       readTime,
       author,
       slug,
+      createdAt,
     }))
 
   return { success: true, data: popular }

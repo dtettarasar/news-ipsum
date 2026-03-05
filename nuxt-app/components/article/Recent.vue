@@ -16,9 +16,17 @@
     
     import { useArticlesStore } from '@/stores/articlesStore'
     import { storeToRefs } from 'pinia'
-    
+
     const articlesStore = useArticlesStore()
     const isReady = ref(false);
 
+    const { recent } = storeToRefs(articlesStore)
+
+    await useAsyncData('recent', async () => {
+        await articlesStore.fetchRecent(5)
+        return recent.value
+    })
+
+    console.log('Recent articles:', recent.value)
 
 </script>
