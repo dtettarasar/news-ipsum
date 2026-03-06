@@ -1,7 +1,7 @@
 <template>
 
     <article
-      class="rounded-xl p-3 cursor-pointer"
+      class="rounded-xl p-3 cursor-pointer transition-all duration-200 hover:-translate-x-[3px] hover:-translate-y-[3px] hover:shadow-[3px_3px_0px_#000]"
       :style="{ backgroundColor: cardBackground }"
     >
       <a :href="`/article/read/${slug}`" class="block">
