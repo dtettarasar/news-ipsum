@@ -89,7 +89,7 @@
 
 ---
 
-### US-004: Recent Articles Section ⬜ P1
+### US-004: Recent Articles Section 🟡 P1
 
 **En tant que** visiteur  
 **Je veux** voir les articles les plus récemment publiés  
@@ -97,72 +97,78 @@
 
 **Description** : Section affichée sur la homepage, juste en dessous de "Top Stories". Affiche les 5 articles les plus récents dans un layout à 2 colonnes (desktop).
 
-#### US-004a: Section Recent Articles (composant parent) ⬜ P1
+#### US-004a: Section Recent Articles (composant parent) ✅ P1
 
 **En tant que** visiteur  
 **Je veux** voir une section "Recent Articles" sur la homepage  
 **Afin de** accéder aux dernières publications
 
 **Critères d'acceptance:**
-- [ ] Titre de section "Recent Articles"
-- [ ] Layout desktop : 2 colonnes (gauche = featured card, droite = grille 2×2 de small cards)
-- [ ] Les 2 colonnes ont la même hauteur
-- [ ] Affiche les 5 articles les plus récents (triés par `createdAt` DESC)
-- [ ] Données récupérées depuis le store via `useAsyncData` (SSR-safe, comme TopStories)
-- [ ] État de chargement visible pendant le fetch
-- [ ] Composant extrait dans `components/article/RecentArticles.vue`
+- [x] Titre de section "Recent Articles"
+- [x] Layout desktop : 2 colonnes (gauche = featured card, droite = grille 2×2 de small cards)
+- [x] Les 2 colonnes ont la même hauteur
+- [x] Affiche les 5 articles les plus récents (triés par `createdAt` DESC)
+- [x] Données récupérées depuis le store via `useAsyncData` (SSR-safe, comme TopStories)
+- [x] État de chargement visible pendant le fetch
+- [x] Composant extrait dans `components/article/Recent.vue`
 
 **Technical notes:**
 - API: `GET /api/articles/recent?limit=5`
-- Store: `articlesStore.fetchRecent(5)` (ou adaptation de `fetchRecentByCategory`)
+- Store: `articlesStore.fetchRecent(5)`
 - Pattern identique à TopStories : `useAsyncData` → `isReady` → v-if/v-else
 - Responsive : 1 colonne en mobile (featured card en haut, puis les 4 small cards empilées)
-- En mobile, la featured card conserve son design (image background + titre blanc) mais fait la même hauteur que les petites cards
+- En mobile, la featured card conserve son design (image background + titre blanc) et les small cards passent en 1 colonne
 
 ---
 
-#### US-004b: Featured Article Card (grande card) ⬜ P1
+#### US-004b: Featured Article Card (grande card) ✅ P1
 
 **En tant que** visiteur  
 **Je veux** voir l'article le plus récent mis en avant dans une grande card  
 **Afin de** identifier rapidement la dernière publication
 
 **Critères d'acceptance:**
-- [ ] Occupe la colonne gauche (environ 50% de la largeur desktop)
-- [ ] Image principale de l'article en background (couvre toute la card)
-- [ ] Badge catégorie en style "pill" (comme les cards TopStories)
-- [ ] Titre de l'article en blanc, aligné à gauche, positionné en bas de la card
-- [ ] Catégorie positionnée au-dessus du titre, en bas de la card
-- [ ] Desktop : la card fait la même hauteur que la grille 2×2 à droite
-- [ ] Mobile : la card fait la même hauteur que les petites cards (layout 1 colonne)
-- [ ] Au clic → navigation vers `/article/read/:slug`
+- [x] Occupe la colonne gauche (environ 50% de la largeur desktop)
+- [x] Image principale de l'article en background (couvre toute la card)
+- [x] Badge catégorie en style "pill" (comme les cards TopStories)
+- [x] Titre de l'article en blanc, aligné à gauche, positionné en bas de la card
+- [x] Catégorie positionnée au-dessus du titre, en bas de la card
+- [x] Desktop : la card fait la même hauteur que la grille 2×2 à droite
+- [x] Mobile : la card fait la même hauteur que les petites cards (layout 1 colonne)
+- [x] Au clic → navigation vers `/article/read/:slug`
 
 **Technical notes:**
 - Composant: `components/article/FeaturedCard.vue`
 - Props: `title`, `slug`, `image`, `category`
 - Design : overlay sombre en dégradé sur l'image pour lisibilité du texte blanc
 - Pas d'auteur, pas de durée de lecture, pas de nombre de vues, pas de bouton "Read Full Article"
+- Hover néo-brutaliste : `translate(-3px, -3px)` + `box-shadow: 3px 3px 0px #000`
+- Overlay dégradé sombre (`from-black/80 via-black/30 to-transparent`) pour lisibilité du texte blanc
+- Tailles de texte responsive : pill `text-sm md:text-base lg:text-lg`, titre `text-lg md:text-2xl lg:text-3xl`
 
 ---
 
-#### US-004c: Recent Article Card (petite card) ⬜ P1
+#### US-004c: Recent Article Card (petite card) ✅ P1
 
 **En tant que** visiteur  
 **Je veux** voir les articles récents dans des cards compactes  
 **Afin de** parcourir rapidement les publications récentes
 
 **Critères d'acceptance:**
-- [ ] Affichée dans la colonne droite, grille 2×2 (4 cards)
-- [ ] Image principale de l'article
-- [ ] Badge catégorie en style "pill"
-- [ ] Titre de l'article
-- [ ] Design simplifié par rapport à la card TopStories : pas d'auteur, pas de durée de lecture, pas de nombre de vues, pas de bouton "Read Full Article"
-- [ ] Au clic → navigation vers `/article/read/:slug`
+- [x] Affichée dans la colonne droite, grille 2×2 (4 cards)
+- [x] Image principale de l'article
+- [x] Badge catégorie en style "pill"
+- [x] Titre de l'article
+- [x] Design simplifié par rapport à la card TopStories : pas d'auteur, pas de durée de lecture, pas de nombre de vues, pas de bouton "Read Full Article"
+- [x] Au clic → navigation vers `/article/read/:slug`
 
 **Technical notes:**
 - Composant: `components/article/RecentCard.vue`
 - Props: `title`, `slug`, `image`, `category`
 - Design similaire aux ArticleCard TopStories, mais allégé (image + catégorie + titre uniquement)
+- Hover néo-brutaliste : `translate(-3px, -3px)` + `box-shadow: 3px 3px 0px #000`
+- Couleurs de fond aléatoires SSR-safe via `useState` (même pattern que Card.vue)
+- Tailles de texte responsive : pill `text-xs md:text-sm`, titre `text-sm md:text-base lg:text-lg`
 
 ---
 
@@ -1020,6 +1026,9 @@ _Section 4 — "Meet Our Team" :_
 | US-013: Article Card Tests | ✅ Done | - |
 | US-014: Top Stories Tests | ✅ Done | - |
 | US-015: Store Integration Tests | ✅ Done | - |
+| US-004a: Section Recent Articles | ✅ Done | - |
+| US-004b: Featured Card | ✅ Done | - |
+| US-004c: Recent Card | ✅ Done | - |
 
 ---
 
@@ -1031,4 +1040,5 @@ _Section 4 — "Meet Our Team" :_
 | 2026-02-26 | US-001, US-002, US-003 complétés (Sprint Homepage MVP) |
 | 2026-02-27 | US-013, US-014, US-015 complétés (Tests unitaires & intégration) |
 | 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-032 ajoutées, Epic 9 à 11, points à clarifier avec Ilaria |
+| 2026-03-06 | US-004a/b/c complétés : Recent.vue, FeaturedCard.vue, RecentCard.vue — layout 2 colonnes, hover néo-brutaliste, tailles responsive. Tests restent à faire. |
 
