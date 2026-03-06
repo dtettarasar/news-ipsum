@@ -8,7 +8,7 @@
         Chargement des articles...
     </div>
 
-    <div v-else class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div v-else class="mt-6 p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
 
       <!-- Colonne gauche : Featured Card -->
       <article-featured-card
@@ -19,8 +19,8 @@
         :category="featuredArticle.category"
       />
 
-      <!-- Colonne droite : Grille 2×2 petites cards -->
-      <div class="grid grid-cols-2 gap-4">
+      <!-- Colonne droite : Grille 2×2 petites cards (1 colonne en mobile) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <article-recent-card
           v-for="article in smallCards"
           :key="article._id"
