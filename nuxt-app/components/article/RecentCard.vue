@@ -18,12 +18,12 @@
 
         <div class="pt-3">
           <span
-            class="inline-flex items-center px-2 py-0.5 rounded-full bg-white text-xs uppercase tracking-wide border border-black border-2"
+            class="inline-flex items-center px-2 py-0.5 rounded-full bg-white text-xs md:text-sm uppercase tracking-wide border border-black border-2"
           >
             {{ category }}
           </span>
 
-          <h3 class="mt-2 text-sm font-bold leading-tight line-clamp-2">
+          <h3 class="mt-2 text-sm md:text-base lg:text-lg font-bold leading-tight line-clamp-2">
             {{ title }}
           </h3>
         </div>

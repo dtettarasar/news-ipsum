@@ -16,12 +16,12 @@
       <!-- Contenu en bas de la card -->
       <div class="absolute bottom-0 left-0 right-0 p-5">
         <span
-          class="inline-flex items-center px-2 py-0.5 rounded-full bg-white text-xs uppercase tracking-wide border border-black border-2"
+          class="inline-flex items-center px-3 py-1 rounded-full bg-white text-sm md:text-base lg:text-lg uppercase tracking-wide border border-black border-2"
         >
           {{ category }}
         </span>
 
-        <h3 class="mt-2 text-xl md:text-2xl font-bold leading-tight text-white line-clamp-3">
+        <h3 class="mt-2 text-lg md:text-2xl lg:text-3xl font-bold leading-tight text-white line-clamp-3">
           {{ title }}
         </h3>
       </div>
