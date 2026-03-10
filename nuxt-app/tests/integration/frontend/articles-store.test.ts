@@ -146,6 +146,94 @@ describe('integration test: articlesStore', () => {
   })
 
   // =============================================
+  // fetchRecent — API call + state + cache
+  // =============================================
+
+  describe('fetchRecent', () => {
+    it('calls the correct API endpoint and populates recent', async () => {
+      fetchMock.mockResolvedValueOnce({ data: mockRecentArticles })
+
+      await store.fetchRecent(5)
+
+      expect(fetchMock).toHaveBeenCalledWith('/api/articles/recent?limit=5')
+      expect(store.recent).toEqual(mockRecentArticles)
+      expect(store.recent).toHaveLength(1)
+    })
+
+    it('uses the default limit of 5 when no argument is provided', async () => {
+      fetchMock.mockResolvedValueOnce({ data: mockRecentArticles })
+
+      await store.fetchRecent()
+
+      expect(fetchMock).toHaveBeenCalledWith('/api/articles/recent?limit=5')
+    })
+
+    it('sets loading.recent to true during fetch, false after', async () => {
+      let loadingDuringFetch = false
+
+      fetchMock.mockImplementationOnce(() => {
+        loadingDuringFetch = store.loading.recent
+        return Promise.resolve({ data: mockRecentArticles })
+      })
+
+      expect(store.loading.recent).toBe(false)
+
+      await store.fetchRecent(5)
+
+      expect(loadingDuringFetch).toBe(true)
+      expect(store.loading.recent).toBe(false)
+    })
+
+    it('sets cached.recent to true after successful fetch', async () => {
+      fetchMock.mockResolvedValueOnce({ data: mockRecentArticles })
+
+      expect(store.cached.recent).toBe(false)
+
+      await store.fetchRecent(5)
+
+      expect(store.cached.recent).toBe(true)
+    })
+
+    it('does not call $fetch again when cache is active', async () => {
+      fetchMock.mockResolvedValueOnce({ data: mockRecentArticles })
+
+      await store.fetchRecent(5)
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+
+      // Deuxième appel : cache actif → pas de second fetch
+      await store.fetchRecent(5)
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not crash and keeps state unchanged on API error', async () => {
+      fetchMock.mockRejectedValueOnce(new Error('Network error'))
+
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      await store.fetchRecent(5)
+
+      expect(store.recent).toEqual([])
+      expect(store.loading.recent).toBe(false)
+      expect(store.cached.recent).toBe(false)
+      expect(consoleSpy).toHaveBeenCalled()
+
+      consoleSpy.mockRestore()
+    })
+
+    it('allows re-fetching after clearCache', async () => {
+      fetchMock.mockResolvedValue({ data: mockRecentArticles })
+
+      await store.fetchRecent(5)
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+
+      store.clearCache()
+
+      await store.fetchRecent(5)
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  // =============================================
   // fetchRecentByCategory — API call + state
   // =============================================
 
