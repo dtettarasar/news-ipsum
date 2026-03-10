@@ -89,7 +89,7 @@
 
 ---
 
-### US-004: Recent Articles Section 🟡 P1
+### US-004: Recent Articles Section ✅ P1
 
 **En tant que** visiteur  
 **Je veux** voir les articles les plus récemment publiés  
@@ -1062,6 +1062,7 @@ _Section 4 — "Meet Our Team" :_
 | US-004a: Section Recent Articles | ✅ Done | - |
 | US-004b: Featured Card | ✅ Done | - |
 | US-004c: Recent Card | ✅ Done | - |
+| US-004: Tests (FeaturedCard, RecentCard, Recent, fetchRecent store) | ✅ Done | - |
 
 ---
 
@@ -1074,4 +1075,5 @@ _Section 4 — "Meet Our Team" :_
 | 2026-02-27 | US-013, US-014, US-015 complétés (Tests unitaires & intégration) |
 | 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-032 ajoutées, Epic 9 à 11, points à clarifier avec Ilaria |
 | 2026-03-06 | US-004a/b/c complétés : Recent.vue, FeaturedCard.vue, RecentCard.vue — layout 2 colonnes, hover néo-brutaliste, tailles responsive. Tests restent à faire. |
+| 2026-03-10 | US-004 ✅ : tests unitaires écrits (featured-card, recent-card, recent-articles), tests intégration store fetchRecent ajoutés. Mock data enrichi (64 articles, 9 catégories). US-033 ajoutée au backlog (Epic 7). |
 
