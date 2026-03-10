@@ -738,6 +738,39 @@ _Section 4 — "Meet Our Team" :_
 
 ## Epic 7: Code Quality & Conventions
 
+### US-033: Script de génération de secrets exécutable hors conteneur ⬜ P3
+
+**En tant que** développeur  
+**Je veux** pouvoir générer les secrets cryptographiques avant de lancer les conteneurs Docker  
+**Afin de** pouvoir initialiser le fichier `.env` correctement lors d'un premier déploiement sur une nouvelle machine
+
+**Contexte** : Le script actuel `nuxt-app/scripts/generate-secrets.ts` est conçu pour être exécuté *à l'intérieur* du conteneur (`make generate-secrets` → `docker compose exec nuxt-app npm run generate-secrets`). Cela crée un problème de bootstrap : pour lancer les conteneurs, il faut un `.env` avec des secrets valides, mais pour générer ces secrets, il faut que les conteneurs soient déjà en cours d'exécution. Ce cycle bloquant a été contourné manuellement lors du premier déploiement (génération via Python ou copier-coller).
+
+**Pistes d'implémentation envisagées :**
+
+1. **Déplacer le script à la racine du dépôt** et l'exposer via une commande `make` dédiée :
+   - Exécution via `node` / `tsx` installé localement si disponible
+   - Ou exécution via un conteneur Docker éphémère (`docker run --rm node:20-alpine npx tsx ...`) pour ne pas dépendre d'une installation locale de Node
+
+2. **Sortie du script :**
+   - Option A (actuelle) : affichage dans la console → copier-coller manuel dans le `.env`
+   - Option B : génération d'un fichier texte temporaire (ex: `.env.secrets.tmp`) contenant uniquement les lignes à copier, à supprimer après usage
+   - Option C (non retenue) : modification directe du `.env` — trop risqué (écrasement de variables existantes, pas de contrôle)
+
+**Critères d'acceptance:**
+- [ ] Le script peut être lancé depuis la racine du dépôt, sans que les conteneurs Docker soient actifs
+- [ ] Une commande `make generate-secrets` à la racine exécute le script (via Node local ou conteneur éphémère)
+- [ ] Le README est mis à jour pour documenter cette étape dans le guide d'installation initiale
+- [ ] L'exécution via conteneur Docker éphémère est la méthode de référence (pas de dépendance à un Node local)
+- [ ] Si Node est disponible localement, une méthode alternative est documentée
+
+**Technical notes:**
+- Script à déplacer ou dupliquer : `nuxt-app/scripts/generate-secrets.ts` → `scripts/generate-secrets.ts` (racine)
+- Commande `make` cible : `docker run --rm node:20-alpine sh -c "npx tsx /scripts/generate-secrets.ts"` avec volume mount
+- Conserver l'ancienne commande `make generate-secrets` (dans le conteneur) pour compatibilité une fois les conteneurs actifs
+
+---
+
 ### US-022: Audit accessibilité des maquettes ⬜ P1
 
 **En tant que** développeur  
