@@ -14,8 +14,10 @@ interface Article {
   image: string
   category: string
   views: number
+  likes: number
   readTime: number
   author: Author
+  createdAt: string
 }
 
 interface LoadingState {
@@ -60,6 +62,21 @@ export const useArticlesStore = defineStore('articles', () => {
       console.error('Failed to fetch top stories:', error)
     } finally {
       loading.value.topStories = false
+    }
+  }
+
+  async function fetchRecent(limit: number = 5): Promise<void> {
+    if (cached.value.recent) return
+
+    loading.value.recent = true
+    try {
+      const response = await $fetch(`/api/articles/recent?limit=${limit}`)
+      recent.value = response.data
+      cached.value.recent = true
+    } catch (error) {
+      console.error('Failed to fetch recent articles:', error)
+    } finally {
+      loading.value.recent = false
     }
   }
 
@@ -127,6 +144,7 @@ export const useArticlesStore = defineStore('articles', () => {
 
     // Actions
     fetchTopStories,
+    fetchRecent,
     fetchRecentByCategory,
     fetchPopular,
     clearCache,

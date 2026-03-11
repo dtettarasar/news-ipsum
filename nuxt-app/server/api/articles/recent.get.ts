@@ -14,15 +14,17 @@ export default defineEventHandler(async (event) => {
   const recent = articles
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, limit)
-    .map(({ _id, title, image, category, views, readTime, author, slug }) => ({
+    .map(({ _id, title, image, category, views, likes, readTime, author, slug, createdAt }) => ({
       _id,
       title,
       image,
       category,
       views,
+      likes,
       readTime,
       author,
       slug,
+      createdAt,
     }))
 
   return { success: true, data: recent }

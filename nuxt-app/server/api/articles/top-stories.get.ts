@@ -6,15 +6,17 @@ export default defineEventHandler(async (event) => {
   const topStories = articlesData
     .sort((a, b) => b.views - a.views)
     .slice(0, limit)
-    .map(({ _id, title, image, category, views, readTime, author, slug }) => ({
+    .map(({ _id, title, image, category, views, likes, readTime, author, slug, createdAt }) => ({
       _id,
       title,
       image,
       category,
       views,
+      likes,
       readTime,
       author,
       slug,
+      createdAt,
     }))
 
   return { success: true, data: topStories }
