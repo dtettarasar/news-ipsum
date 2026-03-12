@@ -228,22 +228,28 @@
 **Afin de** identifier rapidement la vidéo la plus populaire
 
 **Critères d'acceptance:**
-- [ ] Occupe la colonne gauche (environ 50% de la largeur desktop)
+- [ ] Occupe la colonne gauche (∼60% de la largeur desktop)
+- [ ] Colonne droite (SmallVideoCards) : ∼40% de la largeur desktop
+- [ ] Mobile : la card prend 100% de la largeur, la colonne droite se place en dessous
 - [ ] Thumbnail de la vidéo en background (couvre toute la card)
 - [ ] Icône play clairement visible et centrée sur la card
 - [ ] Badge catégorie en style "pill"
 - [ ] Titre de la vidéo en blanc, positionné en bas de la card
-- [ ] Durée de la vidéo affichée
-- [ ] Nombre de vues affiché
+- [ ] Sous le titre : nom de l'auteur | (icône horloge) durée | (icône œil) nombre de vues
+- [ ] Séparateurs verticaux entre chaque info (même design que les cards TopStories)
+- [ ] Nombre de vues formaté (`9000` → `9k`)
 - [ ] Desktop : la card fait la même hauteur que la grille 2×2 à droite
-- [ ] Mobile : la card fait la même hauteur que les petites cards (layout 1 colonne)
+- [ ] Mobile : la card prend toute la largeur (hauteur adaptée)
 - [ ] Au clic → navigation vers la page de la vidéo (`/video/watch/:slug`)
 
 **Technical notes:**
 - Composant: `components/video/FeaturedVideoCard.vue`
-- Props: `title`, `slug`, `thumbnail`, `category`, `duration`, `views`
+- Props: `title`, `slug`, `thumbnail`, `category`, `authorName`, `duration`, `views`
 - Design similaire à `FeaturedCard.vue` : overlay sombre en dégradé, hover néo-brutaliste
-- Ajouts spécifiques vidéo : icône play (SVG ou icon library), badge durée, compteur de vues
+- Layout desktop : CSS `grid-cols` ou `flex` avec `basis-[60%]` / `basis-[40%]` sur le parent `TopVideo.vue`
+- Barre d'infos (auteur + durée + vues) : même pattern que `Card.vue` TopStories (séparateurs `|`, icônes SVG inline ou icon library)
+- `duration` : string formaté côté mock data (ex: `"4:32"`) — voir note backend (section "Notes techniques à explorer")
+- `views` : nombre entier, formaté en `k` via un helper (même utilitaire que `Card.vue`)
 - Overlay dégradé sombre pour lisibilité du texte blanc
 
 ---
@@ -1129,6 +1135,47 @@ _Section 4 — "Meet Our Team" :_
 
 ---
 
+## Notes techniques à explorer
+
+> Cette section regroupe des réflexions et questions techniques transversales qui ne sont pas encore formalisées en User Stories mais qui méritent d'être documentées pour orienter les choix d'architecture futurs.
+
+### NT-001: Comptage des vues vidéo
+
+**Contexte** : Pour la section Top Video (US-006), les vues des vidéos sont actuellement hardcodées dans `site-content.ts`. Il faudra à terme un mécanisme automatique de comptage.
+
+**Pistes à évaluer :**
+
+1. **Tracker maison** : incrémenter un compteur en base pour chaque clic sur "play" (appel API `POST /api/videos/:slug/view`). Simple, sans dépendance externe. Consultable depuis l'interface admin.
+2. **Google Analytics / GA4** : exploitation des événements GA4 (event `video_play`). Nécessite une intégration GA4 et une API de lecture des données (Google Analytics Data API). Plus complexe mais offre des métriques enrichies (taux de completion, engagement).
+3. **Solution hybride** : tracker maison pour l'admin + GA4 pour l'analyse marketing.
+
+**Questions ouvertes :**
+- [ ] Quel niveau de précision est attendu ? (vues uniques par user vs total des clics)
+- [ ] Les stats de vues doivent-elles être visibles dans l'interface admin ?
+- [ ] Un tableau de bord analytics (genre récap hebdo) est-il prévu ?
+
+**Statut** : 💭 À explorer — pas de US créée à ce stade
+
+---
+
+### NT-002: Récupération automatique de la durée des vidéos
+
+**Contexte** : La durée des vidéos est actuellement hardcodée (ex: `"4:32"`). Pour un vrai système, il faudrait l'extraire automatiquement depuis le fichier vidéo au moment de l'upload.
+
+**Pistes à évaluer :**
+
+1. **Librairie JS côté serveur** : récupérer les métadonnées du fichier vidéo lors de l'upload (ex: `ffprobe` via `fluent-ffmpeg`, ou librairie pure JS comme `get-video-duration`). Retourne la durée en secondes, à formater en `mm:ss`.
+2. **API de la plateforme d'hébergement** : si les vidéos sont hébergées sur Vimeo, YouTube ou Mux, leur API fournit la durée et d'autres métadonnées directement.
+3. **Lecture côté client** : l'élément HTML `<video>` expose `videoElement.duration` une fois le fichier chargé. Utilisable pour un affichage client-side mais pas pour stocker en base.
+
+**Questions ouvertes :**
+- [ ] Les vidéos seront-elles hébergées en self-hosted (sur le serveur Gandi) ou chez une plateforme tier (Vimeo, Mux, Cloudflare Stream) ?
+- [ ] La récupération de durée se fait-elle à l'upload (process admin) ou automatiquement via une tâche planifiée ?
+
+**Statut** : 💭 À explorer — lié à la décision d'infrastructure vidéo (US-F03 VOD)
+
+---
+
 ## Epic 9: Évolutions futures (hors scope formation)
 
 > Les fonctionnalités ci-dessous sont identifiées comme des évolutions potentielles de la plateforme, mais **ne font pas partie du périmètre de la formation Ilaria Digital School**. Elles sont documentées ici pour anticiper l'architecture et faciliter leur implémentation future.
@@ -1221,5 +1268,5 @@ _Section 4 — "Meet Our Team" :_
 | 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-032 ajoutées, Epic 9 à 11, points à clarifier avec Ilaria |
 | 2026-03-06 | US-004a/b/c complétés : Recent.vue, FeaturedCard.vue, RecentCard.vue — layout 2 colonnes, hover néo-brutaliste, tailles responsive. Tests restent à faire. |
 | 2026-03-10 | US-004 ✅ : tests unitaires écrits (featured-card, recent-card, recent-articles), tests intégration store fetchRecent ajoutés. Mock data enrichi (64 articles, 9 catégories). US-033 ajoutée au backlog (Epic 7). |
-| 2026-03-12 | US-006 Top Video Section ajoutée au backlog (Epic 1) avec 6 sous-US (006a à 006f) : composant parent, FeaturedVideoCard, SmallVideoCard, mock data, API+Store, tests. US-006 Article Detail Page renommée US-034 pour éviter le conflit de numérotation. |
+| 2026-03-12 | US-006 Top Video Section ajoutée au backlog (Epic 1) avec 6 sous-US (006a à 006f) : composant parent, FeaturedVideoCard, SmallVideoCard, mock data, API+Store, tests. US-006 Article Detail Page renommée US-034 pour éviter le conflit de numérotation. US-006b affinée : largeur 60/40, auteur + durée + vues avec séparateurs, layout mobile. Section "Notes techniques à explorer" ajoutée (NT-001 comptage vues vidéo, NT-002 récupération durée). |
 
