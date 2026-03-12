@@ -212,6 +212,7 @@
 - [ ] Données récupérées depuis le store via `useAsyncData` (SSR-safe)
 - [ ] État de chargement visible pendant le fetch
 - [ ] Composant extrait dans `components/video/TopVideo.vue`
+- [ ] Background color noir sur toute la section
 
 **Technical notes:**
 - API: `GET /api/videos/popular?limit=5`
@@ -261,10 +262,10 @@
 **Afin de** parcourir rapidement le contenu vidéo populaire
 
 **Critères d'acceptance:**
-- [ ] Affichée dans la colonne droite, grille 2×2 (4 cards)
-- [ ] Structure interne en **2 colonnes** : vignette à gauche, informations à droite
-- [ ] **Colonne gauche** : thumbnail de la vidéo avec icône play centrée (horizontalement et verticalement) par-dessus
-- [ ] **Colonne droite** : badge catégorie (pill) + titre de la vidéo + nom de l'auteur (ex: "by Esther Howard")
+- [ ] Affichée dans la colonne droite en **colonne unique** : les 4 cards sont empilées verticalement l'une au-dessus de l'autre (pas de grille 2×2 comme dans Recent Articles)
+- [ ] Structure interne en **2 colonnes** : vignette à gauche (~40% de largeur), informations à droite (~60% de largeur)
+- [ ] **Colonne gauche (40%)** : thumbnail de la vidéo avec icône play centrée (horizontalement et verticalement) par-dessus
+- [ ] **Colonne droite (60%)** : badge catégorie (pill) + titre de la vidéo + nom de l'auteur (ex: "by Esther Howard")
 - [ ] Pas de background sur la card elle-même (hérite du fond noir de la section)
 - [ ] Titre en blanc
 - [ ] Nom de l'auteur en gris clair
