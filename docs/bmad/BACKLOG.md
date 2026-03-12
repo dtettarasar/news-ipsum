@@ -678,12 +678,20 @@ Pour les thumbnails et les URLs de vidéos, plusieurs plateformes offrent du con
 **Je veux** m'inscrire à la newsletter du site  
 **Afin de** recevoir par email les dernières actualités et publications
 
-**Contexte** : Les maquettes incluent un composant d'inscription à la newsletter sur la homepage — fonctionnalité non mentionnée dans le cahier des charges Ilaria (voir section "Points à clarifier"). Deux scénarios d'inscription doivent être gérés : visiteurs anonymes (email seul) et utilisateurs connectés (lié au compte).
+**Contexte** : Les maquettes incluent un composant d'inscription à la newsletter sur la homepage, la page About et la page article (sidebar) — fonctionnalité non mentionnée dans le cahier des charges Ilaria (voir section "Points à clarifier" #5). Le même composant `SubscribeForm.vue` est réutilisé sur les trois pages. Deux scénarios d'inscription doivent être gérés : visiteurs anonymes (email seul) et utilisateurs connectés (lié au compte).
 
 **Critères d'acceptance:**
 
+_Composant visuel (`SubscribeForm.vue`) :_
+- [ ] Conteneur centré verticalement et horizontalement
+- [ ] Titre "SUBSCRIBE TO OUR NEWSLETTER" en noir, gras, lettres majuscules
+- [ ] Texte d'accroche en dessous du titre (voir Points à clarifier #5 — préférable à l'adresse postale des maquettes)
+- [ ] Champ email + bouton d'inscription alignés horizontalement
+- [ ] Champ email : bordure solid noir ~2px, coins arrondis, placeholder "Email Address", style néo-brutaliste (même ligne que `SearchBar.vue`)
+- [ ] Bouton "Subscribe" avec icône avion en papier, fond `#40E0D0` (turquoise), style néo-brutaliste
+- [ ] Composant intégré sur : **homepage**, **page About**, **page article** (sidebar ou section dédiée)
+
 _Inscription sans compte :_
-- [ ] Composant formulaire visible sur la homepage (champ email + bouton)
 - [ ] Validation de l'email côté client et serveur
 - [ ] Message de confirmation après inscription
 - [ ] Stockage de l'email en base (collection dédiée ou modèle `NewsletterSubscriber`)
@@ -702,10 +710,13 @@ _Gestion des données :_
 
 **Technical notes:**
 - Composant : `components/newsletter/SubscribeForm.vue`
+- Design proche de `components/forms/SearchBar.vue` : même style néo-brutaliste pour le champ et le bouton
+- Couleur bouton : `#40E0D0` (turquoise) — à vérifier contraste WCAG avec le texte blanc ou noir dessus
+- Icône avion en papier : SVG inline ou icon library (même choix que le reste du projet)
 - API : `POST /api/newsletter/subscribe`, `POST /api/newsletter/unsubscribe`
 - Modèle possible : `NewsletterSubscriber { email, userId? (ref User), subscribedAt, active, unsubscribeToken }`
 - Alternative : champ `newsletterSubscribed: Boolean` sur le modèle User + collection séparée pour les abonnés sans compte
-- Architecture de données à affiner (à explorer ensemble)
+- Architecture de données à affiner (explorer ensemble)
 - Service d'envoi d'email nécessaire (même infra que US-019 récupération mdp)
 
 ---
@@ -1165,13 +1176,16 @@ _Section 4 — "Meet Our Team" :_
 
 ### 5. Newsletter
 
-**Constat** : Les maquettes incluent un composant d'inscription à la newsletter sur la homepage. Cependant, **aucune fonctionnalité relative à la newsletter n'est mentionnée dans le cahier des charges** fourni par Ilaria.
+**Constat** : Les maquettes incluent un composant d'inscription à la newsletter sur la homepage, la page About et la page article. Cependant, **aucune fonctionnalité relative à la newsletter n'est mentionnée dans le cahier des charges** fourni par Ilaria.
 
 **Questions :**
 - [ ] La newsletter fait-elle partie du périmètre attendu par Ilaria pour la formation, ou est-ce un ajout des maquettes non requis ?
 - [ ] Si oui, quel est le niveau d'attente ? Juste le composant d'inscription frontend, ou le système complet (envoi d'emails, gestion des abonnés, désinscription) ?
 - [ ] Y a-t-il un outil d'emailing imposé ou recommandé par Ilaria ?
 - [ ] La gestion RGPD (consentement, désinscription) est-elle évaluée ?
+
+**Point UX / marketing à discuter :**
+- [ ] Les maquettes affichent l'**adresse postale des locaux** sous le titre du composant newsletter. D'un point de vue marketing, ce choix est discutable : l'adresse postale n'incite pas à s'inscrire à une newsletter. Il serait préférable de la remplacer par une **phrase d'accroche** mettant en avant la valeur de l'abonnement (ex: "Stay informed with our latest news and exclusive content"). À valider avec Ilaria avant implémentation.
 
 **Statut** : ❓ À clarifier — une US-023 est créée dans le backlog avec les deux scénarios (avec/sans compte) en prévision
 
