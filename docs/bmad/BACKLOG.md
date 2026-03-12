@@ -206,7 +206,7 @@
 
 **Critères d'acceptance:**
 - [ ] Titre de section "Top Video"
-- [ ] Layout desktop : 2 colonnes (gauche = featured video card, droite = grille 2×2 de small video cards)
+- [ ] Layout desktop : 2 colonnes (gauche = featured video card, droite = colonne unique de 4 small video cards empilées en 1×4)
 - [ ] Les 2 colonnes ont la même hauteur
 - [ ] Affiche les 5 vidéos les plus vues (triées par `views` DESC)
 - [ ] Données récupérées depuis le store via `useAsyncData` (SSR-safe)
@@ -239,7 +239,7 @@
 - [ ] Sous le titre : nom de l'auteur | (icône horloge) durée | (icône œil) nombre de vues
 - [ ] Séparateurs verticaux entre chaque info (même design que les cards TopStories)
 - [ ] Nombre de vues formaté (`9000` → `9k`)
-- [ ] Desktop : la card fait la même hauteur que la grille 2×2 à droite
+- [ ] Desktop : la card fait la même hauteur que la colonne de droite (4 small cards empilées en 1×4)
 - [ ] Mobile : la card prend toute la largeur (hauteur adaptée)
 - [ ] Au clic → navigation vers la page de la vidéo (`/video/watch/:slug`)
 
@@ -289,7 +289,7 @@
 **Afin de** développer et tester la section Top Video sans backend réel
 
 **Critères d'acceptance:**
-- [ ] Interface TypeScript `Video` définie (`title`, `slug`, `thumbnail`, `category`, `views`, `duration`, `url`)
+- [ ] Interface TypeScript `Video` définie (`title`, `slug`, `thumbnail`, `category`, `authorName`, `views`, `duration`, `url`)
 - [ ] Au moins 10 vidéos mock avec des données réalistes
 - [ ] Les vidéos couvrent plusieurs catégories
 - [ ] Les thumbnails utilisent des URLs de ressources libres de droits
@@ -315,7 +315,7 @@ Pour les thumbnails et les URLs de vidéos, plusieurs plateformes offrent du con
 - [ ] State: `topVideos` (array), `loading` (flag), `cached.topVideos` (boolean)
 - [ ] Cache pour éviter les re-fetch inutiles (`cached` state + early return)
 - [ ] Flag `loading` (true pendant le fetch, false après)
-- [ ] TypeScript interfaces définies (`Video`)
+- [ ] TypeScript interfaces définies (`Video` : `title`, `slug`, `thumbnail`, `category`, `authorName`, `views`, `duration`, `url`)
 - [ ] Action `clearCache` pour reset
 
 **Technical notes:**
@@ -334,7 +334,7 @@ Pour les thumbnails et les URLs de vidéos, plusieurs plateformes offrent du con
 
 **Critères d'acceptance:**
 - [ ] Tests unitaires `FeaturedVideoCard.vue` : rendu titre, badge catégorie, thumbnail background, icône play, durée, vues, href
-- [ ] Tests unitaires `SmallVideoCard.vue` : rendu titre, badge catégorie, thumbnail, icône play, durée, href
+- [ ] Tests unitaires `SmallVideoCard.vue` : rendu titre, badge catégorie, thumbnail, icône play, nom auteur, href
 - [ ] Tests unitaires `TopVideo.vue` : titre de section, état de chargement, featured card = vidéo 1, 4 small cards = vidéos 2-5, `fetchTopVideos` appelé au mount
 - [ ] Tests d'intégration `fetchTopVideos` : endpoint correct, limit, flag loading, cache, gestion erreur, clearCache
 
