@@ -190,9 +190,154 @@
 
 ---
 
+### US-006: Top Video Section ⬜ P1
+
+**En tant que** visiteur
+**Je veux** voir les vidéos ayant le plus de vues
+**Afin de** découvrir le contenu vidéo le plus consulté sur le site
+
+**Description** : Section affichée sur la homepage, juste en dessous de "Recent Articles". Affiche les 5 vidéos les plus vues dans un layout à 2 colonnes (desktop), similaire à la section Recent Articles (US-004), avec des variations de design propres au contenu vidéo.
+
+#### US-006a: Section Top Video (composant parent) ⬜ P1
+
+**En tant que** visiteur
+**Je veux** voir une section "Top Video" sur la homepage
+**Afin de** accéder aux vidéos les plus populaires
+
+**Critères d'acceptance:**
+- [ ] Titre de section "Top Video"
+- [ ] Layout desktop : 2 colonnes (gauche = featured video card, droite = grille 2×2 de small video cards)
+- [ ] Les 2 colonnes ont la même hauteur
+- [ ] Affiche les 5 vidéos les plus vues (triées par `views` DESC)
+- [ ] Données récupérées depuis le store via `useAsyncData` (SSR-safe)
+- [ ] État de chargement visible pendant le fetch
+- [ ] Composant extrait dans `components/video/TopVideo.vue`
+
+**Technical notes:**
+- API: `GET /api/videos/popular?limit=5`
+- Store: `videosStore.fetchTopVideos(5)` (nouveau store dédié)
+- Pattern identique à `Recent.vue` : `useAsyncData` → `isReady` → v-if/v-else
+- Responsive : 1 colonne en mobile (featured video card en haut, puis les 4 small cards empilées)
+
+---
+
+#### US-006b: Featured Video Card (grande card) ⬜ P1
+
+**En tant que** visiteur
+**Je veux** voir la vidéo la plus vue mise en avant dans une grande card
+**Afin de** identifier rapidement la vidéo la plus populaire
+
+**Critères d'acceptance:**
+- [ ] Occupe la colonne gauche (environ 50% de la largeur desktop)
+- [ ] Thumbnail de la vidéo en background (couvre toute la card)
+- [ ] Icône play clairement visible et centrée sur la card
+- [ ] Badge catégorie en style "pill"
+- [ ] Titre de la vidéo en blanc, positionné en bas de la card
+- [ ] Durée de la vidéo affichée
+- [ ] Nombre de vues affiché
+- [ ] Desktop : la card fait la même hauteur que la grille 2×2 à droite
+- [ ] Mobile : la card fait la même hauteur que les petites cards (layout 1 colonne)
+- [ ] Au clic → navigation vers la page de la vidéo (`/video/watch/:slug`)
+
+**Technical notes:**
+- Composant: `components/video/FeaturedVideoCard.vue`
+- Props: `title`, `slug`, `thumbnail`, `category`, `duration`, `views`
+- Design similaire à `FeaturedCard.vue` : overlay sombre en dégradé, hover néo-brutaliste
+- Ajouts spécifiques vidéo : icône play (SVG ou icon library), badge durée, compteur de vues
+- Overlay dégradé sombre pour lisibilité du texte blanc
+
+---
+
+#### US-006c: Small Video Card (petite card) ⬜ P1
+
+**En tant que** visiteur
+**Je veux** voir les vidéos populaires dans des cards compactes
+**Afin de** parcourir rapidement le contenu vidéo populaire
+
+**Critères d'acceptance:**
+- [ ] Affichée dans la colonne droite, grille 2×2 (4 cards)
+- [ ] Thumbnail de la vidéo
+- [ ] Icône play visible
+- [ ] Badge catégorie en style "pill"
+- [ ] Titre de la vidéo
+- [ ] Durée de la vidéo affichée
+- [ ] Au clic → navigation vers la page de la vidéo (`/video/watch/:slug`)
+
+**Technical notes:**
+- Composant: `components/video/SmallVideoCard.vue`
+- Props: `title`, `slug`, `thumbnail`, `category`, `duration`
+- Design similaire à `RecentCard.vue` mais adapté au contenu vidéo (icône play, durée)
+- Hover néo-brutaliste identique aux autres cards
+- Couleurs de fond aléatoires SSR-safe via `useState` (même pattern que Card.vue et RecentCard.vue)
+
+---
+
+#### US-006d: Mock data — Vidéos ⬜ P1
+
+**En tant que** développeur
+**Je veux** avoir des données de vidéos simulées
+**Afin de** développer et tester la section Top Video sans backend réel
+
+**Critères d'acceptance:**
+- [ ] Interface TypeScript `Video` définie (`title`, `slug`, `thumbnail`, `category`, `views`, `duration`, `url`)
+- [ ] Au moins 10 vidéos mock avec des données réalistes
+- [ ] Les vidéos couvrent plusieurs catégories
+- [ ] Les thumbnails utilisent des URLs de ressources libres de droits
+- [ ] Données intégrées dans `server/database/site-content.ts`
+
+**Note sur les ressources vidéo libres de droits :**
+Pour les thumbnails et les URLs de vidéos, plusieurs plateformes offrent du contenu libre de droits exploitable pour le développement frontend (équivalent vidéo d'Unsplash) :
+- **Pexels** (https://www.pexels.com/videos/) — vidéos HD libres de droits, API disponible, pas d'inscription requise pour les embeds
+- **Pixabay** (https://pixabay.com/videos/) — similaire à Pexels, large catalogue
+- **Coverr** (https://coverr.co/) — vidéos de lifestyle de qualité, sans inscription requise
+
+---
+
+#### US-006e: API route & Store — Vidéos ⬜ P1
+
+**En tant que** développeur
+**Je veux** une route API et un store Pinia pour les vidéos populaires
+**Afin de** alimenter les composants frontend en données
+
+**Critères d'acceptance:**
+- [ ] Route API `GET /api/videos/popular?limit=5` retournant les vidéos triées par vues (DESC)
+- [ ] Store Pinia `videosStore` avec action `fetchTopVideos(limit)`
+- [ ] State: `topVideos` (array), `loading` (flag), `cached.topVideos` (boolean)
+- [ ] Cache pour éviter les re-fetch inutiles (`cached` state + early return)
+- [ ] Flag `loading` (true pendant le fetch, false après)
+- [ ] TypeScript interfaces définies (`Video`)
+- [ ] Action `clearCache` pour reset
+
+**Technical notes:**
+- Fichier API: `server/api/videos/popular.get.ts`
+- Store: `stores/videosStore.ts`
+- Pattern identique à `articlesStore.ts` (Composition API)
+- Données issues de `site-content.ts` (mock), même pattern que les articles
+
+---
+
+#### US-006f: Tests — Top Video Section ⬜ P1
+
+**En tant que** développeur
+**Je veux** des tests unitaires et d'intégration pour la section Top Video
+**Afin de** garantir la fiabilité des composants et du store
+
+**Critères d'acceptance:**
+- [ ] Tests unitaires `FeaturedVideoCard.vue` : rendu titre, badge catégorie, thumbnail background, icône play, durée, vues, href
+- [ ] Tests unitaires `SmallVideoCard.vue` : rendu titre, badge catégorie, thumbnail, icône play, durée, href
+- [ ] Tests unitaires `TopVideo.vue` : titre de section, état de chargement, featured card = vidéo 1, 4 small cards = vidéos 2-5, `fetchTopVideos` appelé au mount
+- [ ] Tests d'intégration `fetchTopVideos` : endpoint correct, limit, flag loading, cache, gestion erreur, clearCache
+
+**Technical notes:**
+- Fichiers tests : `tests/unit/frontend/featured-video-card.test.ts`, `tests/unit/frontend/small-video-card.test.ts`, `tests/unit/frontend/top-video.test.ts`
+- Test store : `tests/integration/frontend/videos-store.test.ts`
+- Patterns identiques aux tests US-004 (Suspense wrapper pour async setup, dual stubs kebab/PascalCase)
+
+---
+
 ## Epic 2: Article Detail Page
 
-### US-006: Article Detail Page ⬜ P1
+### US-034: Article Detail Page ⬜ P1
 
 **En tant que** visiteur  
 **Je veux** lire un article complet  
@@ -381,7 +526,7 @@
 - Relation many-to-many : `Article.tags: [ObjectId]` → ref Tag
 - API : `GET/POST/PUT/DELETE /api/tags`
 - Composant admin : intégré au formulaire d'édition d'article (US-008)
-- Affichage frontend : badges cliquables sur la page article (US-006)
+- Affichage frontend : badges cliquables sur la page article (US-034)
 
 ---
 
@@ -448,7 +593,7 @@
 **Contexte** : Nécessite que les visiteurs puissent créer un compte (US-018) pour s'authentifier avant de commenter.
 
 **Critères d'acceptance:**
-- [ ] Section commentaires sous article (page détail US-006)
+- [ ] Section commentaires sous article (page détail US-034)
 - [ ] Formulaire de commentaire (visible uniquement si connecté)
 - [ ] Message invitant à se connecter/s'inscrire si visiteur non authentifié
 - [ ] Affichage chronologique
@@ -457,7 +602,7 @@
 - [ ] Notification à l'auteur de l'article quand un nouveau commentaire est posté (optionnel)
 
 **Technical notes:**
-- Prérequis : US-006 (page détail), US-018 (inscription lecteur)
+- Prérequis : US-034 (page détail), US-018 (inscription lecteur)
 
 ---
 
@@ -1076,4 +1221,5 @@ _Section 4 — "Meet Our Team" :_
 | 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-032 ajoutées, Epic 9 à 11, points à clarifier avec Ilaria |
 | 2026-03-06 | US-004a/b/c complétés : Recent.vue, FeaturedCard.vue, RecentCard.vue — layout 2 colonnes, hover néo-brutaliste, tailles responsive. Tests restent à faire. |
 | 2026-03-10 | US-004 ✅ : tests unitaires écrits (featured-card, recent-card, recent-articles), tests intégration store fetchRecent ajoutés. Mock data enrichi (64 articles, 9 catégories). US-033 ajoutée au backlog (Epic 7). |
+| 2026-03-12 | US-006 Top Video Section ajoutée au backlog (Epic 1) avec 6 sous-US (006a à 006f) : composant parent, FeaturedVideoCard, SmallVideoCard, mock data, API+Store, tests. US-006 Article Detail Page renommée US-034 pour éviter le conflit de numérotation. |
 
