@@ -262,19 +262,22 @@
 
 **Critères d'acceptance:**
 - [ ] Affichée dans la colonne droite, grille 2×2 (4 cards)
-- [ ] Thumbnail de la vidéo
-- [ ] Icône play visible
-- [ ] Badge catégorie en style "pill"
-- [ ] Titre de la vidéo
-- [ ] Durée de la vidéo affichée
+- [ ] Structure interne en **2 colonnes** : vignette à gauche, informations à droite
+- [ ] **Colonne gauche** : thumbnail de la vidéo avec icône play centrée (horizontalement et verticalement) par-dessus
+- [ ] **Colonne droite** : badge catégorie (pill) + titre de la vidéo + nom de l'auteur (ex: "by Esther Howard")
+- [ ] Pas de background sur la card elle-même (hérite du fond noir de la section)
+- [ ] Titre en blanc
+- [ ] Nom de l'auteur en gris clair
+- [ ] Badge catégorie : fond gris foncé, texte gris clair
 - [ ] Au clic → navigation vers la page de la vidéo (`/video/watch/:slug`)
 
 **Technical notes:**
 - Composant: `components/video/SmallVideoCard.vue`
-- Props: `title`, `slug`, `thumbnail`, `category`, `duration`
-- Design similaire à `RecentCard.vue` mais adapté au contenu vidéo (icône play, durée)
-- Hover néo-brutaliste identique aux autres cards
-- Couleurs de fond aléatoires SSR-safe via `useState` (même pattern que Card.vue et RecentCard.vue)
+- Props: `title`, `slug`, `thumbnail`, `category`, `authorName`
+- Pas de couleur de fond aléatoire (contrairement à `RecentCard.vue`) — la card est transparente sur fond noir de section
+- Icône play sur la vignette : même approche que `FeaturedVideoCard.vue` (SVG centré en absolu sur la thumbnail)
+- Hover : à définir (le néo-brutaliste noir sur noir n'est pas adapté — prévoir un hover adapté au fond sombre, ex: légère luminosité sur la vignette ou bordure claire)
+- Pas de durée sur la small card (contrairement à la featured card)
 
 ---
 
@@ -1074,6 +1077,12 @@ _Section 4 — "Meet Our Team" :_
 **Questions :**
 - [ ] Est-ce acceptable de modifier certains aspects visuels des maquettes (contrastes, tailles de texte) pour respecter l'accessibilité ? En cas de conflit entre maquette et accessibilité, quelle est la priorité ?
 - [ ] Faut-il documenter les écarts entre maquettes et implémentation finale ?
+
+**Points d'attention identifiés sur la section Top Video (US-006) :**
+- Le fond noir de la section combiné à des textes en gris clair (auteur, catégorie) crée des risques de contraste insuffisant (WCAG AA exige un ratio ≥ 4.5:1 pour le texte normal)
+- Les badges catégorie (fond gris foncé + texte gris clair) sont particulièrement à risque : les deux teintes de gris très proches peuvent être illisibles pour les personnes malvoyantes
+- La taille de texte de l'auteur (probablement `text-xs` ou `text-sm`) est potentiellement trop petite sur fond sombre
+- **À vérifier à l'implémentation** : utiliser un outil de contraste (ex: axe DevTools, Colour Contrast Analyser) et ajuster les valeurs de gris si nécessaire — quitte à s'écarter légèrement de la maquette
 
 **Statut** : ❓ À clarifier — l'accessibilité est mentionnée comme prioritaire dans le cahier des charges, ce qui devrait primer sur la fidélité pixel-perfect aux maquettes.
 
