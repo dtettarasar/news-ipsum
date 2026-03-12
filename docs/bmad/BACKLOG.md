@@ -691,6 +691,21 @@ _Composant visuel (`SubscribeForm.vue`) :_
 - [ ] Bouton "Subscribe" avec icône avion en papier, fond `#40E0D0` (turquoise), style néo-brutaliste
 - [ ] Composant intégré sur : **homepage**, **page About**, **page article** (sidebar ou section dédiée)
 
+_Comportement après soumission :_
+- [ ] **Succès** : affichage d'un message de remerciement dans le composant (ex: "Merci ! Vous êtes bien inscrit.") — comportement exact à clarifier (voir Points à clarifier #5)
+- [ ] **Email invalide** : message d'erreur inline sous le champ (ex: "Veuillez saisir une adresse email valide") sans rechargement de page
+- [ ] **Email déjà inscrit** : affichage du même message de remerciement que pour une nouvelle inscription (ne pas révéler qu'une adresse est déjà présente en base — sécurité / vie privée). Le doublon est silencieusement bloqué côté serveur.
+- [ ] **Erreur serveur** : message d'erreur générique non technique (ex: "Une erreur est survenue, veuillez réessayer")
+- [ ] Le bouton est désactivé pendant l'envoi (prévention des soumissions multiples)
+
+_Sécurité :_
+- [ ] Validation du format email côté client (regex ou API Constraint Validation)
+- [ ] Validation et sanitisation côté serveur (rejet de tout ce qui n'est pas un email valide)
+- [ ] Protection anti-spam : rate limiting sur l'endpoint `POST /api/newsletter/subscribe` (ex: max 5 tentatives / IP / heure)
+- [ ] Honeypot ou autre mécanisme anti-bot à considérer (champ caché invisible pour les humains)
+- [ ] Le token de désinscription (`unsubscribeToken`) doit être généré de façon cryptographiquement sûr (ex: `crypto.randomBytes`)
+- [ ] L'endpoint de désinscription valide le token avant toute modification en base
+
 _Inscription sans compte :_
 - [ ] Validation de l'email côté client et serveur
 - [ ] Message de confirmation après inscription
@@ -1186,6 +1201,16 @@ _Section 4 — "Meet Our Team" :_
 
 **Point UX / marketing à discuter :**
 - [ ] Les maquettes affichent l'**adresse postale des locaux** sous le titre du composant newsletter. D'un point de vue marketing, ce choix est discutable : l'adresse postale n'incite pas à s'inscrire à une newsletter. Il serait préférable de la remplacer par une **phrase d'accroche** mettant en avant la valeur de l'abonnement (ex: "Stay informed with our latest news and exclusive content"). À valider avec Ilaria avant implémentation.
+
+**Comportement après soumission à préciser :**
+- [ ] Quel retour visuel après une inscription réussie ? (message inline dans le composant, toast/notification, redirection, remplacement du formulaire par un message de remerciement ?)
+- [ ] Faut-il un email de confirmation d'inscription (double opt-in) ou une inscription directe (single opt-in) ? Le double opt-in est recommandé pour la conformité RGPD et la qualité de la liste
+- [ ] Quel message afficher si l'email est déjà inscrit ? → **Recommandation** : afficher le même message de remerciement que pour une nouvelle inscription, sans révéler l'existence de l'adresse en base (sécurité / vie privée). Le doublon est bloqué silencieusement côté serveur. À confirmer avec Ilaria.
+
+**Sécurité à confirmer :**
+- [ ] Rate limiting sur l'endpoint d'inscription (protection contre les soumissions massives / bots) : à implémenter, niveau à définir
+- [ ] Honeypot anti-bot : pertinent ou suffisant avec le rate limiting seul ?
+- [ ] Double opt-in vs single opt-in : le double opt-in améliore la sécurité (confirmation de possession de l'email) mais ajoute de la friction
 
 **Statut** : ❓ À clarifier — une US-023 est créée dans le backlog avec les deux scénarios (avec/sans compte) en prévision
 
