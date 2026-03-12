@@ -345,6 +345,62 @@ Pour les thumbnails et les URLs de vidéos, plusieurs plateformes offrent du con
 
 ---
 
+### US-035: Top Columnist Section ⬜ P1
+
+**En tant que** visiteur
+**Je veux** voir les meilleurs rédacteurs du site présentés dans un slider
+**Afin de** découvrir les auteurs phares du média et leurs spécialités
+
+**Description** : Section affichée sur la homepage, juste en dessous de "Most Popular". Affiche les top columnists dans un slider à défilement automatique en boucle.
+
+#### US-035a: Section Top Columnist (composant parent + slider) ⬜ P1
+
+**En tant que** visiteur
+**Je veux** voir une section "Top Columnist" sur la homepage avec un slider des rédacteurs
+**Afin de** découvrir les auteurs phares du média
+
+**Critères d'acceptance:**
+- [ ] Titre de section "Top Columnist"
+- [ ] Slider prenant toute la largeur du conteneur
+- [ ] Défilement automatique en boucle (le dernier rédacteur est suivi par le premier)
+- [ ] Pause du défilement automatique au survol de la souris (`mouseenter` / `mouseleave`)
+- [ ] Desktop : plusieurs cards de columnist visibles simultanément dans le slider
+- [ ] Mobile : une seule card visible à la fois, défilement un par un
+- [ ] Données récupérées via le store ou directement depuis une API
+- [ ] Composant extrait dans `components/columnist/TopColumnist.vue`
+
+**Technical notes:**
+- Librairie slider à évaluer : **Keen-Slider** (légère, SSR-safe, compatible Vue 3), **Swiper.js** (plus complet), ou **CSS Scroll Snap** (natif, zéro dépendance)
+- Le défilement automatique est un point d'attention accessibilité (voir section "Points à clarifier" #8)
+- Comportement mobile exact à préciser : swipe tactile natif ou navigation par boutons ? (voir #8)
+- Les données columnist sont probablement issues du modèle `User` (rôle editor/admin) enrichi avec les catégories rattachées
+- Critères de sélection des "top" columnists à définir (voir section "Points à clarifier" #8)
+
+---
+
+#### US-035b: Columnist Card (composant de présentation du rédacteur) ⬜ P1
+
+**En tant que** visiteur
+**Je veux** voir les informations d'un rédacteur dans une card
+**Afin de** connaître son nom, sa spécialité et ses thèmes de prédilection
+
+**Critères d'acceptance:**
+- [ ] Structure en **2 colonnes**
+- [ ] **Colonne gauche** : photo du rédacteur au format cercle
+- [ ] **Colonne droite** :
+  - Ligne 1 : nom et prénom en **gras**, noir, grande taille
+  - Ligne 2 : mention "Specialise in" en petit, gris foncé
+  - Ligne 3 : thèmes/catégories rattachés, gris foncé, même taille que le nom
+
+**Technical notes:**
+- Composant: `components/columnist/ColumnistCard.vue`
+- Props: `name`, `avatar`, `categories` (array de strings)
+- Photo en cercle : `rounded-full` + `object-cover` + dimensions fixes
+- Fallback avatar si la photo est absente (initiales ou icône générique)
+- `categories` : affichées en texte simple séparé par des virgules ou des badges (selon maquette à préciser)
+
+---
+
 ## Epic 2: Article Detail Page
 
 ### US-034: Article Detail Page ⬜ P1
@@ -1145,7 +1201,26 @@ _Section 4 — "Meet Our Team" :_
 
 ---
 
-## Notes techniques à explorer
+### 8. Top Columnist — critères de sélection et accessibilité du slider
+
+**Constat** : La section Top Columnist (US-035) soulève deux familles de questions non résolues.
+
+**Critères de sélection des "top columnists" :**
+- [ ] Quels critères définissent un "top columnist" ? Exemples possibles : nombre d'articles publiés, nombre de likes reçus sur ses articles, nombre de vues cumulées, combinaison de plusieurs métriques
+- [ ] S'agit-il d'une sélection manuelle par l'admin (l'admin choisit qui apparaît dans le slider) ou d'un classement automatique calculé en base ?
+- [ ] Un columnist non-actif (sans article récent) doit-il toujours apparaître ?
+- [ ] Quel est le nombre minimum / maximum de columnists affichés ?
+
+**Accessibilité du slider automatique :**
+- [ ] Le défilement automatique est soumis au critère WCAG 2.1 — **2.2.2 Pause, Stop, Hide** : tout contenu qui se déplace automatiquement doit pouvoir être **mis en pause, arrêté ou masqué** par l'utilisateur. La pause au survol souris seule ne suffit pas — il faut également un mécanisme accessible au clavier
+- [ ] Faut-il ajouter des boutons de navigation explicites (précédent / suivant) ? Cela améliorerait l'accessibilité et l'UX mobile
+- [ ] Comportement mobile : swipe tactile natif ou navigation par boutons ? Le défilement automatique sur mobile peut être perturbant
+- [ ] Les cards doivent être navigables au clavier (focus visible sur chaque card)
+- [ ] Chaque card doit avoir un lien semantique vers le profil du columnist (attribut `aria-label` adéquat)
+
+**Statut** : ❓ À clarifier avant implémentation — les critères de sélection impactent le modèle de données, et les exigences d'accessibilité impactent le choix de la librairie slider
+
+---
 
 > Cette section regroupe des réflexions et questions techniques transversales qui ne sont pas encore formalisées en User Stories mais qui méritent d'être documentées pour orienter les choix d'architecture futurs.
 
@@ -1278,5 +1353,5 @@ _Section 4 — "Meet Our Team" :_
 | 2026-03-03 | Alignement cahier des charges Ilaria : US-004 réécrite, US-016 à US-032 ajoutées, Epic 9 à 11, points à clarifier avec Ilaria |
 | 2026-03-06 | US-004a/b/c complétés : Recent.vue, FeaturedCard.vue, RecentCard.vue — layout 2 colonnes, hover néo-brutaliste, tailles responsive. Tests restent à faire. |
 | 2026-03-10 | US-004 ✅ : tests unitaires écrits (featured-card, recent-card, recent-articles), tests intégration store fetchRecent ajoutés. Mock data enrichi (64 articles, 9 catégories). US-033 ajoutée au backlog (Epic 7). |
-| 2026-03-12 | US-006 Top Video Section ajoutée au backlog (Epic 1) avec 6 sous-US (006a à 006f) : composant parent, FeaturedVideoCard, SmallVideoCard, mock data, API+Store, tests. US-006 Article Detail Page renommée US-034 pour éviter le conflit de numérotation. US-006b affinée : largeur 60/40, auteur + durée + vues avec séparateurs, layout mobile. Section "Notes techniques à explorer" ajoutée (NT-001 comptage vues vidéo, NT-002 récupération durée). |
+| 2026-03-12 | US-006 Top Video Section ajoutée au backlog (Epic 1) avec 6 sous-US (006a à 006f) : composant parent, FeaturedVideoCard, SmallVideoCard, mock data, API+Store, tests. US-006 Article Detail Page renommée US-034 pour éviter le conflit de numérotation. US-006b affinée : largeur 60/40, auteur + durée + vues avec séparateurs, layout mobile. Section "Notes techniques à explorer" ajoutée (NT-001 comptage vues vidéo, NT-002 récupération durée). US-035 Top Columnist Section ajoutée (Epic 1) avec 2 sous-US : composant parent slider (035a) + ColumnistCard (035b). Point #8 ajouté dans "Points à clarifier" (critères de sélection + accessibilité slider WCAG 2.2.2). |
 
