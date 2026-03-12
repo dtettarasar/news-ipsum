@@ -1222,6 +1222,35 @@ _Section 4 — "Meet Our Team" :_
 
 ---
 
+### 9. Top Columnist — section sous le slider (grille 3 colonnes)
+
+**Constat** : Sous le slider des rédacteurs (US-035) se trouve une section ou sous-section qui semble lui être rattachée. Elle présente une grille de **3 colonnes**, chaque colonne contenant une grande card avec **3 sous-cards d'articles**. Les sous-cards ne suivent pas toutes le même design :
+
+- **Première sous-card** (en tête de colonne) : design plus complet, similaire aux TopStories — vignette de l'article, badge catégorie en "pill", titre, photo + nom du rédacteur, temps de lecture, nombre de vues. Pas de bouton "Read Full Article".
+- **Deuxième et troisième sous-cards** : design allégé — catégorie en texte gris majuscules (sans pill), titre en noir. Pas de vignette, pas d'auteur, pas de métadonnées.
+
+Chaque colonne a également un fond de couleur (comme d'autres composants du site).
+
+**Questions à clarifier avec Ilaria :**
+
+_Contenu et logique métier :_
+- [ ] À quoi correspond chaque colonne ? Un rédacteur particulier ? Une catégorie ? Un thème éditorial ?
+- [ ] Quelle est la logique de sélection des articles affichés dans chaque colonne ?
+- [ ] Pourquoi une différence de design entre la première sous-card et les deux suivantes ? Est-ce intentionnel ou une erreur de maquette ?
+
+_Pertinence UX / marketing :_
+- [ ] En quoi cette section apporte-t-elle une valeur différente des sections précédentes (Top Stories, Recent Articles, Most Popular) ? N'y a-t-il pas un risque de redondance avec du contenu déjà présenté plus haut dans la page ?
+- [ ] Le visiteur comprend-il intuitivement la logique de cette section sans label explicatif ?
+
+_Accessibilité :_
+- [ ] Les fonds de couleur par colonne doivent respecter les ratios de contraste WCAG AA avec les textes posés dessus — à vérifier selon les couleurs retenues
+- [ ] La taille des textes dans les sous-cards allégées (catégorie en majuscules, titre) doit être vérifiée (risque de texte trop petit)
+- [ ] La cohérence sémantique (même section, deux designs de card différents) peut dérouter les lecteurs d'écran
+
+**Statut** : ❓ À clarifier avant toute implémentation — la pertinence même de cette section doit être validée par Ilaria. Pas de User Story créée à ce stade.
+
+---
+
 > Cette section regroupe des réflexions et questions techniques transversales qui ne sont pas encore formalisées en User Stories mais qui méritent d'être documentées pour orienter les choix d'architecture futurs.
 
 ### NT-001: Comptage des vues vidéo
