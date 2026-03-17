@@ -136,7 +136,7 @@ article {
 
     .img-cont {
         width: 176px;
-        height: 176px;
+        align-self: flex-start
     }
 }
 
