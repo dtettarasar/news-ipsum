@@ -4,7 +4,7 @@
     :style="{ backgroundColor: cardBackground }"
   >
     <div
-      class="h-44 w-44 rounded-xl bg-white/60 flex items-center justify-center overflow-hidden"
+      class="img-cont rounded-xl bg-white/60 flex items-center justify-center overflow-hidden"
       :style="{
         backgroundImage: props.image ? `url(${props.image})` : undefined,
         backgroundSize: 'cover',
@@ -122,9 +122,21 @@ article {
     gap: 20px 10px;
 }
 
+.img-cont {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+
+
 @media (min-width: 1024px) {
     article {
         flex-direction: row;
+    }
+
+    .img-cont {
+        width: 176px;
+        height: 176px;
     }
 }
 
