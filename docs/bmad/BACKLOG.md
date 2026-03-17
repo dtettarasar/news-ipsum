@@ -179,14 +179,14 @@
 **Afin de** découvrir le contenu recommandé par la communauté
 
 **Critères d'acceptance:**
-- [ ] Affiche 12 articles triés par likes (DESC)
+- [ ] Affiche 6 articles triés par likes (DESC)
 - [ ] Grid responsive: adaptatif selon écran
 - [ ] Titre "Most Popular"
 - [ ] État de chargement
 
 **Technical notes:**
-- API: `GET /api/articles/popular?limit=12`
-- Store: `articlesStore.fetchPopular(12)`
+- API: `GET /api/articles/popular?limit=6`
+- Store: `articlesStore.fetchPopular(6)`
 
 ---
 
