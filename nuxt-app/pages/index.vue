@@ -18,6 +18,10 @@
       <article-recent />
     </div>
 
+    <div class="my-12">
+      <article-most-popular />
+    </div>
+
   </div>
 
 </template>
