@@ -40,7 +40,7 @@ await useAsyncData('mostPopular', async () => {
   return popular.value
 })
 
-console.log('Most Popular Articles:', popular.value)
+// console.log('Most Popular Articles:', popular.value)
 
 isReady.value = popular.value && popular.value.length > 0
 
