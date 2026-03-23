@@ -17,7 +17,7 @@
     <div class="pt-4">
       <div class="flex items-center justify-between gap-3">
         <span
-          class="inline-flex items-center px-3 py-1 rounded-full bg-white/70 text-sm md:text-base lg:text-lg uppercase tracking-wide border border-black border-2"
+          class="inline-flex items-center px-3 py-1 rounded-full bg-white text-sm md:text-base lg:text-lg uppercase tracking-wide border border-black border-2"
         >
           {{ props.category }}
         </span>
@@ -33,6 +33,7 @@
       <div class="mt-4 flex flex-wrap items-center gap-2 text-sm md:text-base text-gray-700">
         <!-- Auteur -->
         <div class="flex items-center gap-1.5">
+        <!--
           <img
             v-if="props.authorAvatar"
             :src="props.authorAvatar"
@@ -40,6 +41,7 @@
             class="w-6 h-6 rounded-full border border-black flex-shrink-0 object-cover"
           />
           <div v-else class="w-6 h-6 rounded-full border border-black bg-gray-300 flex-shrink-0"></div>
+        -->
           <span class="font-semibold whitespace-nowrap">{{ props.authorName }}</span>
         </div>
 
@@ -51,16 +53,22 @@
           <span>{{ props.readTime }} min read</span>
         </div>
 
+        <!--
         <span class="text-gray-400">|</span>
+        -->
 
         <!-- Nombre de vues -->
+        <!--
         <div class="flex items-center gap-1">
           <Icon name="mdi:eye-outline" class="w-4 h-4" />
           <span>{{ formattedViews }}</span>
         </div>
+        -->
+
       </div>
 
       <!-- Lien vers l'article -->
+      <!--
       <div class="mt-4 flex items-center gap-3">
         <span class="text-sm md:text-base font-semibold">Read Full Article</span>
         <a
@@ -70,6 +78,7 @@
           <Icon name="mdi:arrow-top-right" class="w-5 h-5" />
         </a>
       </div>
+      -->
     </div>
   </article>
 
