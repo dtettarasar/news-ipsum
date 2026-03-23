@@ -1,10 +1,10 @@
 <template>
   <article
-    class="rounded-xl p-4 md:p-6 cursor-pointer transition-all duration-200 transition-all duration-200 hover:-translate-x-[3px] hover:-translate-y-[3px] hover:shadow-[3px_3px_0px_#000]"
+    class="rounded-xl cursor-pointer transition-all duration-200 duration-200 hover:-translate-x-[3px] hover:-translate-y-[3px] hover:shadow-[3px_3px_0px_#000]"
     :style="{ backgroundColor: cardBackground }"
   >
 
-    <a :href="`/article/read/${slug}`" class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+    <a :href="`/article/read/${slug}`" class="p-4 md:p-6 flex flex-col lg:flex-row gap-4 lg:gap-6">
 
       <div
         class="img-cont rounded-xl bg-white/60 flex items-center justify-center overflow-hidden"
@@ -128,11 +128,13 @@ const formattedViews = computed(() => {
 
 <style scoped>
 
+/*
 article {
     display: flex;
     flex-direction: column;
     gap: 20px 10px;
 }
+*/
 
 .img-cont {
     width: 100%;
@@ -140,9 +142,11 @@ article {
 }
 
 @media (min-width: 1024px) {
+    /*
     article {
         flex-direction: row;
     }
+    */
 
     .img-cont {
         width: 176px;
