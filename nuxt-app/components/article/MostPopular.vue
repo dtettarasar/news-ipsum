@@ -17,9 +17,7 @@
             :image="article.image"
             :category="article.category"
             :author-name="article.author.name"
-            :author-avatar="article.author.avatar"
             :read-time="article.readTime"
-            :views="article.views"
         />
     </div>
 
@@ -39,8 +37,6 @@ await useAsyncData('mostPopular', async () => {
   await articlesStore.fetchPopular(6)
   return popular.value
 })
-
-// console.log('Most Popular Articles:', popular.value)
 
 isReady.value = popular.value && popular.value.length > 0
 
