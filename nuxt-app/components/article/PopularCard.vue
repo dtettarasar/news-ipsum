@@ -116,7 +116,6 @@ const formattedViews = computed(() => {
 <style scoped>
 
 article {
-/* Forcer les enfants à ne pas dépasser les bords arrondis */
     display: flex;
     flex-direction: column;
     gap: 20px 10px;
@@ -127,8 +126,6 @@ article {
     aspect-ratio: 1 / 1;
 }
 
-
-
 @media (min-width: 1024px) {
     article {
         flex-direction: row;
@@ -136,7 +133,9 @@ article {
 
     .img-cont {
         width: 176px;
-        align-self: flex-start
+        height: 176px;
+        flex-shrink: 0;
+        align-self: flex-start;
     }
 }
 
