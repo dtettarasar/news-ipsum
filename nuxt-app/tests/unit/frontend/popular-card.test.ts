@@ -45,4 +45,23 @@ describe('unit test: article/PopularCard.vue', () => {
         expect(wrapper.text()).toContain('The f1 World Championship: A Thrilling Season Ahead')
     })
 
+    it('renders a custom title passed via props', async () => {
+
+        wrapper = await factory({ title: 'Custom Title Here' })
+        await nextTick()
+        expect(wrapper.text()).toContain('Custom Title Here')
+
+    })
+
+    it('renders default title when no prop is passed', async () => {
+
+        const { default: Card } = await import('@/components/article/Card.vue')
+        wrapper = mount(Card, {
+          global: { stubs: { Icon: IconStub } },
+        })
+        await nextTick()
+        expect(wrapper.text()).toContain('Titre de l\'article — maquette à valider')
+
+    })
+
 })
