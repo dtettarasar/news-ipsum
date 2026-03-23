@@ -1,6 +1,6 @@
 <template>
   <article
-    class="rounded-xl cursor-pointer transition-all duration-200 duration-200 hover:-translate-x-[3px] hover:-translate-y-[3px] hover:shadow-[3px_3px_0px_#000]"
+    class="rounded-xl cursor-pointer transition-all duration-200 hover:-translate-x-[3px] hover:-translate-y-[3px] hover:shadow-[3px_3px_0px_#000]"
     :style="{ backgroundColor: cardBackground }"
   >
 
