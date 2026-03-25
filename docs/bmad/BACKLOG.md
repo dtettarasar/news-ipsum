@@ -172,21 +172,26 @@
 
 ---
 
-### US-005: Most Popular Section ⬜ P1
+### US-005: Most Popular Section ✅ P1
 
 **En tant que** visiteur  
 **Je veux** voir les articles les plus appréciés  
 **Afin de** découvrir le contenu recommandé par la communauté
 
 **Critères d'acceptance:**
-- [ ] Affiche 6 articles triés par likes (DESC)
-- [ ] Grid responsive: adaptatif selon écran
-- [ ] Titre "Most Popular"
-- [ ] État de chargement
+- [x] Affiche 6 articles triés par likes (DESC)
+- [x] Grid responsive: adaptatif selon écran
+- [x] Titre "Most Popular"
+- [x] État de chargement
 
 **Technical notes:**
 - API: `GET /api/articles/popular?limit=6`
 - Store: `articlesStore.fetchPopular(6)`
+
+**Implémentation:**
+- `components/article/MostPopular.vue` — composant parent, grid 2 colonnes desktop
+- `components/article/PopularCard.vue` — card individuelle, layout flex image+texte, hover néo-brutaliste
+- 14 tests unitaires dans `tests/unit/frontend/popular-card.test.ts`
 
 ---
 
