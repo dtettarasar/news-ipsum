@@ -55,8 +55,8 @@ describe('unit test: article/PopularCard.vue', () => {
 
     it('renders default title when no prop is passed', async () => {
 
-        const { default: Card } = await import('@/components/article/Card.vue')
-        wrapper = mount(Card, {
+        const { default: PopularCard } = await import('@/components/article/PopularCard.vue')
+        wrapper = mount(PopularCard, {
           global: { stubs: { Icon: IconStub } },
         })
         await nextTick()
@@ -97,10 +97,10 @@ describe('unit test: article/PopularCard.vue', () => {
         expect(wrapper.text()).toContain('Ayrton Senna')
     })
 
-    it('displays a fallback circle when authorName is empty', async () => {
+    it('displays a default name when authorName is not provided as prop', async () => {
 
-        const { default: Card } = await import('@/components/article/Card.vue')
-        wrapper = mount(Card, {
+        const { default: PopularCard } = await import('@/components/article/PopularCard.vue')
+        wrapper = mount(PopularCard, {
           global: { stubs: { Icon: IconStub } },
         })
 
