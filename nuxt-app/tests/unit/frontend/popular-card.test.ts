@@ -64,4 +64,29 @@ describe('unit test: article/PopularCard.vue', () => {
 
     })
 
+    it('applies line-clamp-3 class on the title', async () => {
+        wrapper = await factory()
+        await nextTick()
+        const h3 = wrapper.find('h3')
+        expect(h3.exists()).toBe(true)
+        expect(h3.classes()).toContain('line-clamp-3')
+    })
+
+    // ===== CATÉGORIE (badge) =====
+
+    it('displays the category badge', async () => {
+        wrapper = await factory()
+        await nextTick()
+        const badge = wrapper.find('span.inline-flex')
+        expect(badge.exists()).toBe(true)
+        expect(badge.text()).toBe('Sport')
+    })
+
+    it('displays a custom category', async () => {
+        wrapper = await factory({ category: 'Design' })
+        await nextTick()
+        const badge = wrapper.find('span.inline-flex')
+        expect(badge.text()).toBe('Design')
+    })
+
 })
