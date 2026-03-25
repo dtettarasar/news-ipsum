@@ -89,4 +89,41 @@ describe('unit test: article/PopularCard.vue', () => {
         expect(badge.text()).toBe('Design')
     })
 
+    // ===== AUTEUR =====
+
+    it('displays the author name', async () => {
+        wrapper = await factory()
+        await nextTick()
+        expect(wrapper.text()).toContain('Ayrton Senna')
+    })
+
+    it('displays a fallback circle when authorName is empty', async () => {
+
+        const { default: Card } = await import('@/components/article/Card.vue')
+        wrapper = mount(Card, {
+          global: { stubs: { Icon: IconStub } },
+        })
+
+        await nextTick()
+
+        const fallback = wrapper.find('div.text-gray-700')
+        expect(fallback.exists()).toBe(true)
+        expect(fallback.text()).toContain('Kristin Watson')
+
+    })
+
+     // ===== TEMPS DE LECTURE =====
+
+    it('displays the read time', async () => {
+        wrapper = await factory()
+        await nextTick()
+        expect(wrapper.text()).toContain('5 min read')
+    })
+
+    it('displays a different read time', async () => {
+        wrapper = await factory({ readTime: 3 })
+        await nextTick()
+        expect(wrapper.text()).toContain('3 min read')
+    })
+
 })
