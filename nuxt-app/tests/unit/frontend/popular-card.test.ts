@@ -157,4 +157,20 @@ describe('unit test: article/PopularCard.vue', () => {
         expect(style).toContain('background-color')
     })
 
+    // ===== LIEN =====
+
+    it('generates the correct href from the slug', async () => {
+        wrapper = await factory()
+        await nextTick()
+        const link = wrapper.find('a')
+        expect(link.attributes('href')).toBe('/article/read/f1-world-championship-thrilling-season')
+    })
+
+    it('generates a link with a different slug', async () => {
+        wrapper = await factory({ slug: 'tennis-grand-slam-preview' })
+        await nextTick()
+        const link = wrapper.find('a')
+        expect(link.attributes('href')).toBe('/article/read/tennis-grand-slam-preview') 
+    })
+
 })
