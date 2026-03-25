@@ -126,4 +126,35 @@ describe('unit test: article/PopularCard.vue', () => {
         expect(wrapper.text()).toContain('3 min read')
     })
 
+    // ===== IMAGE =====
+
+    it('sets background-image when image prop is provided', async () => {
+        wrapper = await factory()
+        await nextTick()
+        const imageDiv = wrapper.find('.aspect-square')
+        const style = imageDiv.attributes('style')
+        expect(style).toContain('background-image')
+        expect(style).toContain(fullProps.image)
+    })
+
+    it('shows placeholder text when image is empty', async () => {
+        wrapper = await factory({ image: '' })
+        await nextTick()
+        const imageDiv = wrapper.find('.aspect-square')
+        expect(imageDiv.text()).toBe('Image')
+        // Pas de background-image
+        const style = imageDiv.attributes('style') || ''
+        expect(style).not.toContain('background-image')
+    })
+
+    // ===== BACKGROUND COLOR =====
+
+    it('applies a background color on the article element', async () => {
+        wrapper = await factory()
+        await nextTick()
+        const article = wrapper.find('article')
+        const style = article.attributes('style')
+        expect(style).toContain('background-color')
+    })
+
 })
