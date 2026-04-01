@@ -155,4 +155,12 @@ describe('unit test: article/MostPopular.vue', () => {
     }
   }
 
+  // ===== TITRE DE SECTION =====
+  
+    it('renders the "Most Popular" section title', async () => {
+      wrapper = await factory(mockArticles)
+      await waitForContent(wrapper, 'Most Popular')
+      expect(wrapper.text()).toContain('Most Popular')
+    })
+
 })
