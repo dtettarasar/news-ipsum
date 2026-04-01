@@ -167,4 +167,20 @@ describe('unit test: article/MostPopular.vue', () => {
 
     })
 
+  // ===== ÉTAT DE CHARGEMENT =====
+
+  it('shows loading state when store is empty', async () => {
+    wrapper = await factory([])
+    await nextTick()
+    expect(wrapper.text()).toContain('Chargement des articles')
+  })
+
+  // ===== STORE INTERACTION =====
+  
+  it('calls fetchPopular on mount', async () => {
+    wrapper = await factory(mockArticles)
+    await nextTick()
+    expect(store.fetchPopular).toHaveBeenCalled()
+  })
+
 })
