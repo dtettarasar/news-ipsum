@@ -17,7 +17,7 @@ const PopularCardStub = {
   template: '<div class="popular-card-stub">{{ title }}</div>',
 }
 
-// Articles mock (5 articles de catégories variées)
+// Articles mock (6 articles de catégories variées)
 const mockArticles = [
   {
     _id: '31',
@@ -78,6 +78,18 @@ const mockArticles = [
     readTime: 7,
     author: { name: 'Carol Davis', avatar: 'https://example.com/carol.jpg' },
     createdAt: '2025-02-14',
+  },
+  {
+    _id: '22',
+    title: 'The Future of Remote Work',
+    slug: 'future-remote-work',
+    image: 'https://example.com/remote.jpg',
+    category: 'Business',
+    views: 1350,
+    likes: 120,
+    readTime: 6,
+    author: { name: 'John Smith', avatar: 'https://example.com/john.jpg' },
+    createdAt: '2025-02-13',
   },
 ]
 
@@ -181,6 +193,26 @@ describe('unit test: article/MostPopular.vue', () => {
     wrapper = await factory(mockArticles)
     await nextTick()
     expect(store.fetchPopular).toHaveBeenCalled()
+  })
+
+  // ===== AFFICHAGE DES ARTICLES =====
+
+  it('renders 6 small popular cards for articles', async () => {
+      wrapper = await factory(mockArticles)
+      const popularCards = wrapper.findAll('.popular-card-stub')
+      expect(popularCards.length).toBe(6) // 6 articles dans le mock
+  })
+
+  it('renders the correct titles in the small cards', async () => {
+      wrapper = await factory(mockArticles)
+      await waitForContent(wrapper, 'Sleep Science and Productivity')
+  
+      expect(wrapper.text()).toContain('The Rise of Digital Democracy')
+      expect(wrapper.text()).toContain('The Science of Athletic Performance')
+      expect(wrapper.text()).toContain('Sleep Science and Productivity')
+      expect(wrapper.text()).toContain('Color Psychology in UX Design')
+      expect(wrapper.text()).toContain('Vue 3 Composition API Guide')
+      expect(wrapper.text()).toContain('The Future of Remote Work')
   })
 
 })
