@@ -160,7 +160,11 @@ describe('unit test: article/MostPopular.vue', () => {
     it('renders the "Most Popular" section title', async () => {
       wrapper = await factory(mockArticles)
       await waitForContent(wrapper, 'Most Popular')
-      expect(wrapper.text()).toContain('Most Popular')
+
+      const titleElement = wrapper.find('.section-title-stub')
+      expect(titleElement.exists()).toBe(true)
+      expect(titleElement.text()).toBe('Most Popular')
+
     })
 
 })
