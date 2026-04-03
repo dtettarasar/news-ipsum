@@ -215,4 +215,21 @@ describe('unit test: article/MostPopular.vue', () => {
       expect(wrapper.text()).toContain('The Future of Remote Work')
   })
 
+   // ===== CAS LIMITES =====
+
+  it('renders correctly when there are less than 6 articles', async () => {
+
+    const fewArticles = mockArticles.slice(0, 3) // Prendre seulement 3 articles
+    wrapper = await factory(fewArticles)
+    await waitForContent(wrapper, 'Sleep Science and Productivity')
+
+    const popularCards = wrapper.findAll('.popular-card-stub')
+    expect(popularCards.length).toBe(3) // Seulement 3 articles dans le store
+
+    expect(wrapper.text()).toContain('The Rise of Digital Democracy')
+    expect(wrapper.text()).toContain('The Science of Athletic Performance')
+    expect(wrapper.text()).toContain('Sleep Science and Productivity')
+
+  })
+
 })
