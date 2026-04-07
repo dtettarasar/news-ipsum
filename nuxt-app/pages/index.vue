@@ -24,11 +24,14 @@
 
   </div>
 
-  <div class="container mx-auto">
-    
-    <div class="my-12">
+  <div class="w-full bg-black">
+
+    <div class="container mx-auto my-12">
+
       <video-top-videos />
+
     </div>
+    
 
   </div>
 
