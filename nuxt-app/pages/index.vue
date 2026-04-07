@@ -24,6 +24,14 @@
 
   </div>
 
+  <div class="container mx-auto">
+    
+    <div class="my-12">
+      <video-top-videos />
+    </div>
+
+  </div>
+
 </template>
 
 <script setup lang="ts">
