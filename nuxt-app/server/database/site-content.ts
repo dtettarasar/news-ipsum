@@ -1150,6 +1150,7 @@ export function getVideos() {
       category: 'Technologie',
       thumbnail: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800',
       views: 7650,
+      durationTime: 12,
       author: {
         name: 'Zoé Bernard',
         avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
@@ -1162,6 +1163,7 @@ export function getVideos() {
       category: 'Sport',
       thumbnail: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800',
       views: 5420,
+      durationTime: 18,
       author: {
         name: 'Yann Leclerc',
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
@@ -1174,6 +1176,7 @@ export function getVideos() {
       category: 'Spiritualité',
       thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
       views: 4180,
+      durationTime: 9,
       author: {
         name: 'Sophie Martin',
         avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
@@ -1186,6 +1189,7 @@ export function getVideos() {
       category: 'Cuisine',
       thumbnail: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
       views: 9310,
+      durationTime: 24,
       author: {
         name: 'Xavier Kim',
         avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
@@ -1198,6 +1202,7 @@ export function getVideos() {
       category: 'Économie',
       thumbnail: 'https://images.unsplash.com/photo-1611974714851-eb6053e6235b?w=800',
       views: 6870,
+      durationTime: 15,
       author: {
         name: 'Rafael Torres',
         avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
@@ -1210,6 +1215,7 @@ export function getVideos() {
       category: 'Santé',
       thumbnail: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=800',
       views: 3290,
+      durationTime: 11,
       author: {
         name: 'Layla Hassan',
         avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
@@ -1222,6 +1228,7 @@ export function getVideos() {
       category: 'Marketing',
       thumbnail: 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=800',
       views: 11240,
+      durationTime: 20,
       author: {
         name: 'Hannah Kim',
         avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
@@ -1234,6 +1241,7 @@ export function getVideos() {
       category: 'Politique',
       thumbnail: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800',
       views: 8460,
+      durationTime: 16,
       author: {
         name: 'George Mitchell',
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
@@ -1246,6 +1254,7 @@ export function getVideos() {
       category: 'Technologie',
       thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800',
       views: 2870,
+      durationTime: 7,
       author: {
         name: 'Carol Davis',
         avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
@@ -1258,6 +1267,7 @@ export function getVideos() {
       category: 'Santé',
       thumbnail: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
       views: 4950,
+      durationTime: 13,
       author: {
         name: 'Priya Singh',
         avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
@@ -1270,6 +1280,7 @@ export function getVideos() {
       category: 'Culture',
       thumbnail: 'https://images.unsplash.com/photo-1460666819451-7410f5ef13ac?w=800',
       views: 6120,
+      durationTime: 10,
       author: {
         name: 'Julia Novak',
         avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
@@ -1282,6 +1293,7 @@ export function getVideos() {
       category: 'Sport',
       thumbnail: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800',
       views: 13580,
+      durationTime: 22,
       author: {
         name: 'Zoé Bernard',
         avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
@@ -1294,6 +1306,7 @@ export function getVideos() {
       category: 'Spiritualité',
       thumbnail: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800',
       views: 3710,
+      durationTime: 14,
       author: {
         name: 'Nina Johansson',
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
@@ -1306,6 +1319,7 @@ export function getVideos() {
       category: 'Économie',
       thumbnail: 'https://images.unsplash.com/photo-1611974714851-eb6053e6235b?w=800',
       views: 9980,
+      durationTime: 19,
       author: {
         name: 'Oscar Fernandez',
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
@@ -1318,6 +1332,7 @@ export function getVideos() {
       category: 'Design',
       thumbnail: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800',
       views: 2150,
+      durationTime: 8,
       author: {
         name: 'Rachel Green',
         avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
