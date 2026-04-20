@@ -1137,5 +1137,72 @@ export function getArticles() {
       createdAt: '2024-12-30',
     },
   ]
-  
+
+}
+
+export function getVideos() {
+
+  return [
+    {
+      _id: '1',
+      title: 'The Future of AI in Everyday Life',
+      slug: 'future-ai-everyday-life',
+      category: 'Technologie',
+      thumbnail: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800',
+      views: 7650,
+      author: {
+        name: 'Zoé Bernard',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+      },
+    },
+    {
+      _id: '2',
+      title: 'Inside the World of Professional Football',
+      slug: 'inside-professional-football',
+      category: 'Sport',
+      thumbnail: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800',
+      views: 5420,
+      author: {
+        name: 'Yann Leclerc',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+      },
+    },
+    {
+      _id: '3',
+      title: 'How Meditation Changed My Life',
+      slug: 'meditation-changed-my-life',
+      category: 'Spiritualité',
+      thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
+      views: 4180,
+      author: {
+        name: 'Sophie Martin',
+        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
+      },
+    },
+    {
+      _id: '4',
+      title: 'Street Food Tour: Tokyo to Mexico City',
+      slug: 'street-food-tour-tokyo-mexico',
+      category: 'Cuisine',
+      thumbnail: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
+      views: 9310,
+      author: {
+        name: 'Xavier Kim',
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
+      },
+    },
+    {
+      _id: '5',
+      title: 'The Untold Story of Crypto Crashes',
+      slug: 'untold-story-crypto-crashes',
+      category: 'Économie',
+      thumbnail: 'https://images.unsplash.com/photo-1611974714851-eb6053e6235b?w=800',
+      views: 6870,
+      author: {
+        name: 'Rafael Torres',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+      },
+    },
+  ]
+
 }
