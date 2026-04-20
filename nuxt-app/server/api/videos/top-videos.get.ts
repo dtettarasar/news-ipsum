@@ -6,13 +6,14 @@ export default defineEventHandler(async (event) => {
   const topVideos = getVideos()
     .sort((a, b) => b.views - a.views)
     .slice(0, limit)
-    .map(({ _id, title, slug, category, thumbnail, views, author }) => ({
+    .map(({ _id, title, slug, category, thumbnail, views, duration, author }) => ({
       _id,
       title,
       slug,
       category,
       thumbnail,
       views,
+      duration,
       author,
     }))
 

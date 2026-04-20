@@ -1150,7 +1150,7 @@ export function getVideos() {
       category: 'Technologie',
       thumbnail: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800',
       views: 7650,
-      durationTime: 12,
+      duration: 12,
       createdAt: '2025-02-14',
       author: {
         name: 'Zoé Bernard',
@@ -1164,7 +1164,7 @@ export function getVideos() {
       category: 'Sport',
       thumbnail: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800',
       views: 5420,
-      durationTime: 18,
+      duration: 18,
       createdAt: '2025-02-08',
       author: {
         name: 'Yann Leclerc',
@@ -1178,7 +1178,7 @@ export function getVideos() {
       category: 'Spiritualité',
       thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800',
       views: 4180,
-      durationTime: 9,
+      duration: 9,
       createdAt: '2025-01-30',
       author: {
         name: 'Sophie Martin',
@@ -1192,7 +1192,7 @@ export function getVideos() {
       category: 'Cuisine',
       thumbnail: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
       views: 9310,
-      durationTime: 24,
+      duration: 24,
       createdAt: '2025-02-17',
       author: {
         name: 'Xavier Kim',
@@ -1206,7 +1206,7 @@ export function getVideos() {
       category: 'Économie',
       thumbnail: 'https://images.unsplash.com/photo-1611974714851-eb6053e6235b?w=800',
       views: 6870,
-      durationTime: 15,
+      duration: 15,
       createdAt: '2025-01-22',
       author: {
         name: 'Rafael Torres',
@@ -1220,7 +1220,7 @@ export function getVideos() {
       category: 'Santé',
       thumbnail: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=800',
       views: 3290,
-      durationTime: 11,
+      duration: 11,
       createdAt: '2025-02-03',
       author: {
         name: 'Layla Hassan',
@@ -1234,7 +1234,7 @@ export function getVideos() {
       category: 'Marketing',
       thumbnail: 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=800',
       views: 11240,
-      durationTime: 20,
+      duration: 20,
       createdAt: '2025-02-11',
       author: {
         name: 'Hannah Kim',
@@ -1248,7 +1248,7 @@ export function getVideos() {
       category: 'Politique',
       thumbnail: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800',
       views: 8460,
-      durationTime: 16,
+      duration: 16,
       createdAt: '2025-01-15',
       author: {
         name: 'George Mitchell',
@@ -1262,7 +1262,7 @@ export function getVideos() {
       category: 'Technologie',
       thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800',
       views: 2870,
-      durationTime: 7,
+      duration: 7,
       createdAt: '2025-01-07',
       author: {
         name: 'Carol Davis',
@@ -1276,7 +1276,7 @@ export function getVideos() {
       category: 'Santé',
       thumbnail: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
       views: 4950,
-      durationTime: 13,
+      duration: 13,
       createdAt: '2025-02-06',
       author: {
         name: 'Priya Singh',
@@ -1290,7 +1290,7 @@ export function getVideos() {
       category: 'Culture',
       thumbnail: 'https://images.unsplash.com/photo-1460666819451-7410f5ef13ac?w=800',
       views: 6120,
-      durationTime: 10,
+      duration: 10,
       createdAt: '2025-01-25',
       author: {
         name: 'Julia Novak',
@@ -1304,7 +1304,7 @@ export function getVideos() {
       category: 'Sport',
       thumbnail: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800',
       views: 13580,
-      durationTime: 22,
+      duration: 22,
       createdAt: '2025-02-19',
       author: {
         name: 'Zoé Bernard',
@@ -1318,7 +1318,7 @@ export function getVideos() {
       category: 'Spiritualité',
       thumbnail: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800',
       views: 3710,
-      durationTime: 14,
+      duration: 14,
       createdAt: '2025-01-18',
       author: {
         name: 'Nina Johansson',
@@ -1332,7 +1332,7 @@ export function getVideos() {
       category: 'Économie',
       thumbnail: 'https://images.unsplash.com/photo-1611974714851-eb6053e6235b?w=800',
       views: 9980,
-      durationTime: 19,
+      duration: 19,
       createdAt: '2025-01-10',
       author: {
         name: 'Oscar Fernandez',
@@ -1346,7 +1346,7 @@ export function getVideos() {
       category: 'Design',
       thumbnail: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800',
       views: 2150,
-      durationTime: 8,
+      duration: 8,
       createdAt: '2024-12-28',
       author: {
         name: 'Rachel Green',
