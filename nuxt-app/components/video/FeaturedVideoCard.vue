@@ -24,7 +24,7 @@
     <div class="absolute bottom-0 left-0 right-0 p-5">
 
       <!-- Badge catégorie -->
-      <span class="inline-flex items-center px-3 py-1 rounded-full bg-white text-sm uppercase tracking-wide border-2 border-black font-semibold">
+      <span class="inline-flex items-center px-3 py-1 rounded-full bg-white text-sm md:text-base lg:text-lg uppercase tracking-wide border-2 border-black">
         {{ category }}
       </span>
 

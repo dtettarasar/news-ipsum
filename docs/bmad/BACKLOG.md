@@ -1068,6 +1068,32 @@ _Section 4 — "Meet Our Team" :_
 
 ---
 
+### US-036: Refactorisation des éléments UI répétés en composants atomiques ⬜ P3
+
+**En tant que** développeur  
+**Je veux** extraire les éléments de design répétés en composants Vue réutilisables  
+**Afin de** réduire la duplication de code, faciliter la maintenance et garantir l'uniformité visuelle sur l'ensemble du site
+
+**Contexte** : Plusieurs éléments de design sont actuellement dupliqués dans de nombreux composants (badges de catégorie, séparateurs de barre d'infos, formatage des vues, etc.). Les regrouper en composants atomiques rendra le code plus lisible et les évolutions de design plus rapides à appliquer.
+
+**Éléments identifiés à extraire :**
+- [ ] **`CategoryPill.vue`** — badge catégorie en style "pill" (`px-3 py-1 rounded-full uppercase tracking-wide border-2 border-black`). Prop : `category: string`. Actuellement dupliqué dans : `Card.vue`, `FeaturedCard.vue`, `FeaturedVideoCard.vue`, et les composants vidéo à venir.
+- [ ] **`ViewCount.vue`** (ou composable) — affichage du nombre de vues formaté en `k`. Logique `formattedViews` actuellement dupliquée dans `Card.vue` et `FeaturedVideoCard.vue`.
+- [ ] **`InfoBar.vue`** — barre d'infos auteur / durée ou temps de lecture / vues avec séparateurs `|` et icônes. Pattern répété dans `Card.vue`, `FeaturedVideoCard.vue`.
+
+**Critères d'acceptance:**
+- [ ] Chaque composant atomique extrait est documenté avec ses props TypeScript
+- [ ] Les composants existants sont mis à jour pour utiliser les nouveaux composants atomiques
+- [ ] Le rendu visuel est identique avant/après refactorisation (non-régression)
+- [ ] Aucune prop superflue n'est ajoutée (les composants atomiques restent simples)
+
+**Technical notes:**
+- Dossier cible : `components/ui/` pour les composants atomiques génériques
+- Utiliser `withDefaults(defineProps<Props>(), {...})` comme dans les composants existants
+- La refactorisation se fait composant par composant, sans bloquer les développements en cours
+
+---
+
 ## Epic 8: Tests
 
 ### US-013: Test unitaire — Article Card ✅ P1
