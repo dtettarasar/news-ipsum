@@ -1,7 +1,34 @@
 <template>
-  
-  <div>
-    <text-section-title text="Top Videos" backgroundColor="oklch(43.9% 0 0)" textColor="#fff" ></text-section-title>
+
+  <div class="bg-black px-2 py-6">
+    <text-section-title text="Top Videos" backgroundColor="oklch(43.9% 0 0)" textColor="#fff" />
+
+    <div v-if="!isReady" class="mt-6 h-[300px] flex items-center justify-center font-bold uppercase tracking-widest text-white">
+      Chargement des vidéos...
+    </div>
+
+    <div v-else class="mt-6 flex flex-col md:flex-row gap-4">
+
+      <!-- Colonne gauche : Featured Video Card (~60%) -->
+      <div class="w-full md:basis-[60%]">
+        <video-featured-video-card
+          v-if="featuredVideo"
+          :title="featuredVideo.title"
+          :slug="featuredVideo.slug"
+          :thumbnail="featuredVideo.thumbnail"
+          :category="featuredVideo.category"
+          :author-name="featuredVideo.author.name"
+          :duration="featuredVideo.duration"
+          :views="featuredVideo.views"
+        />
+      </div>
+
+      <!-- Colonne droite : 4 Small Video Cards empilées (~40%) -->
+      <div class="w-full md:basis-[40%] flex flex-col gap-4">
+        <!-- Small cards à venir (US-006c) -->
+      </div>
+
+    </div>
   </div>
 
 </template>
@@ -22,5 +49,8 @@
   })
 
   isReady.value = topVideos.value && topVideos.value.length > 0
+
+  const featuredVideo = computed(() => topVideos.value?.[0] ?? null)
+  const smallCards = computed(() => topVideos.value.slice(1, 5))
 
 </script>
