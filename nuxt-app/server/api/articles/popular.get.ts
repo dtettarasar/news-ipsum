@@ -1,9 +1,9 @@
-import { articlesData } from '~/server/database/site-content'
+import { getArticles } from '~/server/database/site-content'
 
 export default defineEventHandler(async (event) => {
   const limit = parseInt(getQuery(event).limit as string) || 12
 
-  const popular = articlesData
+  const popular = getArticles()
     .sort((a, b) => (b.likes || 0) - (a.likes || 0))
     .slice(0, limit)
     .map(({ _id, title, image, category, views, likes, readTime, author, slug, createdAt }) => ({

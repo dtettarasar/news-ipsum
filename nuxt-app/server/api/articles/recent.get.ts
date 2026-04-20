@@ -1,11 +1,11 @@
-import { articlesData } from '~/server/database/site-content'
+import { getArticles } from '~/server/database/site-content'
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const limit = parseInt(query.limit as string) || 6
   const category = query.category as string
 
-  let articles = [...articlesData]
+  let articles = [...getArticles()]
   
   if (category) {
     articles = articles.filter(a => a.category === category)
