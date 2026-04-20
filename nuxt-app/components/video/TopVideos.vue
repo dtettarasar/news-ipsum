@@ -1,7 +1,7 @@
 <template>
 
   <div class="bg-black px-2 py-6">
-    <text-section-title text="Top Videos" backgroundColor="oklch(43.9% 0 0)" textColor="#fff" />
+    <text-section-title text="Top Videos" backgroundColor="#525252" textColor="#fff" />
 
     <div v-if="!isReady" class="mt-6 h-[300px] flex items-center justify-center font-bold uppercase tracking-widest text-white">
       Chargement des vidéos...

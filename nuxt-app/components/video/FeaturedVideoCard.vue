@@ -2,7 +2,7 @@
 
   <a
     :href="`/video/watch/${slug}`"
-    class="block rounded-xl overflow-hidden relative cursor-pointer transition-all duration-200 hover:-translate-x-[3px] hover:-translate-y-[3px] hover:shadow-[3px_3px_0px_#fff] h-full min-h-[300px]"
+    class="block rounded-xl overflow-hidden relative cursor-pointer transition-all duration-200 hover:-translate-x-[3px] hover:-translate-y-[3px] hover:shadow-[3px_3px_0px_#525252] h-full min-h-[300px]"
     :style="{
       backgroundImage: thumbnail ? `url(${thumbnail})` : undefined,
       backgroundSize: 'cover',
