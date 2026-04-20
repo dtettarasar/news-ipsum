@@ -23,6 +23,4 @@
 
   isReady.value = topVideos.value && topVideos.value.length > 0
 
-  console.log('Top Videos:', topVideos.value)
-
 </script>

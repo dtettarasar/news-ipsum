@@ -220,7 +220,7 @@
 - [ ] Background color noir sur toute la section
 
 **Technical notes:**
-- API: `GET /api/videos/popular?limit=5`
+- API: `GET /api/videos/top-videos?limit=5`
 - Store: `videosStore.fetchTopVideos(5)` (nouveau store dédié)
 - Pattern identique à `Recent.vue` : `useAsyncData` → `isReady` → v-if/v-else
 - Responsive : 1 colonne en mobile (featured video card en haut, puis les 4 small cards empilées)
