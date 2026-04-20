@@ -15,7 +15,6 @@ interface Video {
   thumbnail: string
   category: string
   views: number
-  likes: number
   durationTime: number
   author: Author
 
