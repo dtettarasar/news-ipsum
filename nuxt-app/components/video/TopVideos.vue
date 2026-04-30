@@ -24,8 +24,20 @@
       </div>
 
       <!-- Colonne droite : 4 Small Video Cards empilées (~40%) -->
-      <div class="w-full md:basis-[40%] flex flex-col gap-4">
-        <!-- Small cards à venir (US-006c) -->
+      <div v-if="smallCards" class="w-full md:basis-[40%] flex flex-col gap-4">
+        
+        <video-small-video-card
+        
+        v-for="video in smallCards"
+        :key="video._id"
+        :title="video.title"
+        :slug="video.slug"
+        :thumbnail="video.thumbnail"
+        :category="video.category"
+        :author-name="video.author.name"
+        
+        />
+
       </div>
 
     </div>
