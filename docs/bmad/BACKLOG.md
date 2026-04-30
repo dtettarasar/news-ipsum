@@ -216,7 +216,7 @@
 - [ ] Affiche les 5 vidéos les plus vues (triées par `views` DESC)
 - [ ] Données récupérées depuis le store via `useAsyncData` (SSR-safe)
 - [ ] État de chargement visible pendant le fetch
-- [ ] Composant extrait dans `components/video/TopVideo.vue`
+- [ ] Composant extrait dans `components/video/TopVideos.vue`
 - [ ] Background color noir sur toute la section
 
 **Technical notes:**
@@ -252,7 +252,7 @@
 - Composant: `components/video/FeaturedVideoCard.vue`
 - Props: `title`, `slug`, `thumbnail`, `category`, `authorName`, `duration`, `views`
 - Design similaire à `FeaturedCard.vue` : overlay sombre en dégradé, hover néo-brutaliste
-- Layout desktop : CSS `grid-cols` ou `flex` avec `basis-[60%]` / `basis-[40%]` sur le parent `TopVideo.vue`
+- Layout desktop : CSS `grid-cols` ou `flex` avec `basis-[60%]` / `basis-[40%]` sur le parent `TopVideos.vue`
 - Barre d'infos (auteur + durée + vues) : même pattern que `Card.vue` TopStories (séparateurs `|`, icônes SVG inline ou icon library)
 - `duration` : string formaté côté mock data (ex: `"4:32"`) — voir note backend (section "Notes techniques à explorer")
 - `views` : nombre entier, formaté en `k` via un helper (même utilitaire que `Card.vue`)
@@ -324,7 +324,7 @@ Pour les thumbnails et les URLs de vidéos, plusieurs plateformes offrent du con
 - [ ] Action `clearCache` pour reset
 
 **Technical notes:**
-- Fichier API: `server/api/videos/popular.get.ts`
+- Fichier API: `server/api/videos/top-videos.get.ts`
 - Store: `stores/videosStore.ts`
 - Pattern identique à `articlesStore.ts` (Composition API)
 - Données issues de `site-content.ts` (mock), même pattern que les articles
@@ -340,7 +340,7 @@ Pour les thumbnails et les URLs de vidéos, plusieurs plateformes offrent du con
 **Critères d'acceptance:**
 - [ ] Tests unitaires `FeaturedVideoCard.vue` : rendu titre, badge catégorie, thumbnail background, icône play, durée, vues, href
 - [ ] Tests unitaires `SmallVideoCard.vue` : rendu titre, badge catégorie, thumbnail, icône play, nom auteur, href
-- [ ] Tests unitaires `TopVideo.vue` : titre de section, état de chargement, featured card = vidéo 1, 4 small cards = vidéos 2-5, `fetchTopVideos` appelé au mount
+- [ ] Tests unitaires `TopVideos.vue` : titre de section, état de chargement, featured card = vidéo 1, 4 small cards = vidéos 2-5, `fetchTopVideos` appelé au mount
 - [ ] Tests d'intégration `fetchTopVideos` : endpoint correct, limit, flag loading, cache, gestion erreur, clearCache
 
 **Technical notes:**
