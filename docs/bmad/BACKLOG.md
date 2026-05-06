@@ -60,6 +60,7 @@
   - [US-023: Inscription Newsletter ⬜](#us-023-inscription-newsletter--p2)
   - [US-024: Page réglages du compte ⬜](#us-024-page-réglages-du-compte-utilisateur--p3)
   - [US-037: Widget Explore Topics ⬜](#us-037-widget-explore-topics--p2)
+  - [US-038: Widget Newsletter sidebar ⬜](#us-038-widget-newsletter-sidebar-page-article--p2)
   - [US-025: Widget Météo ⬜](#us-025-widget-météo-sidebar-page-article--p3)
 - [Epic 10: Contact Page](#epic-10-contact-page)
   - [US-026: Page Contact (layout) ⬜](#us-026-page-contact-layout--p2)
@@ -692,7 +693,7 @@ _Ordre des widgets (de haut en bas) :_
 - [ ] **1. Widget Météo** → voir [US-025](#us-025-widget-météo-sidebar-page-article--p3) — composant `widgets/WeatherWidget.vue`
 - [ ] **2. Search Bar** → réutilisation du composant `forms/SearchBar.vue` existant (voir [US-009](#us-009-search-functionality--p2) pour la fonctionnalité complète)
 - [ ] **3. Widget Explore Topics** → voir [US-037](#us-037-widget-explore-topics--p2) — composant `widgets/ExploreTopicsWidget.vue`
-- [ ] **4. Widget Newsletter** → voir [US-023](#us-023-inscription-newsletter--p2) — composant `newsletter/SubscribeForm.vue`
+- [ ] **4. Widget Newsletter** → voir [US-038](#us-038-widget-newsletter-sidebar-page-article--p2) — composant `widgets/NewsletterWidget.vue` (design sidebar, logique partagée avec US-023)
 
 **Technical notes:**
 - Composant conteneur : `components/article/ArticleSidebar.vue`
@@ -1119,6 +1120,45 @@ _Comportement :_
 - Nombre d'articles par catégorie : à récupérer depuis l'API ou calculé côté serveur — envisager d'enrichir `GET /api/categories` avec un champ `articleCount` pour éviter un second appel
 - Séparateur : `<hr>` ou `<div class="border-t border-black">` entre les lignes (pas après la dernière)
 - Lien de catégorie : à aligner avec la future page de listing articles (Epic à définir)
+
+---
+
+### US-038: Widget Newsletter (sidebar page article) ⬜ P2
+
+**En tant que** visiteur
+**Je veux** m'inscrire à la newsletter depuis la sidebar de la page article
+**Afin de** rester informé des nouvelles publications sans quitter ma lecture
+
+**Contexte** : Widget affiché dans la sidebar de la page article (US-034j), en dernier position sous le widget Explore Topics. Ce composant a un design propre différent du composant `SubscribeForm.vue` (US-023), mais partage entièrement la même logique fonctionnelle (validation, sécurité, comportements post-soumission, gestion des inscriptions avec/sans compte, RGPD). Seul le design est à implémenter ici — la logique métier est documentée dans US-023.
+
+**Critères d'acceptance:**
+
+_Conteneur :_
+- [ ] Fond de couleur unie (couleur à définir — à aligner avec la charte graphique)
+- [ ] Coins arrondis (`rounded-xl` ou similaire)
+- [ ] Bordure noire solid 1–2px sur tout le contour
+- [ ] Padding intérieur entre le contenu et les bords
+- [ ] Style néo-brutaliste (cohérent avec le reste du site)
+
+_Contenu (de haut en bas) :_
+- [ ] Catchphrase **"Newsletter that Makes you hungry!"** — uppercase, noir, bold
+- [ ] Mention **"sign up for free"** — lowercase, noir, bold
+- [ ] Séparateur : ligne noire horizontale centrée, correspondant à ~1/3 de la largeur du conteneur
+- [ ] Champ email : placeholder "Email Address", style cohérent avec les autres champs du site (bordure noire, coins arrondis)
+- [ ] Bouton **"Subscribe"** suivi d'une icône avion en papier — fond noir, texte blanc, coins arrondis
+
+_Comportement et logique :_
+- [ ] Comportement après soumission (succès, email invalide, email déjà inscrit, erreur serveur) : voir [US-023](#us-023-inscription-newsletter--p2)
+- [ ] Sécurité (validation, rate limiting, honeypot) : voir [US-023](#us-023-inscription-newsletter--p2)
+- [ ] Gestion des inscriptions avec et sans compte : voir [US-023](#us-023-inscription-newsletter--p2)
+- [ ] Conformité RGPD : voir [US-023](#us-023-inscription-newsletter--p2)
+
+**Technical notes:**
+- Composant : `components/widgets/NewsletterWidget.vue`
+- Ce composant est distinct de `components/newsletter/SubscribeForm.vue` (US-023) — même logique, design différent
+- Réutiliser le même endpoint `POST /api/newsletter/subscribe` que US-023
+- Icône avion en papier : même librairie d'icônes que le reste du projet (Nuxt Icon / mdi)
+- La couleur de fond du conteneur est à définir avec la charte graphique (non précisée dans les maquettes à ce stade)
 
 ---
 
