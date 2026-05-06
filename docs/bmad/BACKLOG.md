@@ -195,7 +195,7 @@
 
 ---
 
-### US-006: Top Video Section ⬜ P1
+### US-006: Top Video Section ✅ P1
 
 **En tant que** visiteur
 **Je veux** voir les vidéos ayant le plus de vues
@@ -203,56 +203,56 @@
 
 **Description** : Section affichée sur la homepage, juste en dessous de "Recent Articles". Affiche les 5 vidéos les plus vues dans un layout à 2 colonnes (desktop), similaire à la section Recent Articles (US-004), avec des variations de design propres au contenu vidéo.
 
-#### US-006a: Section Top Video (composant parent) ⬜ P1
+#### US-006a: Section Top Video (composant parent) ✅ P1
 
 **En tant que** visiteur
 **Je veux** voir une section "Top Video" sur la homepage
 **Afin de** accéder aux vidéos les plus populaires
 
 **Critères d'acceptance:**
-- [ ] Titre de section "Top Video"
-- [ ] Layout desktop : 2 colonnes (gauche = featured video card, droite = colonne unique de 4 small video cards empilées en 1×4)
-- [ ] Les 2 colonnes ont la même hauteur
-- [ ] Affiche les 5 vidéos les plus vues (triées par `views` DESC)
-- [ ] Données récupérées depuis le store via `useAsyncData` (SSR-safe)
-- [ ] État de chargement visible pendant le fetch
-- [ ] Composant extrait dans `components/video/TopVideo.vue`
-- [ ] Background color noir sur toute la section
+- [x] Titre de section "Top Video"
+- [x] Layout desktop : 2 colonnes (gauche = featured video card, droite = colonne unique de 4 small video cards empilées en 1×4)
+- [x] Les 2 colonnes ont la même hauteur
+- [x] Affiche les 5 vidéos les plus vues (triées par `views` DESC)
+- [x] Données récupérées depuis le store via `useAsyncData` (SSR-safe)
+- [x] État de chargement visible pendant le fetch
+- [x] Composant extrait dans `components/video/TopVideos.vue`
+- [x] Background color noir sur toute la section
 
 **Technical notes:**
-- API: `GET /api/videos/popular?limit=5`
+- API: `GET /api/videos/top-videos?limit=5`
 - Store: `videosStore.fetchTopVideos(5)` (nouveau store dédié)
 - Pattern identique à `Recent.vue` : `useAsyncData` → `isReady` → v-if/v-else
 - Responsive : 1 colonne en mobile (featured video card en haut, puis les 4 small cards empilées)
 
 ---
 
-#### US-006b: Featured Video Card (grande card) ⬜ P1
+#### US-006b: Featured Video Card (grande card) ✅ P1
 
 **En tant que** visiteur
 **Je veux** voir la vidéo la plus vue mise en avant dans une grande card
 **Afin de** identifier rapidement la vidéo la plus populaire
 
 **Critères d'acceptance:**
-- [ ] Occupe la colonne gauche (∼60% de la largeur desktop)
-- [ ] Colonne droite (SmallVideoCards) : ∼40% de la largeur desktop
-- [ ] Mobile : la card prend 100% de la largeur, la colonne droite se place en dessous
-- [ ] Thumbnail de la vidéo en background (couvre toute la card)
-- [ ] Icône play clairement visible et centrée sur la card
-- [ ] Badge catégorie en style "pill"
-- [ ] Titre de la vidéo en blanc, positionné en bas de la card
-- [ ] Sous le titre : nom de l'auteur | (icône horloge) durée | (icône œil) nombre de vues
-- [ ] Séparateurs verticaux entre chaque info (même design que les cards TopStories)
-- [ ] Nombre de vues formaté (`9000` → `9k`)
-- [ ] Desktop : la card fait la même hauteur que la colonne de droite (4 small cards empilées en 1×4)
-- [ ] Mobile : la card prend toute la largeur (hauteur adaptée)
-- [ ] Au clic → navigation vers la page de la vidéo (`/video/watch/:slug`)
+- [x] Occupe la colonne gauche (∼60% de la largeur desktop)
+- [x] Colonne droite (SmallVideoCards) : ∼40% de la largeur desktop
+- [x] Mobile : la card prend 100% de la largeur, la colonne droite se place en dessous
+- [x] Thumbnail de la vidéo en background (couvre toute la card)
+- [x] Icône play clairement visible et centrée sur la card
+- [x] Badge catégorie en style "pill"
+- [x] Titre de la vidéo en blanc, positionné en bas de la card
+- [x] Sous le titre : nom de l'auteur | (icône horloge) durée | (icône œil) nombre de vues
+- [x] Séparateurs verticaux entre chaque info (même design que les cards TopStories)
+- [x] Nombre de vues formaté (`9000` → `9k`)
+- [x] Desktop : la card fait la même hauteur que la colonne de droite (4 small cards empilées en 1×4)
+- [x] Mobile : la card prend toute la largeur (hauteur adaptée)
+- [x] Au clic → navigation vers la page de la vidéo (`/video/watch/:slug`)
 
 **Technical notes:**
 - Composant: `components/video/FeaturedVideoCard.vue`
 - Props: `title`, `slug`, `thumbnail`, `category`, `authorName`, `duration`, `views`
 - Design similaire à `FeaturedCard.vue` : overlay sombre en dégradé, hover néo-brutaliste
-- Layout desktop : CSS `grid-cols` ou `flex` avec `basis-[60%]` / `basis-[40%]` sur le parent `TopVideo.vue`
+- Layout desktop : CSS `grid-cols` ou `flex` avec `basis-[60%]` / `basis-[40%]` sur le parent `TopVideos.vue`
 - Barre d'infos (auteur + durée + vues) : même pattern que `Card.vue` TopStories (séparateurs `|`, icônes SVG inline ou icon library)
 - `duration` : string formaté côté mock data (ex: `"4:32"`) — voir note backend (section "Notes techniques à explorer")
 - `views` : nombre entier, formaté en `k` via un helper (même utilitaire que `Card.vue`)
@@ -260,22 +260,22 @@
 
 ---
 
-#### US-006c: Small Video Card (petite card) ⬜ P1
+#### US-006c: Small Video Card (petite card) ✅ P1
 
 **En tant que** visiteur
 **Je veux** voir les vidéos populaires dans des cards compactes
 **Afin de** parcourir rapidement le contenu vidéo populaire
 
 **Critères d'acceptance:**
-- [ ] Affichée dans la colonne droite en **colonne unique** : les 4 cards sont empilées verticalement l'une au-dessus de l'autre (pas de grille 2×2 comme dans Recent Articles)
-- [ ] Structure interne en **2 colonnes** : vignette à gauche (~40% de largeur), informations à droite (~60% de largeur)
-- [ ] **Colonne gauche (40%)** : thumbnail de la vidéo avec icône play centrée (horizontalement et verticalement) par-dessus
-- [ ] **Colonne droite (60%)** : badge catégorie (pill) + titre de la vidéo + nom de l'auteur (ex: "by Esther Howard")
-- [ ] Pas de background sur la card elle-même (hérite du fond noir de la section)
-- [ ] Titre en blanc
-- [ ] Nom de l'auteur en gris clair
-- [ ] Badge catégorie : fond gris foncé, texte gris clair
-- [ ] Au clic → navigation vers la page de la vidéo (`/video/watch/:slug`)
+- [x] Affichée dans la colonne droite en **colonne unique** : les 4 cards sont empilées verticalement l'une au-dessus de l'autre (pas de grille 2×2 comme dans Recent Articles)
+- [x] Structure interne en **2 colonnes** : vignette à gauche (~40% de largeur), informations à droite (~60% de largeur)
+- [x] **Colonne gauche (40%)** : thumbnail de la vidéo avec icône play centrée (horizontalement et verticalement) par-dessus
+- [x] **Colonne droite (60%)** : badge catégorie (pill) + titre de la vidéo + nom de l'auteur (ex: "by Esther Howard")
+- [x] Pas de background sur la card elle-même (hérite du fond noir de la section)
+- [x] Titre en blanc
+- [x] Nom de l'auteur en gris clair
+- [x] Badge catégorie : fond gris foncé, texte gris clair
+- [x] Au clic → navigation vers la page de la vidéo (`/video/watch/:slug`)
 
 **Technical notes:**
 - Composant: `components/video/SmallVideoCard.vue`
@@ -287,18 +287,18 @@
 
 ---
 
-#### US-006d: Mock data — Vidéos ⬜ P1
+#### US-006d: Mock data — Vidéos ✅ P1
 
 **En tant que** développeur
 **Je veux** avoir des données de vidéos simulées
 **Afin de** développer et tester la section Top Video sans backend réel
 
 **Critères d'acceptance:**
-- [ ] Interface TypeScript `Video` définie (`title`, `slug`, `thumbnail`, `category`, `authorName`, `views`, `duration`, `url`)
-- [ ] Au moins 10 vidéos mock avec des données réalistes
-- [ ] Les vidéos couvrent plusieurs catégories
-- [ ] Les thumbnails utilisent des URLs de ressources libres de droits
-- [ ] Données intégrées dans `server/database/site-content.ts`
+- [x] Interface TypeScript `Video` définie (`title`, `slug`, `thumbnail`, `category`, `views`, `duration`, `createdAt`, `author`)
+- [x] Au moins 10 vidéos mock avec des données réalistes (15 vidéos créées)
+- [x] Les vidéos couvrent plusieurs catégories
+- [x] Les thumbnails utilisent des URLs de ressources libres de droits (Unsplash)
+- [x] Données intégrées dans `server/database/site-content.ts` via `getVideos()`
 
 **Note sur les ressources vidéo libres de droits :**
 Pour les thumbnails et les URLs de vidéos, plusieurs plateformes offrent du contenu libre de droits exploitable pour le développement frontend (équivalent vidéo d'Unsplash) :
@@ -308,40 +308,40 @@ Pour les thumbnails et les URLs de vidéos, plusieurs plateformes offrent du con
 
 ---
 
-#### US-006e: API route & Store — Vidéos ⬜ P1
+#### US-006e: API route & Store — Vidéos ✅ P1
 
 **En tant que** développeur
 **Je veux** une route API et un store Pinia pour les vidéos populaires
 **Afin de** alimenter les composants frontend en données
 
 **Critères d'acceptance:**
-- [ ] Route API `GET /api/videos/popular?limit=5` retournant les vidéos triées par vues (DESC)
-- [ ] Store Pinia `videosStore` avec action `fetchTopVideos(limit)`
-- [ ] State: `topVideos` (array), `loading` (flag), `cached.topVideos` (boolean)
-- [ ] Cache pour éviter les re-fetch inutiles (`cached` state + early return)
-- [ ] Flag `loading` (true pendant le fetch, false après)
-- [ ] TypeScript interfaces définies (`Video` : `title`, `slug`, `thumbnail`, `category`, `authorName`, `views`, `duration`, `url`)
-- [ ] Action `clearCache` pour reset
+- [x] Route API `GET /api/videos/top-videos?limit=5` retournant les vidéos triées par vues (DESC)
+- [x] Store Pinia `videosStore` avec action `fetchTopVideos(limit)`
+- [x] State: `topVideos` (array), `loading` (flag), `cached.topVideos` (boolean)
+- [x] Cache pour éviter les re-fetch inutiles (`cached` state + early return)
+- [x] Flag `loading` (true pendant le fetch, false après)
+- [x] TypeScript interfaces définies (`Video` : `title`, `slug`, `thumbnail`, `category`, `views`, `duration`, `createdAt`, `author`)
+- [x] Action `clearCache` pour reset
 
 **Technical notes:**
-- Fichier API: `server/api/videos/popular.get.ts`
+- Fichier API: `server/api/videos/top-videos.get.ts`
 - Store: `stores/videosStore.ts`
 - Pattern identique à `articlesStore.ts` (Composition API)
 - Données issues de `site-content.ts` (mock), même pattern que les articles
 
 ---
 
-#### US-006f: Tests — Top Video Section ⬜ P1
+#### US-006f: Tests — Top Video Section ✅ P1
 
 **En tant que** développeur
 **Je veux** des tests unitaires et d'intégration pour la section Top Video
 **Afin de** garantir la fiabilité des composants et du store
 
 **Critères d'acceptance:**
-- [ ] Tests unitaires `FeaturedVideoCard.vue` : rendu titre, badge catégorie, thumbnail background, icône play, durée, vues, href
-- [ ] Tests unitaires `SmallVideoCard.vue` : rendu titre, badge catégorie, thumbnail, icône play, nom auteur, href
-- [ ] Tests unitaires `TopVideo.vue` : titre de section, état de chargement, featured card = vidéo 1, 4 small cards = vidéos 2-5, `fetchTopVideos` appelé au mount
-- [ ] Tests d'intégration `fetchTopVideos` : endpoint correct, limit, flag loading, cache, gestion erreur, clearCache
+- [x] Tests unitaires `FeaturedVideoCard.vue` : rendu titre, badge catégorie, thumbnail background, icône play, durée, vues, href
+- [x] Tests unitaires `SmallVideoCard.vue` : rendu titre, badge catégorie, thumbnail, icône play, nom auteur, href
+- [x] Tests unitaires `TopVideos.vue` : titre de section, état de chargement, featured card = vidéo 1, 4 small cards = vidéos 2-5, `fetchTopVideos` appelé au mount
+- [x] Tests d'intégration `fetchTopVideos` : endpoint correct, limit, flag loading, cache, gestion erreur, clearCache
 
 **Technical notes:**
 - Fichiers tests : `tests/unit/frontend/featured-video-card.test.ts`, `tests/unit/frontend/small-video-card.test.ts`, `tests/unit/frontend/top-video.test.ts`
@@ -1068,6 +1068,32 @@ _Section 4 — "Meet Our Team" :_
 
 ---
 
+### US-036: Refactorisation des éléments UI répétés en composants atomiques ⬜ P3
+
+**En tant que** développeur  
+**Je veux** extraire les éléments de design répétés en composants Vue réutilisables  
+**Afin de** réduire la duplication de code, faciliter la maintenance et garantir l'uniformité visuelle sur l'ensemble du site
+
+**Contexte** : Plusieurs éléments de design sont actuellement dupliqués dans de nombreux composants (badges de catégorie, séparateurs de barre d'infos, formatage des vues, etc.). Les regrouper en composants atomiques rendra le code plus lisible et les évolutions de design plus rapides à appliquer.
+
+**Éléments identifiés à extraire :**
+- [ ] **`CategoryPill.vue`** — badge catégorie en style "pill" (`px-3 py-1 rounded-full uppercase tracking-wide border-2 border-black`). Prop : `category: string`. Actuellement dupliqué dans : `Card.vue`, `FeaturedCard.vue`, `FeaturedVideoCard.vue`, et les composants vidéo à venir.
+- [ ] **`ViewCount.vue`** (ou composable) — affichage du nombre de vues formaté en `k`. Logique `formattedViews` actuellement dupliquée dans `Card.vue` et `FeaturedVideoCard.vue`.
+- [ ] **`InfoBar.vue`** — barre d'infos auteur / durée ou temps de lecture / vues avec séparateurs `|` et icônes. Pattern répété dans `Card.vue`, `FeaturedVideoCard.vue`.
+
+**Critères d'acceptance:**
+- [ ] Chaque composant atomique extrait est documenté avec ses props TypeScript
+- [ ] Les composants existants sont mis à jour pour utiliser les nouveaux composants atomiques
+- [ ] Le rendu visuel est identique avant/après refactorisation (non-régression)
+- [ ] Aucune prop superflue n'est ajoutée (les composants atomiques restent simples)
+
+**Technical notes:**
+- Dossier cible : `components/ui/` pour les composants atomiques génériques
+- Utiliser `withDefaults(defineProps<Props>(), {...})` comme dans les composants existants
+- La refactorisation se fait composant par composant, sans bloquer les développements en cours
+
+---
+
 ## Epic 8: Tests
 
 ### US-013: Test unitaire — Article Card ✅ P1
@@ -1413,6 +1439,12 @@ _Accessibilité :_
 | US-004b: Featured Card | ✅ Done | - |
 | US-004c: Recent Card | ✅ Done | - |
 | US-004: Tests (FeaturedCard, RecentCard, Recent, fetchRecent store) | ✅ Done | - |
+| US-006d: Mock data Vidéos | ✅ Done | - |
+| US-006e: API route & Store Vidéos | ✅ Done | - |
+| US-006a: Section Top Video (composant parent) | ✅ Done | - |
+| US-006b: Featured Video Card | ✅ Done | - |
+| US-006c: Small Video Card | ✅ Done | - |
+| US-006f: Tests Top Video Section | ✅ Done | - |
 
 ---
 
@@ -1427,4 +1459,5 @@ _Accessibilité :_
 | 2026-03-06 | US-004a/b/c complétés : Recent.vue, FeaturedCard.vue, RecentCard.vue — layout 2 colonnes, hover néo-brutaliste, tailles responsive. Tests restent à faire. |
 | 2026-03-10 | US-004 ✅ : tests unitaires écrits (featured-card, recent-card, recent-articles), tests intégration store fetchRecent ajoutés. Mock data enrichi (64 articles, 9 catégories). US-033 ajoutée au backlog (Epic 7). |
 | 2026-03-12 | US-006 Top Video Section ajoutée au backlog (Epic 1) avec 6 sous-US (006a à 006f) : composant parent, FeaturedVideoCard, SmallVideoCard, mock data, API+Store, tests. US-006 Article Detail Page renommée US-034 pour éviter le conflit de numérotation. US-006b affinée : largeur 60/40, auteur + durée + vues avec séparateurs, layout mobile. Section "Notes techniques à explorer" ajoutée (NT-001 comptage vues vidéo, NT-002 récupération durée). US-035 Top Columnist Section ajoutée (Epic 1) avec 2 sous-US : composant parent slider (035a) + ColumnistCard (035b). Point #8 ajouté dans "Points à clarifier" (critères de sélection + accessibilité slider WCAG 2.2.2). |
+| 2026-04-30 | US-006 ✅ : section Top Video complète — 15 vidéos mock (getVideos()), API GET /api/videos/top-videos, store videosStore (fetchTopVideos, cache, clearCache), TopVideos.vue (layout 60/40, SSR-safe), FeaturedVideoCard.vue (overlay, play, barre infos, vues formatées), SmallVideoCard.vue (layout 2 colonnes, thumbnail+play, badge catégorie). 48 tests écrits et passants (15 FeaturedVideoCard, 13 SmallVideoCard, 9 TopVideos, 11 videos-store). US-036 ajoutée (Epic 7) : refactorisation composants atomiques UI (CategoryPill, ViewCount, InfoBar). |
 

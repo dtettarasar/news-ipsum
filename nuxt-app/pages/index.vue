@@ -18,6 +18,20 @@
       <article-recent />
     </div>
 
+  </div>
+
+  <div class="w-full bg-black py-[20px]">
+
+    <div class="container mx-auto my-12">
+
+      <video-top-videos />
+
+    </div>
+
+  </div>
+
+  <div class="container mx-auto">
+
     <div class="my-12">
       <article-most-popular />
     </div>
