@@ -59,6 +59,7 @@
   - [US-011: Comments System ⬜](#us-011-comments-system--p3)
   - [US-023: Inscription Newsletter ⬜](#us-023-inscription-newsletter--p2)
   - [US-024: Page réglages du compte ⬜](#us-024-page-réglages-du-compte-utilisateur--p3)
+  - [US-037: Widget Explore Topics ⬜](#us-037-widget-explore-topics--p2)
   - [US-025: Widget Météo ⬜](#us-025-widget-météo-sidebar-page-article--p3)
 - [Epic 10: Contact Page](#epic-10-contact-page)
   - [US-026: Page Contact (layout) ⬜](#us-026-page-contact-layout--p2)
@@ -681,15 +682,22 @@ Pour les thumbnails et les URLs de vidéos, plusieurs plateformes offrent du con
 **Afin de** découvrir d'autres ressources pendant ma lecture
 
 **Critères d'acceptance:**
+
+_Layout :_
 - [ ] Colonne droite visible uniquement en desktop (~1/3 de largeur)
-- [ ] En mobile : les widgets apparaissent sous la colonne article (ordre à définir)
-- [ ] Contient au minimum : widget météo (US-025), formulaire newsletter (US-023)
-- [ ] Les widgets sont empilés verticalement dans la sidebar
+- [ ] En mobile : les widgets apparaissent sous la colonne article, dans le même ordre que sur desktop
+- [ ] Les widgets sont empilés verticalement avec un espacement cohérent
+
+_Ordre des widgets (de haut en bas) :_
+- [ ] **1. Widget Météo** → voir [US-025](#us-025-widget-météo-sidebar-page-article--p3) — composant `widgets/WeatherWidget.vue`
+- [ ] **2. Search Bar** → réutilisation du composant `forms/SearchBar.vue` existant (voir [US-009](#us-009-search-functionality--p2) pour la fonctionnalité complète)
+- [ ] **3. Widget Explore Topics** → voir [US-037](#us-037-widget-explore-topics--p2) — composant `widgets/ExploreTopicsWidget.vue`
+- [ ] **4. Widget Newsletter** → voir [US-023](#us-023-inscription-newsletter--p2) — composant `newsletter/SubscribeForm.vue`
 
 **Technical notes:**
 - Composant conteneur : `components/article/ArticleSidebar.vue`
-- Les widgets individuels sont des composants autonomes (US-025, US-023)
-- La sidebar peut être enrichie d'autres widgets ultérieurement (articles populaires, etc.)
+- Chaque widget est autonome et indépendant — un widget en erreur ne doit pas bloquer les autres
+- La `SearchBar` dans la sidebar réutilise le composant existant `components/forms/SearchBar.vue` ; son comportement fonctionnel (requêtes, résultats) dépend de US-009
 
 ---
 
@@ -1070,6 +1078,47 @@ _Évolutions futures (hors scope) :_
 - API : `GET/PUT /api/account/settings`, `GET /api/account/comments`
 - Middleware : authentification requise
 - Prérequis : US-018 (inscription), US-016 (auth migration)
+
+---
+
+### US-037: Widget Explore Topics ⬜ P2
+
+**En tant que** visiteur
+**Je veux** voir les catégories disponibles sur le site dans la sidebar
+**Afin de** explorer facilement les sujets qui m'intéressent
+
+**Contexte** : Widget affiché dans la sidebar de la page article (US-034j), entre la search bar et le widget newsletter. Présente toutes les catégories du site sous forme de liste verticale avec le nombre d'articles par catégorie.
+
+**Critères d'acceptance:**
+
+_Conteneur :_
+- [ ] Fond blanc, coins arrondis (`rounded-xl` ou similaire)
+- [ ] Bordure noire fine solid 1–2px sur tout le contour du conteneur
+- [ ] Padding intérieur entre le contenu et les bords du conteneur
+- [ ] Style néo-brutaliste (cohérent avec le reste du site)
+
+_Titre du widget :_
+- [ ] Texte "Explore Topics" affiché en haut du widget
+
+_Liste des catégories :_
+- [ ] Toutes les catégories du site sont listées verticalement, une par ligne
+- [ ] Chaque ligne affiche : **nom de la catégorie à gauche** et **nombre d'articles entre parenthèses à droite** — ex: `Culture` · · · `(2)`
+- [ ] Disposition `flex justify-between` : nom collé au bord gauche, nombre collé au bord droit
+- [ ] Texte en noir, semi-bold
+- [ ] Les lignes sont séparées par un trait horizontal noir de 1–2px, pleine largeur du contenu (en tenant compte du padding du conteneur)
+- [ ] Pas de séparateur après la dernière catégorie
+- [ ] Chaque ligne est cliquable → redirige vers la liste des articles filtrés par catégorie
+
+_Comportement :_
+- [ ] Au clic sur une catégorie → navigation vers `/articles?category=NomDeLaCategorie`
+- [ ] État de chargement si les catégories ne sont pas encore en cache
+
+**Technical notes:**
+- Composant : `components/widgets/ExploreTopicsWidget.vue`
+- Données catégories : réutiliser `GET /api/categories` + `categoryStore` (déjà en place)
+- Nombre d'articles par catégorie : à récupérer depuis l'API ou calculé côté serveur — envisager d'enrichir `GET /api/categories` avec un champ `articleCount` pour éviter un second appel
+- Séparateur : `<hr>` ou `<div class="border-t border-black">` entre les lignes (pas après la dernière)
+- Lien de catégorie : à aligner avec la future page de listing articles (Epic à définir)
 
 ---
 
