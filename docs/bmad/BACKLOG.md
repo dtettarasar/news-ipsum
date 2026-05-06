@@ -30,6 +30,18 @@
   - [US-035: Top Columnist Section ⬜](#us-035-top-columnist-section--p1)
 - [Epic 2: Article Detail Page](#epic-2-article-detail-page)
   - [US-034: Article Detail Page ⬜](#us-034-article-detail-page--p1)
+    - [US-034a: Layout + route ⬜](#us-034a-layout-de-la-page--route--p1)
+    - [US-034b: En-tête de l'article ⬜](#us-034b-en-tête-de-larticle--p1)
+    - [US-034c: Boutons de partage ⬜](#us-034c-boutons-de-partage-réseaux-sociaux--p2)
+    - [US-034d: Image hero ⬜](#us-034d-image-hero--p1)
+    - [US-034e: Contenu de l'article ⬜](#us-034e-contenu-de-larticle--p1)
+    - [US-034f: Tags ⬜](#us-034f-tags-de-larticle--p2)
+    - [US-034g: Encart auteur ⬜](#us-034g-encart-de-présentation-de-lauteur--p2)
+    - [US-034h: Navigation précédent/suivant ⬜](#us-034h-navigation-précédent--suivant--p2)
+    - [US-034i: Section commentaires ⬜](#us-034i-section-commentaires--p3)
+    - [US-034j: Sidebar widgets ⬜](#us-034j-sidebar--colonne-droite-widgets--p2)
+    - [US-034k: API & Mock data ⬜](#us-034k-api--mock-data--article-détail--p1)
+    - [US-034l: Tests ⬜](#us-034l-tests--article-detail-page--p2)
 - [Epic 3: Auth — Migration vers nuxt-auth-utils](#epic-3-auth--migration-vers-nuxt-auth-utils)
   - [US-016: Migration vers nuxt-auth-utils ⬜](#us-016-migration-du-système-dauthentification-vers-nuxt-auth-utils--p2)
   - [US-018: Inscription utilisateur ⬜](#us-018-inscription-utilisateur-lecteur--p2)
@@ -470,23 +482,253 @@ Pour les thumbnails et les URLs de vidéos, plusieurs plateformes offrent du con
 
 ### US-034: Article Detail Page ⬜ P1
 
-**En tant que** visiteur  
-**Je veux** lire un article complet  
-**Afin de** consommer le contenu en détail
+**En tant que** visiteur
+**Je veux** lire un article complet
+**Afin de** consommer le contenu éditorial en détail
+
+**Description** : Page de lecture d'un article, accessible depuis toutes les article cards du site. Layout à 2 colonnes (article à gauche ~2/3, widgets à droite ~1/3). Route : `/article/read/[slug]`.
+
+---
+
+#### US-034a: Layout de la page + route ⬜ P1
+
+**En tant que** visiteur
+**Je veux** accéder à la page d'un article via son slug
+**Afin de** consulter son contenu complet
 
 **Critères d'acceptance:**
-- [ ] Route: `/articles/:slug`
-- [ ] Affiche titre, image hero, contenu complet
-- [ ] Affiche auteur (avatar, nom, bio)
-- [ ] Affiche date de publication
-- [ ] Affiche temps de lecture
-- [ ] Affiche catégorie (lien vers filtre)
-- [ ] Meta tags SEO dynamiques
-- [ ] Related articles en bas
+- [ ] Route : `/article/read/[slug]` (cohérent avec les liens des cards homepage)
+- [ ] Layout desktop : 2 colonnes — colonne gauche ~2/3, colonne droite ~1/3
+- [ ] Layout mobile : 1 colonne (colonne gauche en premier, sidebar en dessous)
+- [ ] Si le slug ne correspond à aucun article → page 404
+- [ ] Meta tags SEO dynamiques : `<title>`, `<meta description>`, `og:title`, `og:image`
+- [ ] État de chargement pendant le fetch de l'article
 
 **Technical notes:**
-- Page: `pages/articles/[slug].vue`
-- API: `GET /api/articles/:slug` (à créer)
+- Page : `pages/article/read/[slug].vue`
+- API : `GET /api/articles/:slug` (à créer — US-034k)
+- Pattern SSR : `useAsyncData` avec le slug comme clé
+
+---
+
+#### US-034b: En-tête de l'article ⬜ P1
+
+**En tant que** visiteur
+**Je veux** voir les informations clés de l'article dès le haut de la page
+**Afin de** savoir immédiatement de quoi parle l'article et qui l'a écrit
+
+**Critères d'acceptance:**
+- [ ] Badge catégorie en style "pill" (même design que les cards homepage)
+- [ ] Titre de l'article — grand, typographie lisible
+- [ ] Barre d'infos : "by" + nom | date de publication | temps de lecture | nombre de vues | nombre de commentaires
+- [ ] Séparateurs `|` entre chaque info (même pattern que `Card.vue`)
+- [ ] Icônes pour chaque métadonnée (horloge pour le temps de lecture, œil pour les vues, bulle pour les commentaires)
+- [ ] Date formatée de manière lisible (ex: "10 février 2025" ou en anglais "Oct 18, 2023")
+
+**Technical notes:**
+- Composant : `components/article/ArticleHeader.vue`
+- Props : `category`, `title`, `authorName`, `authorAvatar`, `publishedAt`, `readTime`, `views`, `commentsCount`
+- Le formatage de la date se fait via un helper (ex: `new Intl.DateTimeFormat('fr-FR', ...)`)
+
+---
+
+#### US-034c: Boutons de partage réseaux sociaux ⬜ P2
+
+**En tant que** visiteur
+**Je veux** partager un article sur les réseaux sociaux
+**Afin de** diffuser le contenu à mon réseau
+
+**Critères d'acceptance:**
+- [ ] Boutons de partage affichés 2 fois : juste avant l'image hero, et après les tags (en bas de l'article)
+- [ ] Réseaux supportés : Facebook, X (Twitter), LinkedIn, lien de copie (copy link)
+- [ ] Au clic sur un réseau → ouverture dans un nouvel onglet avec l'URL de partage pré-remplie
+- [ ] Au clic sur "copy link" → l'URL de la page est copiée dans le presse-papier + feedback visuel (ex: icône qui change brièvement)
+- [ ] Design cohérent avec le reste du site (style néo-brutaliste)
+
+**Technical notes:**
+- Composant réutilisable : `components/article/ShareButtons.vue`
+- Prop : `url` (l'URL complète de l'article), `title` (pour pré-remplir le texte de partage)
+- URLs de partage : Facebook (`https://www.facebook.com/sharer/sharer.php?u=`), X (`https://x.com/intent/tweet?url=&text=`), LinkedIn (`https://www.linkedin.com/sharing/share-offsite/?url=`)
+- Copy link : `navigator.clipboard.writeText(url)`
+
+---
+
+#### US-034d: Image hero ⬜ P1
+
+**En tant que** visiteur
+**Je veux** voir l'image principale de l'article en grand format
+**Afin d'** avoir une accroche visuelle avant de lire le contenu
+
+**Critères d'acceptance:**
+- [ ] Image affichée en pleine largeur de la colonne gauche
+- [ ] Ratio cohérent (ex: 16/9 ou similaire) — hauteur fixe ou contrôlée
+- [ ] Coins arrondis (cohérent avec le design du site)
+- [ ] Texte alternatif accessible (`alt` = titre de l'article)
+- [ ] Fallback si l'image est absente (fond gris neutre)
+
+**Technical notes:**
+- Même image que celle utilisée dans les article cards (`image` field)
+- Composant intégré directement dans la page ou dans `ArticleBody.vue`
+
+---
+
+#### US-034e: Contenu de l'article ⬜ P1
+
+**En tant que** visiteur
+**Je veux** lire le contenu complet de l'article
+**Afin de** consommer l'information
+
+**Critères d'acceptance:**
+- [ ] Rendu du contenu HTML (le contenu sera stocké en HTML dans la base de données)
+- [ ] Typographie lisible : taille de police confortable, interlignage généreux, largeur de ligne maîtrisée
+- [ ] Styles appliqués aux éléments HTML internes : `<h2>`, `<h3>`, `<p>`, `<ul>`, `<ol>`, `<blockquote>`, `<strong>`, `<em>`, `<a>`, `<img>`
+- [ ] Les images dans le contenu sont responsive (`max-width: 100%`)
+- [ ] Les liens dans le contenu s'ouvrent dans un nouvel onglet
+- [ ] Pas d'injection XSS possible (le contenu HTML est sanitisé côté serveur avant stockage)
+
+**Technical notes:**
+- Le frontend reçoit et rend uniquement le champ `sanitizedHtml` via `v-html` — jamais le `content` brut
+- **Pipeline de sanitisation côté serveur (Mongoose pre-validate hook)** :
+  1. L'éditeur admin produit du HTML (éditeur WYSIWYG type Tiptap ou Quill)
+  2. Le hook `pre("validate")` du modèle Article convertit `content` → `sanitizedHtml` via **DOMPurify** + **jsdom** (même pattern que le projet de référence)
+  3. `sanitizedHtml` est le seul champ exposé par l'API au frontend
+  4. `lastModifiedAt` est mis à jour automatiquement si `content` est modifié
+- Dépendances backend : `dompurify`, `jsdom`
+- Styles Tailwind Typography (`@tailwindcss/typography` plugin) ou styles CSS personnalisés dans `assets/css/` pour styler le HTML rendu
+- Composant : `components/article/ArticleContent.vue`
+- Référence : modèle `ArticleSch` du projet Node/Express précédent (pre-validate hook DOMPurify)
+
+---
+
+#### US-034f: Tags de l'article ⬜ P2
+
+**En tant que** visiteur
+**Je veux** voir les tags associés à l'article
+**Afin de** découvrir d'autres articles sur des sujets similaires
+
+**Critères d'acceptance:**
+- [ ] Affichés sous le contenu de l'article, avant les boutons de partage du bas
+- [ ] Chaque tag est cliquable → redirige vers une page ou un filtre listant les articles du même tag
+- [ ] Style "pill" cohérent avec les badges catégorie (variante visuelle possible pour les différencier)
+- [ ] Si aucun tag → la section est masquée
+
+**Technical notes:**
+- Tags stockés sous forme de tableau de strings sur le modèle Article (`tags: string[]`)
+- Lien de tag : `/articles?tag=slug-du-tag` (à définir selon la page de listing)
+- Lié à US-020 (Système de Tags) pour la gestion admin
+
+---
+
+#### US-034g: Encart de présentation de l'auteur ⬜ P2
+
+**En tant que** visiteur
+**Je veux** voir une présentation de l'auteur de l'article
+**Afin de** découvrir qui a écrit le contenu et explorer ses autres articles
+
+**Critères d'acceptance:**
+- [ ] Affiché sous les boutons de partage du bas
+- [ ] Avatar de l'auteur (grand format, arrondi)
+- [ ] Nom de l'auteur
+- [ ] Bio courte de l'auteur
+- [ ] Lien "Voir tous les articles de cet auteur" (optionnel — à définir selon la roadmap)
+- [ ] Lien sociaux de l'auteur (Instagram, twitter, mail)
+
+**Technical notes:**
+- Composant : `components/article/AuthorCard.vue`
+- Props : `name`, `avatar`, `bio`
+- Le champ `bio` sera à ajouter au modèle `Author`/`User` en base de données
+
+---
+
+#### US-034h: Navigation précédent / suivant ⬜ P2
+
+**En tant que** visiteur
+**Je veux** naviguer vers l'article précédent ou suivant
+**Afin de** parcourir le contenu sans revenir à la liste
+
+**Critères d'acceptance:**
+- [ ] Affiché sous l'encart auteur
+- [ ] Lien "Article précédent" à gauche (avec titre et image miniature)
+- [ ] Lien "Article suivant" à droite (avec titre et image miniature)
+- [ ] Pour le titre le nombre de caractère affiché est limité (limitation à spécifier, si le titre est trop long, le couper et terminer la chaîne de caractère par "...")
+- [ ] Si aucun article précédent → le lien gauche est masqué (ou désactivé)
+- [ ] Si aucun article suivant → le lien droit est masqué (ou désactivé)
+- [ ] Design cohérent, hover néo-brutaliste
+
+**Technical notes:**
+- L'API `GET /api/articles/:slug` retourne optionnellement `prevArticle` et `nextArticle` (slug + titre + image)
+- Composant : `components/article/ArticleNavigation.vue`
+- Tri par `createdAt` pour définir l'ordre précédent/suivant
+
+---
+
+#### US-034i: Section commentaires ⬜ P3
+
+**En tant que** visiteur / utilisateur connecté
+**Je veux** lire et poster des commentaires sur l'article
+**Afin de** participer à la discussion
+
+> ℹ️ Cette US est implémentée dans **US-011** (Epic 6). Elle est intégrée ici dans le layout de la page article sous la navigation précédent/suivant.
+
+**Critères d'acceptance:** voir [US-011](#us-011-comments-system--p3)
+
+---
+
+#### US-034j: Sidebar — colonne droite (widgets) ⬜ P2
+
+**En tant que** visiteur
+**Je veux** voir des contenus complémentaires dans la colonne droite
+**Afin de** découvrir d'autres ressources pendant ma lecture
+
+**Critères d'acceptance:**
+- [ ] Colonne droite visible uniquement en desktop (~1/3 de largeur)
+- [ ] En mobile : les widgets apparaissent sous la colonne article (ordre à définir)
+- [ ] Contient au minimum : widget météo (US-025), formulaire newsletter (US-023)
+- [ ] Les widgets sont empilés verticalement dans la sidebar
+
+**Technical notes:**
+- Composant conteneur : `components/article/ArticleSidebar.vue`
+- Les widgets individuels sont des composants autonomes (US-025, US-023)
+- La sidebar peut être enrichie d'autres widgets ultérieurement (articles populaires, etc.)
+
+---
+
+#### US-034k: API & Mock data — Article détail ⬜ P1
+
+**En tant que** développeur
+**Je veux** un endpoint pour récupérer un article complet par son slug
+**Afin d'** alimenter la page de détail
+
+**Critères d'acceptance:**
+- [ ] Route API : `GET /api/articles/:slug`
+- [ ] Retourne l'article complet : tous les champs de la card + `content` (HTML), `tags`, `bio` auteur, `prevArticle`, `nextArticle`
+- [ ] Si le slug n'existe pas → réponse 404
+- [ ] Les articles dans `site-content.ts` ont un champ `content` enrichi (faux contenu HTML structuré, pas juste "Full content here...")
+- [ ] Les articles dans `site-content.ts` ont un champ `tags` (tableau de strings)
+
+**Technical notes:**
+- Fichier API : `server/api/articles/[slug].get.ts`
+- `prevArticle` et `nextArticle` : déterminés par tri `createdAt` dans les données mock
+- Enrichir `getArticles()` dans `site-content.ts` pour quelques articles (inutile de remplir les 64 — 5 à 10 suffisent)
+
+---
+
+#### US-034l: Tests — Article Detail Page ⬜ P2
+
+**En tant que** développeur
+**Je veux** des tests pour les composants et l'API de la page article
+**Afin de** garantir la fiabilité de la page de lecture
+
+**Critères d'acceptance:**
+- [ ] Tests unitaires `ArticleHeader.vue` : catégorie, titre, barre d'infos complète, formatage date
+- [ ] Tests unitaires `ShareButtons.vue` : rendu des boutons, hrefs de partage, copy link
+- [ ] Tests unitaires `AuthorCard.vue` : avatar, nom, bio
+- [ ] Tests unitaires `ArticleNavigation.vue` : lien précédent, lien suivant, cas sans précédent/suivant
+- [ ] Tests API : `GET /api/articles/:slug` — article trouvé, slug inexistant (404)
+
+**Technical notes:**
+- Fichiers : `tests/unit/frontend/article-header.test.ts`, `tests/unit/frontend/share-buttons.test.ts`, etc.
+- Patterns identiques aux tests existants (factory + props)
 
 ---
 
